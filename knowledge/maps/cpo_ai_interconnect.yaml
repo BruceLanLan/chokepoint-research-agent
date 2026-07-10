@@ -1,0 +1,45 @@
+# Sketch map for AI interconnect / CPO research (educational).
+# Not a buy list. Nodes are hypotheses to verify with live sources.
+
+system: "AI GPU cluster optical interconnect (CPO / co-packaged optics)"
+physical_origin: "HBM-GPU racks → scale-up / scale-out fabric"
+layers:
+  - name: "System / OEM"
+    examples: ["Hyperscalers", "NVIDIA systems", "Networking OEMs"]
+    notes: "Top-down Capex narrative lives here; not usually the chokepoint."
+
+  - name: "Switch / ASIC & packaging"
+    examples: ["Switch ASICs", "CPO engines", "Advanced packaging"]
+    notes: "Architecture choice (pluggable vs CPO) drives demand below."
+
+  - name: "Optical engine & silicon photonics"
+    candidates:
+      - node: "Fiber-to-waveguide coupling / alignment"
+        why: "Sub-micron alignment; coupling loss sensitivity"
+      - node: "External laser source (ELS) / high-power CW DFB"
+        why: "Si is indirect bandgap; needs external lasers in many CPO designs"
+      - node: "Silicon photonics PIC"
+        why: "Process + design IP; foundry ecosystem"
+
+  - name: "Equipment"
+    candidates:
+      - node: "MBE (molecular beam epitaxy) tools"
+        why: "Atomic-precision epi for compound semiconductors / lasers"
+
+  - name: "Materials & substrates"
+    candidates:
+      - node: "SOI wafers for silicon photonics"
+        why: "Specialty substrate; limited process IP"
+      - node: "High-purity red phosphorus / InP chain inputs"
+        why: "Ultra-high purity chem inputs; concentrated suppliers"
+
+risks:
+  - "CPO timeline slips; copper / advanced copper remains dominant longer"
+  - "Multiple suppliers qualify alternatives → concentration thesis fails"
+  - "Export controls re-route demand geographically"
+  - "Micro-cap liquidity if equities are used as proxies"
+
+kill_criteria_examples:
+  - "Major GPU platform publicly delays or abandons CPO for key SKUs"
+  - "Credible high-volume alternative interconnect with better TCO"
+  - "Supply concentration breaks (new capacity + multi-source qualification)"

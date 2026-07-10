@@ -1,0 +1,29 @@
+# Core agent stack
+deepagents>=0.2.0
+langchain>=0.3.0
+langchain-openai>=0.3.0
+langchain-anthropic>=0.3.0
+langchain-core>=0.3.0
+langgraph>=0.3.0
+
+# Tools & data
+tavily-python>=0.5.0
+httpx[socks]>=0.27.0
+socksio>=1.0.0
+markdownify>=0.13.0
+yfinance>=0.2.40
+pandas>=2.0.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+pyyaml>=6.0
+rich>=13.0.0
+typer>=0.12.0
+
+# Optional API server
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+sse-starlette>=2.0.0
+
+# Dev (also listed in pyproject [dev])
+pytest>=8.0

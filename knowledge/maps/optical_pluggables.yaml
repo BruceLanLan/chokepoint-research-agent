@@ -1,0 +1,24 @@
+# Educational sketch — pluggable optical modules vs CPO.
+# Useful for path-dependency / alternative-route research.
+
+system: "Datacenter pluggable optics (800G/1.6T) as CPO alternative path"
+physical_origin: "Scale-out Ethernet/InfiniBand optical links"
+layers:
+  - name: "Modules"
+    candidates:
+      - node: "800G/1.6T DSFP/OSFP modules"
+        why: "Volume shipping today; incremental upgrades"
+  - name: "DSP / lasers / PICs inside modules"
+    candidates:
+      - node: "Coherent/IM-DD DSPs"
+      - node: "EML / SiPh lasers"
+  - name: "Fiber plant"
+    candidates:
+      - node: "MPO cabling / connectors"
+
+risks:
+  - "CPO adoption faster than expected reduces pluggable TAM"
+  - "Power/thermal limits force architectural change"
+
+kill_criteria_examples:
+  - "Hyperscaler RFQs show step-function CPO attach rates with pluggable phase-out dates"

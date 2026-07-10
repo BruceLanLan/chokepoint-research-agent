@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chokepoint Research Agent</title>
+  <style>
+    :root {
+      --bg: #0b1020; --panel: #121a2f; --text: #e8eefc; --muted: #93a0bf;
+      --accent: #5b9dff; --ok: #3ecf8e; --warn: #f0b429; --border: #243152;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1a2748 0%, var(--bg) 55%);
+      color: var(--text); min-height: 100vh;
+    }
+    header, main, footer { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
+    header { padding-top: 28px; }
+    h1 { margin: 0 0 8px; font-size: 1.55rem; }
+    .sub { color: var(--muted); line-height: 1.5; }
+    .warn {
+      display: inline-block; margin-top: 10px; padding: 6px 10px;
+      border: 1px solid #5a4818; background: #2a220e; color: var(--warn);
+      border-radius: 8px; font-size: 0.85rem;
+    }
+    main { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 16px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    .card {
+      background: color-mix(in srgb, var(--panel) 92%, black);
+      border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin: 8px 0 6px; }
+    textarea, select, input {
+      width: 100%; background: #0d1426; color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font: inherit;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button {
+      margin-top: 10px; width: 100%; border: 0; border-radius: 10px; padding: 12px;
+      background: linear-gradient(180deg, #6aa8ff, #3d7fe0); color: #fff; font-weight: 600; cursor: pointer;
+    }
+    button.secondary { background: #2a3555; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    #status, .meta, .tiny { color: var(--muted); font-size: 0.88rem; }
+    .meta { color: var(--ok); margin-top: 8px; }
+    #live, #out {
+      margin-top: 10px; white-space: pre-wrap; background: #0a1120; border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px; max-height: 36vh; overflow: auto; font-size: 0.9rem; line-height: 1.5;
+    }
+    #out { max-height: 48vh; }
+    ul.reports { list-style: none; padding: 0; margin: 0; }
+    ul.reports li { border-bottom: 1px solid var(--border); padding: 10px 0; cursor: pointer; }
+    ul.reports li:hover { color: var(--accent); }
+    a { color: var(--accent); }
+    footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 28px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Chokepoint Research Agent</h1>
+    <div class="sub">Bottom-up supply-chain multi-agent research · 自下而上供应链多专家研究</div>
+    <div class="warn">⚠️ 仅供研究学习，不构成投资建议 · Research only — not investment advice</div>
+  </header>
+  <main>
+    <section class="card">
+      <label for="q">研究问题</label>
+      <textarea id="q" placeholder="例：对比两家 CPO 相关公司谁更接近物理开关；或 600519 基本面+卡脖子位置"></textarea>
+      <div class="row">
+        <div>
+          <label for="mode">模式</label>
+          <select id="mode">
+            <option value="full">full</option>
+            <option value="chokepoint_fast">chokepoint_fast</option>
+            <option value="risk_only">risk_only</option>
+            <option value="compare">compare</option>
+          </select>
+        </div>
+        <div>
+          <label for="key">X-API-Key（可选）</label>
+          <input id="key" type="password" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="session">session id（可选）</label>
+          <input id="session" placeholder="留空或点 New session" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <label style="display:flex;gap:8px;align-items:center;color:var(--text)">
+            <input type="checkbox" id="stream" checked /> 使用 SSE 流式
+          </label>
+          <label style="display:flex;gap:8px;align-items:center;color:var(--text)">
+            <input type="checkbox" id="bilingual" /> 双语 one-pager
+          </label>
+        </div>
+      </div>
+      <button id="run">开始研究 / Run</button>
+      <button id="newSession" class="secondary">New session</button>
+      <div id="status"></div>
+      <div id="meta" class="meta"></div>
+      <label>Live events</label>
+      <div id="live"></div>
+      <label>Report</label>
+      <div id="out"></div>
+    </section>
+    <section class="card">
+      <h3 style="margin-top:0">历史研报</h3>
+      <button id="refresh" class="secondary">刷新列表</button>
+      <ul class="reports" id="list"></ul>
+    </section>
+  </main>
+  <footer>
+    <a href="https://github.com/BruceLanLan/chokepoint-research-agent" target="_blank" rel="noreferrer">GitHub</a>
+    · <a href="/docs">API docs</a>
+  </footer>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const headers = () => {
+      const h = { "Content-Type": "application/json" };
+      const k = $("key").value.trim();
+      if (k) h["X-API-Key"] = k;
+      return h;
+    };
+
+    async function loadReports() {
+      try {
+        const res = await fetch("/reports?limit=30", { headers: headers() });
+        const data = await res.json();
+        const ul = $("list");
+        ul.innerHTML = "";
+        (data.items || []).forEach((it) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<div>${it.name}</div><div class="tiny">${it.modified} · ${it.size_kb} KB</div>`;
+          li.onclick = async () => {
+            const r = await fetch("/reports/" + encodeURIComponent(it.name), { headers: headers() });
+            const j = await r.json();
+            $("out").textContent = j.content || "";
+          };
+          ul.appendChild(li);
+        });
+        if (!(data.items || []).length) ul.innerHTML = '<li class="tiny">暂无研报</li>';
+      } catch (e) {
+        $("list").innerHTML = `<li class="tiny">${e}</li>`;
+      }
+    }
+
+    $("refresh").onclick = loadReports;
+    $("newSession").onclick = async () => {
+      const res = await fetch("/sessions", { method: "POST", headers: headers() });
+      const j = await res.json();
+      $("session").value = j.session_id || "";
+    };
+
+    async function runSync(body) {
+      const res = await fetch("/research", { method: "POST", headers: headers(), body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
+      $("out").textContent = data.report || "";
+      $("meta").textContent = `mode=${data.mode} quality=${data.quality?.score} cost_tokens≈${data.cost?.total_tokens_est}`;
+      $("status").textContent = "完成 / Done";
+      loadReports();
+    }
+
+    async function runStream(body) {
+      const res = await fetch("/research/stream", {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "";
+      $("live").textContent = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const parts = buf.split("\n\n");
+        buf = parts.pop();
+        for (const chunk of parts) {
+          const lines = chunk.split("\n");
+          let ev = "message", data = "";
+          for (const line of lines) {
+            if (line.startsWith("event:")) ev = line.slice(6).trim();
+            if (line.startsWith("data:")) data += line.slice(5).trim();
+          }
+          if (ev === "update") {
+            try {
+              const j = JSON.parse(data);
+              $("live").textContent += `[${j.node}] ${(j.preview || "").slice(0, 200)}\n\n`;
+              $("live").scrollTop = $("live").scrollHeight;
+            } catch {}
+          } else if (ev === "final") {
+            const j = JSON.parse(data);
+            $("out").textContent = j.report || "";
+            $("meta").textContent = `quality=${j.quality?.score} tokens≈${j.cost?.total_tokens_est}`;
+          } else if (ev === "error") {
+            throw new Error(data);
+          }
+        }
+      }
+      $("status").textContent = "完成 / Done";
+      loadReports();
+    }
+
+    $("run").onclick = async () => {
+      const question = $("q").value.trim();
+      if (!question) return;
+      $("run").disabled = true;
+      $("status").textContent = "研究中…";
+      $("out").textContent = "";
+      $("live").textContent = "";
+      const body = {
+        question,
+        mode: $("mode").value,
+        save_report: true,
+        export: true,
+        bilingual: $("bilingual").checked,
+        session_id: $("session").value.trim() || null,
+      };
+      try {
+        if ($("stream").checked) await runStream(body);
+        else await runSync(body);
+      } catch (e) {
+        $("status").textContent = "失败: " + e;
+      } finally {
+        $("run").disabled = false;
+      }
+    };
+
+    loadReports();
+  </script>
+</body>
+</html>

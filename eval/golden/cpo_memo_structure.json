@@ -1,0 +1,8 @@
+{
+  "id": "cpo_memo_structure",
+  "question": "Map CPO chokepoints for AI interconnect",
+  "min_quality": 55,
+  "require_scorecard": true,
+  "require_urls": 1,
+  "fixture_report": "## 1. 研究结论\n观望。核心逻辑是光进铜退下的封装内光源与对准壁垒。\n\n## 2. 系统解构：物理开关 / chokepoint\nGPU 集群 → 光互联 → CPO → ELS / 对准 / SOI\n\n| 节点 | 不可替代 | 集中度 | 杠杆 | 真空 | 拐点 |\n| --- | --- | --- | --- | --- | --- |\n| ELS 激光 | 5 | 4 | 5 | 4 | 3 |\n| 光纤对准 | 4 | 3 | 4 | 5 | 3 |\n\n## 6. 风险与证伪条件\nKill criteria: 先进铜互联在关键 SKU 上推迟 CPO 24 个月以上\n\n## 8. 信息来源\n[1] Example: https://example.com/cpo-overview\n\n详细分析：共封装光学将光电转换拉近算力芯片，降低封装外铜信道损耗。供给集中与认证周期决定中小市值节点是否具备研究价值。本段填充长度以满足结构评估对篇幅的要求。继续补充行业上下文与路径依赖讨论，强调框架而非荐股。"
+}

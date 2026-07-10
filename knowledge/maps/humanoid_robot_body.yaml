@@ -1,0 +1,36 @@
+# Sketch map for humanoid robot hardware body chain (educational).
+# Not a buy list. Verify every claim with current public sources.
+
+system: "Humanoid robot hardware body (actuators / motion)"
+physical_origin: "Full robot BOM without 'brain' (compute/model)"
+layers:
+  - name: "System integrators"
+    examples: ["US / EU robot OEMs", "China robot OEMs"]
+    notes: "Software brain often discussed more than hardware body."
+
+  - name: "Motion modules"
+    candidates:
+      - node: "Harmonic reducers"
+        why: "Precision, torque density, long qualification cycles"
+      - node: "RV reducers"
+        why: "Heavy-load joints; concentrated know-how"
+      - node: "Linear actuators"
+        why: "Leg/arm linear motion; cost & reliability sensitive"
+      - node: "Servo systems & ball screws"
+        why: "Control + mechanical transmission stack"
+
+  - name: "Materials"
+    candidates:
+      - node: "NdFeB permanent magnets (Nd/Pr + Dy/Tb doping)"
+        why: "High-temp demagnetization resistance; refining geography matters"
+      - node: "Specialty steels / titanium / molybdenum additives"
+        why: "Gears and structural metallurgy"
+
+risks:
+  - "Robot unit volumes far below narrative → materials demand overstated"
+  - "Western re-shoring of refining changes price/path of bottlenecks"
+  - "Single-path reliance on rare-earth PM motors if alternatives scale"
+
+kill_criteria_examples:
+  - "Major OEMs switch joint designs away from assumed component families"
+  - "Material intensity per robot drops by order of magnitude via redesign"

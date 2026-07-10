@@ -1,0 +1,25 @@
+# Educational sketch — HBM / advanced memory for AI accelerators.
+# Not a buy list.
+
+system: "HBM and advanced packaging memory path for AI GPUs"
+physical_origin: "GPU memory wall / bandwidth per watt"
+layers:
+  - name: "HBM stacks"
+    candidates:
+      - node: "HBM3E / HBM4 die stacks"
+        why: "Capacity + bandwidth roadmap gated by few memory makers"
+  - name: "Interposer / advanced packaging"
+    candidates:
+      - node: "CoWoS / similar advanced packaging capacity"
+        why: "Foundry packaging capacity can bottleneck GPU shipments"
+  - name: "Substrates & materials"
+    candidates:
+      - node: "ABF / advanced substrates"
+        why: "Substrate supply historically constrained in prior cycles"
+
+risks:
+  - "Architecture shift to alternative memory hierarchies"
+  - "Rapid capacity expansion collapses scarcity narrative"
+
+kill_criteria_examples:
+  - "Leading GPU SKUs publicly shift away from HBM for mainstream AI training"

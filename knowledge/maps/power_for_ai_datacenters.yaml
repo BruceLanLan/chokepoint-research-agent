@@ -1,0 +1,30 @@
+# Educational sketch — power & cooling bottlenecks for AI datacenters.
+# Not a buy list.
+
+system: "AI datacenter power delivery and thermal path"
+physical_origin: "GPU rack MW-class loads"
+layers:
+  - name: "Facility power"
+    candidates:
+      - node: "Utility interconnect / transformers"
+        why: "Lead times and local grid capacity can gate campus buildouts"
+      - node: "Backup generation / long-duration energy"
+        why: "Uptime contracts; fuel or battery chain"
+  - name: "Rack power delivery"
+    candidates:
+      - node: "PSU / busbar / high-voltage DC architectures"
+        why: "Efficiency and density constraints"
+  - name: "Cooling"
+    candidates:
+      - node: "Liquid cooling CDUs / cold plates"
+        why: "Thermal envelope for high-TDP GPUs"
+      - node: "Facility chillers / heat rejection"
+        why: "Site-level thermal limits"
+
+risks:
+  - "Software efficiency reduces MW intensity faster than expected"
+  - "Regional permitting delays dominate component scarcity narratives"
+
+kill_criteria_examples:
+  - "Hyperscalers publicly deprioritize liquid cooling for key SKUs"
+  - "Transformer lead times normalize without price/volume signal in assumed nodes"

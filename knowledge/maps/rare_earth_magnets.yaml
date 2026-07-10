@@ -1,0 +1,31 @@
+# Educational sketch — rare earth permanent magnets for motors (humanoid / EV / industrial).
+# Not a buy list. Verify every claim with current public sources.
+
+system: "NdFeB permanent magnet supply chain for high-performance motors"
+physical_origin: "Servo / traction motors requiring high-temp demagnetization resistance"
+layers:
+  - name: "End demand"
+    examples: ["Humanoid joints", "EV drive motors", "Industrial automation"]
+  - name: "Magnet manufacture"
+    candidates:
+      - node: "Sintered NdFeB magnets"
+        why: "Process know-how + customer qualification cycles"
+  - name: "Separation / refining"
+    candidates:
+      - node: "Light REE separation (Nd/Pr)"
+        why: "Chemistry + environmental permitting; geography concentrated"
+      - node: "Heavy REE (Dy/Tb) for high-temp grades"
+        why: "Scarcity relative to light REE; doping for coercivity"
+  - name: "Mining / feed"
+    candidates:
+      - node: "Primary rare-earth mining"
+        why: "Ore grade, project timelines, offtake contracts"
+
+risks:
+  - "Demand intensity per robot/vehicle overstated"
+  - "Recycling / substitution (ferrite, alternative motor topologies)"
+  - "Policy export controls re-route trade without creating free capacity"
+
+kill_criteria_examples:
+  - "Major OEMs redesign away from Dy/Tb-heavy grades at scale"
+  - "Large non-concentrated refining capacity online with multi-source qualification"

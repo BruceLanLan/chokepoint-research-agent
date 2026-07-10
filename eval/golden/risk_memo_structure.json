@@ -1,0 +1,8 @@
+{
+  "id": "risk_memo_structure",
+  "question": "Red-team humanoid rare-earth demand thesis",
+  "min_quality": 50,
+  "require_scorecard": false,
+  "require_urls": 1,
+  "fixture_report": "## 1. 研究结论\n风险高：十亿台机器人假设极度敏感。\n\n## 风险与证伪\nKill criteria: 单位机器人稀土用量下降一个数量级。\n路径依赖：永磁电机被替代拓扑部分替代。\n\n## 来源\nhttps://example.com/ms-robot-model\n\n补充：需求模型对渗透率、单机材料强度与回收比例极度敏感，机构覆盖真空不等于低估。研究用途，不构成投资建议。额外文本用于满足长度门槛评估。"
+}
