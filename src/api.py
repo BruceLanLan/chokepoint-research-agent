@@ -915,6 +915,42 @@ def chart_coverage(x_api_key: str | None = Header(default=None, alias="X-API-Key
     return Response(content=coverage_heat_svg(), media_type="image/svg+xml")
 
 
+@app.get("/maps")
+def api_maps(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.knowledge_maps import list_maps
+
+    return {"items": list_maps()}
+
+
+@app.get("/maps/{map_id}")
+def api_map_detail(
+    map_id: str,
+    mermaid: bool = False,
+    seed: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.knowledge_maps import map_research_seed, map_to_graph, map_to_mermaid
+
+    if seed:
+        return map_research_seed(map_id)
+    if mermaid:
+        return {"mermaid": map_to_mermaid(map_id)}
+    g = map_to_graph(map_id)
+    if g.get("error"):
+        raise HTTPException(404, g["error"])
+    return g
+
+
+@app.get("/dashboard")
+def api_dashboard(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.cost_dashboard import cost_quality_dashboard
+
+    return cost_quality_dashboard()
+
+
 @app.websocket("/ws/quotes")
 async def ws_quotes(websocket):  # type: ignore[no-untyped-def]
     """WebSocket quote stream (polling under the hood; research utility only)."""

@@ -1,0 +1,8 @@
+{
+  "id": "knowledge_map_seed",
+  "question": "Use CPO knowledge map as seed",
+  "min_quality": 50,
+  "require_scorecard": true,
+  "require_urls": 1,
+  "fixture_report": "# CPO map-seeded memo\n\n## 研究结论\nELS / external laser remains a candidate chokepoint for CPO in AI interconnect systems.\n\n## 风险与证伪 / Kill criteria\n- Major GPU platform publicly delays CPO\n- High-volume alternative interconnect with better TCO\n\n## 来源\n- https://www.sec.gov/cgi-bin/browse-edgar\n- Educational map: knowledge/maps/cpo_ai_interconnect.yaml\n\n| 节点 | 不可替代 | 集中度 | 杠杆 | 真空 | 拐点 | 备注 |\n|------|---------|--------|------|------|------|------|\n| ELS 激光 | 5 | 4 | 5 | 4 | 4 | verify |\n| 耦合对准 | 4 | 3 | 4 | 4 | 3 | verify |\n"
+}

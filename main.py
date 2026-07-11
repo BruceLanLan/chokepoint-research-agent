@@ -1073,6 +1073,36 @@ def plan_cmd(
     console.print(build_research_plan(topic, skill=skill, template_id=template))
 
 
+@app.command("maps")
+def maps_cmd(
+    map_id: Optional[str] = typer.Argument(None, help="Map id under knowledge/maps"),
+    mermaid: bool = typer.Option(False, "--mermaid"),
+    seed: bool = typer.Option(False, "--seed", help="Emit research seed question"),
+):
+    """Educational knowledge maps (YAML) → graph / seed question."""
+    from src.ops.knowledge_maps import list_maps, map_research_seed, map_to_graph, map_to_mermaid
+
+    if not map_id:
+        console.print(list_maps())
+        return
+    if seed:
+        console.print(map_research_seed(map_id))
+        return
+    if mermaid:
+        console.print(map_to_mermaid(map_id))
+        return
+    console.print(map_to_graph(map_id))
+
+
+@app.command("dashboard")
+def dashboard_cmd():
+    """Cost / quality / audit dashboard (local metrics)."""
+    _boot_env()
+    from src.ops.cost_dashboard import cost_quality_dashboard
+
+    console.print(cost_quality_dashboard())
+
+
 @app.command("version")
 def show_version():
     from src import __version__

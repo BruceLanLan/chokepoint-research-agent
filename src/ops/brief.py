@@ -27,6 +27,32 @@ def build_brief_questions(limit: int = 10) -> list[dict[str, Any]]:
     return out
 
 
+def process_health_section() -> str:
+    """Markdown section: kill-criteria process risks + coverage cold symbols."""
+    lines = ["\n## Process health (ops)\n"]
+    try:
+        from src.ops.kill_monitor import kill_criteria_dashboard
+
+        km = kill_criteria_dashboard()
+        lines.append(f"- high_process_risk_theses: **{km.get('high_risk_count', 0)}**\n")
+        for tid in (km.get("active_without_kills") or [])[:8]:
+            lines.append(f"  - active without kill criteria: `{tid}`\n")
+    except Exception as exc:  # noqa: BLE001
+        lines.append(f"- kill monitor unavailable: {exc}\n")
+    try:
+        from src.ops.coverage_heat import coverage_heatmap
+
+        heat = coverage_heatmap()
+        cold = [s for s in (heat.get("symbols") or []) if s.get("heat") == "cold"][:8]
+        lines.append(f"- cold coverage symbols: **{len(cold)}**\n")
+        for s in cold:
+            lines.append(f"  - `{s.get('symbol')}` reports={s.get('report_count')}\n")
+    except Exception as exc:  # noqa: BLE001
+        lines.append(f"- coverage heat unavailable: {exc}\n")
+    lines.append("\n> Ops checks are process hygiene, not investment signals.\n")
+    return "".join(lines)
+
+
 def run_brief(
     *,
     invoke_fn: Callable[[str, str], str],
@@ -40,6 +66,7 @@ def run_brief(
         f"generated_at: {datetime.now().isoformat(timespec='seconds')}\n",
         f"items: {len(jobs)}\n",
         "\n> Research only — not investment advice. 仅供研究学习，不构成投资建议。\n",
+        process_health_section(),
     ]
     results = []
     for job in jobs:

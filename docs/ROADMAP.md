@@ -59,7 +59,8 @@
 | **v3.1–v3.9** | Evidence, graph, tags, compare, audit, docx, coverage | **Shipped** |
 | **v4.0.0** | Research ops maturity cut | **Shipped** |
 | **v4.1.0** | Citations, lineage, plan, provider health, WS quotes | **Shipped** |
-| v4.2 | Plugin marketplace, heavier realtime MD | Future |
+| **v4.2.0** | Knowledge maps, cost dashboard, brief process health | **Shipped** |
+| v4.3 | Plugin marketplace, heavier realtime MD | Future |
 
 ---
 

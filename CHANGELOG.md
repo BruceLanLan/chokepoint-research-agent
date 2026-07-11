@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.2.0 — 2026-07-12
+
+### Added
+- Knowledge maps graph/seed from `knowledge/maps/*.yaml` (`maps`, `/maps`)
+- Cost/quality dashboard (`dashboard`, `/dashboard`)
+- Brief process-health section (kill monitor + cold coverage)
+- Golden evals: `knowledge_map_seed`, `compare_structure`
+
 ## 4.1.0 — 2026-07-12
 
 ### Added

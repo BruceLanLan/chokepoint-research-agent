@@ -1,0 +1,8 @@
+{
+  "id": "compare_structure",
+  "question": "Compare two interconnect paths",
+  "min_quality": 50,
+  "require_scorecard": false,
+  "require_urls": 1,
+  "fixture_report": "# 路径对比研究\n\n## 研究结论\nCPO 与 pluggable 在功耗与可维护性上权衡不同；需拆解物理节点后再谈标的代理。\n\n## 对比维度\n- 功耗 / 密度\n- 可维护性\n- 供应链集中度\n\n## 风险\nKill criteria: CPO timeline slips indefinitely.\n\n## 来源\n- https://example.com/research-note\n"
+}
