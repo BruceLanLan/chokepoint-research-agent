@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.6.0 — 2026-07-12
+
+### Added
+- Publish **checklist** gate (`checklist`, `/checklist/{name}`)
+- **Eval history** + trend (`eval-record`, `eval-trend`, `/eval/record`, `/eval/trend`)
+- Doctor shows research queue status
+
 ## 4.5.0 — 2026-07-12
 
 ### Added

@@ -63,7 +63,8 @@
 | **v4.3.0** | FTS memo index + research queue | **Shipped** |
 | **v4.4.0** | Queue worker, export pack, auto-tag, thesis health, catalog | **Shipped** |
 | **v4.5.0** | Workspace digest, map compare, hypotheses, enrich frontmatter | **Shipped** |
-| v4.6 | Remote plugin marketplace, heavier realtime MD | Future |
+| **v4.6.0** | Checklist gate, eval history/trend | **Shipped** |
+| v4.7 | Remote plugin marketplace, heavier realtime MD | Future |
 
 ---
 

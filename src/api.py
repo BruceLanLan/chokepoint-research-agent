@@ -1204,6 +1204,36 @@ def api_enrich_report(
     return out
 
 
+@app.get("/checklist/{name}")
+def api_checklist(
+    name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.checklist import run_checklist
+
+    out = run_checklist(report_name=name)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.post("/eval/record")
+def api_eval_record(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.eval_history import record_eval_run
+
+    return record_eval_run()
+
+
+@app.get("/eval/trend")
+def api_eval_trend(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.eval_history import eval_trend
+
+    return eval_trend()
+
+
 @app.websocket("/ws/quotes")
 async def ws_quotes(websocket):  # type: ignore[no-untyped-def]
     """WebSocket quote stream (polling under the hood; research utility only)."""

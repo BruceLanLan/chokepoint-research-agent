@@ -64,9 +64,10 @@ def run_doctor() -> dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         add("agent_build", False, str(exc), "warn")
 
-    # Ops surface (v4)
+    # Ops surface (v4+)
     try:
         from src.ops.kill_monitor import kill_criteria_dashboard
+        from src.ops.research_queue import queue_summary
         from src.plugins.loader import list_plugin_files
         from src.skills.loader import list_skill_packs
 
@@ -81,6 +82,12 @@ def run_doctor() -> dict[str, Any]:
         add("skill_packs", bool(packs), f"{len(packs)} packs", "warn" if not packs else "ok")
         plugs = list_plugin_files()
         add("plugins_dir", True, f"{len(plugs)} files under ./plugins/")
+        qs = queue_summary()
+        add(
+            "research_queue",
+            True,
+            f"total={qs.get('total')} by_status={qs.get('by_status')}",
+        )
     except Exception as exc:  # noqa: BLE001
         add("ops_surface", False, str(exc), "warn")
 

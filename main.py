@@ -1337,6 +1337,39 @@ def enrich_report_cmd(report: str = typer.Argument(...)):
     console.print(out)
 
 
+@app.command("checklist")
+def checklist_cmd(report: str = typer.Argument(..., help="Saved report name")):
+    """Publish gate checklist for a memo (structure, not factuality)."""
+    _boot_env()
+    from src.ops.checklist import run_checklist
+
+    out = run_checklist(report_name=report)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
+    if not out.get("gate_ok"):
+        raise typer.Exit(2)
+
+
+@app.command("eval-record")
+def eval_record_cmd():
+    """Run golden eval and append to eval history."""
+    _boot_env()
+    from src.ops.eval_history import record_eval_run
+
+    console.print(record_eval_run())
+
+
+@app.command("eval-trend")
+def eval_trend_cmd():
+    """Show offline eval pass-rate history."""
+    _boot_env()
+    from src.ops.eval_history import eval_trend
+
+    console.print(eval_trend())
+
+
 @app.command("version")
 def show_version():
     from src import __version__

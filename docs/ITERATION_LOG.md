@@ -15,8 +15,9 @@ Shipped and tagged on GitHub (`BruceLanLan/chokepoint-research-agent`):
 | v4.3.0 | SQLite FTS memo index, research queue |
 | v4.4.0 | Queue worker, export pack, auto-tag, thesis health, catalog |
 | v4.5.0 | Workspace digest, map compare, hypotheses, enrich frontmatter |
+| v4.6.0 | Publish checklist + eval history/trend |
 
-Also: GitHub Releases for v3.0–v4.5; jobs.json corrupt-file harden; **87** offline tests green.
+Also: GitHub Releases for v3.0–v4.6; jobs.json corrupt-file harden; **90** offline tests green.
 
 Principles unchanged: research-only / not investment advice; secrets never committed.
 
