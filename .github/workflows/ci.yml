@@ -50,6 +50,15 @@ jobs:
           python main.py eval-record
           python -c "from src.ops.marketplace import marketplace_index; i=marketplace_index(); assert i['counts']['listings']>0, i"
           python -c "from src.ops.live_safety import estimate_queue_live_cost, live_costs_accepted; e=estimate_queue_live_cost(1); assert 'est_total_tokens' in e; assert live_costs_accepted(flag=False) is False"
+          python -c "from src.ops.workspace_health import workspace_health_score; h=workspace_health_score(); assert 0<=h['score']<=100"
         env:
           PYTHONPATH: .
           REPORTS_DIR: ${{ runner.temp }}/reports
+
+      - name: Upload eval history artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-history-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/data/eval_history.jsonl
+          if-no-files-found: ignore

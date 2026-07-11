@@ -1294,6 +1294,74 @@ def marketplace_cmd(
     console.print(marketplace_search(q) if q else marketplace_index())
 
 
+@app.command("workspace-health")
+def workspace_health_cmd():
+    """Composite research-ops health score (process hygiene, not alpha)."""
+    _boot_env()
+    from src.ops.workspace_health import workspace_health_score
+
+    console.print(workspace_health_score())
+
+
+@app.command("runbook")
+def runbook_cmd(
+    system: str = typer.Option("", "--system", help="System boundary text"),
+    md: bool = typer.Option(False, "--md", help="Print markdown SOP"),
+):
+    """Professional Chokepoint research runbook / SOP (offline)."""
+    _boot_env()
+    from src.ops.runbook import professional_runbook, runbook_markdown
+
+    if md:
+        console.print(runbook_markdown(system=system))
+    else:
+        console.print(professional_runbook(system=system))
+
+
+@app.command("batch-review")
+def batch_review_cmd(limit: int = typer.Option(20, "--limit")):
+    """Batch structure checklist over recent memos (no LLM)."""
+    _boot_env()
+    from src.ops.batch_review import batch_structure_review
+
+    console.print(batch_structure_review(limit=limit))
+
+
+@app.command("weekly-ops")
+def weekly_ops_cmd(
+    save: bool = typer.Option(True, "--save/--no-save"),
+    enqueue: int = typer.Option(0, "--enqueue", help="Also enqueue N watchlist items"),
+):
+    """Weekly ops pack: digest + health + batch review (+ optional queue)."""
+    _boot_env()
+    from src.ops.weekly_ops import run_weekly_ops
+
+    out = run_weekly_ops(save=save, enqueue_watchlist=enqueue)
+    console.print(out.get("markdown") if not save else out)
+    if out.get("saved_path"):
+        console.print(f"[green]Saved: {out['saved_path']}[/green]")
+
+
+@app.command("quotes-cache")
+def quotes_cache_cmd(
+    symbols: Optional[str] = typer.Option(None, "--symbols", help="Comma symbols to refresh"),
+    history: Optional[str] = typer.Option(None, "--history", help="Symbol for history"),
+    summary: bool = typer.Option(False, "--summary"),
+):
+    """Local multi-symbol quote snapshot cache (research utility)."""
+    _boot_env()
+    from src.ops.quote_cache import history_summary, load_history, refresh_symbols
+
+    if symbols:
+        syms = [s.strip() for s in symbols.split(",") if s.strip()]
+        console.print(refresh_symbols(syms))
+        return
+    if history:
+        console.print(load_history(history, limit=50))
+        return
+    console.print(history_summary() if summary or True else history_summary())
+
+
 @app.command("quality-board")
 def quality_board_cmd(limit: int = typer.Option(30, "--limit")):
     """Structure-quality leaderboard for recent memos."""

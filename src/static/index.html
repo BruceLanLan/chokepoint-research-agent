@@ -152,8 +152,16 @@
 
     <!-- ANALYTICS -->
     <section id="tab-analytics" class="card hidden">
-      <h3 style="margin-top:0">Workspace analytics</h3>
-      <button class="btn sec" id="a-run">Refresh</button>
+      <h3 style="margin-top:0">Workspace analytics · Health · Quality</h3>
+      <div class="row">
+        <button class="btn sec" id="a-run">Analytics</button>
+        <button class="btn sec" id="a-health">Workspace health</button>
+      </div>
+      <div class="row">
+        <button class="btn sec" id="a-qboard">Quality board</button>
+        <button class="btn sec" id="a-brev">Batch review</button>
+      </div>
+      <button class="btn" id="a-weekly">Weekly ops pack</button>
       <pre id="a-out" class="mono" style="white-space:pre-wrap"></pre>
     </section>
 
@@ -195,6 +203,10 @@
       <div class="row">
         <button class="btn sec" id="o-mkt">Marketplace</button>
         <button class="btn sec" id="o-qcap">Quotes caps</button>
+      </div>
+      <div class="row">
+        <button class="btn sec" id="o-health">Workspace health</button>
+        <button class="btn sec" id="o-runbook">Runbook</button>
       </div>
       <div class="row">
         <input id="o-check-name" placeholder="report name for checklist…" />
@@ -359,6 +371,10 @@ $("tpl-run").onclick=async()=>{
 
 // analytics / jobs / doctor
 $("a-run").onclick=async()=>{ const j=await jget("/analytics"); $("a-out").textContent=JSON.stringify(j,null,2); };
+$("a-health").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jget("/workspace-health"),null,2); };
+$("a-qboard").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jget("/quality-board"),null,2); };
+$("a-brev").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jget("/batch-review?limit=20"),null,2); };
+$("a-weekly").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jpost("/weekly-ops",{save:true,enqueue:0}),null,2); };
 $("s-run").onclick=async()=>{
   const q=$("s-q").value.trim(); if(!q) return;
   const j=await jget("/search/memos?q="+encodeURIComponent(q)+"&limit=15");
@@ -402,6 +418,8 @@ $("o-thealth").onclick=async()=>{ showOps(await jget("/thesis-health")); };
 $("o-pcat").onclick=async()=>{ showOps(await jget("/plugin-catalog")); };
 $("o-mkt").onclick=async()=>{ showOps(await jget("/marketplace")); };
 $("o-qcap").onclick=async()=>{ showOps(await jget("/quotes/capabilities")); };
+$("o-health").onclick=async()=>{ showOps(await jget("/workspace-health")); };
+$("o-runbook").onclick=async()=>{ showOps(await jget("/runbook?system=AI+CPO")); };
 $("o-check").onclick=async()=>{
   const name=$("o-check-name").value.trim(); if(!name){ alert("report name required"); return; }
   showOps(await jget("/checklist/"+encodeURIComponent(name)));

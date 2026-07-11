@@ -58,7 +58,8 @@ When the user grants free rein or overnight autonomy:
 ## Roadmap pointer
 
 - Current product roadmap: `docs/ROADMAP.md` / `docs/zh/ROADMAP.md`
-- Next future themes (as of v4.6): remote plugin marketplace, heavier realtime market data — only if they stay research-ops scoped
+- Next future themes (as of v5.0): heavier realtime MD, optional remote plugins — only if they stay research-ops scoped
+- Professional loop: see `docs/PROFESSIONAL_WORKSTATION.md`
 - Overnight / long-run progress: `docs/AUTONOMOUS_LOG.md`
 - One-shot overnight launcher: `scripts/autonomous_overnight.sh`
 

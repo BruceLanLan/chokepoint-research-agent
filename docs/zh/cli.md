@@ -100,6 +100,11 @@ python main.py thesis-health
 python main.py quality-board
 python main.py config-show
 python main.py watch bulk NVDA,AVGO,COHR
+python main.py workspace-health
+python main.py runbook --system "AI CPO" --md
+python main.py batch-review
+python main.py weekly-ops
+python main.py quotes-cache --symbols NVDA,AVGO --summary
 
 # v2.0 定时任务（macOS launchd / 通用 cron 行）
 python main.py schedule install --hour 9 --minute 0 --limit 3

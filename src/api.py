@@ -1159,6 +1159,81 @@ def api_quotes_capabilities(x_api_key: str | None = Header(default=None, alias="
     return quotes_capabilities()
 
 
+@app.get("/workspace-health")
+def api_workspace_health(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.workspace_health import workspace_health_score
+
+    return workspace_health_score()
+
+
+@app.get("/runbook")
+def api_runbook(
+    system: str = "",
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.runbook import professional_runbook
+
+    return professional_runbook(system=system)
+
+
+@app.get("/batch-review")
+def api_batch_review(
+    limit: int = 20,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.batch_review import batch_structure_review
+
+    return batch_structure_review(limit=limit)
+
+
+@app.post("/weekly-ops")
+def api_weekly_ops(
+    body: dict | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    body = body or {}
+    from src.ops.weekly_ops import run_weekly_ops
+
+    return run_weekly_ops(
+        save=bool(body.get("save", True)),
+        enqueue_watchlist=int(body.get("enqueue") or 0),
+    )
+
+
+@app.get("/quotes/cache")
+def api_quotes_cache(
+    symbol: str | None = None,
+    summary: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.quote_cache import history_summary, load_history
+
+    if summary or not symbol:
+        return history_summary(symbol)
+    return {"items": load_history(symbol, limit=100)}
+
+
+@app.post("/quotes/cache/refresh")
+def api_quotes_cache_refresh(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.quote_cache import refresh_symbols
+
+    symbols = body.get("symbols") or []
+    if isinstance(symbols, str):
+        symbols = [s.strip() for s in symbols.split(",") if s.strip()]
+    if not symbols:
+        raise HTTPException(400, "symbols required")
+    return refresh_symbols(list(symbols))
+
+
 @app.post("/watchlist/bulk")
 def api_watch_bulk(
     body: dict,

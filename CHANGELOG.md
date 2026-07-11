@@ -1,5 +1,23 @@
 # Changelog
 
+## 5.0.0 — 2026-07-12
+
+Professional research workstation maturity cut (v4.8–v5.0).
+
+### Added
+- **Workspace health** composite score (`workspace-health`, `/workspace-health`)
+- **Research runbook / SOP** offline (`runbook`, `/runbook`)
+- **Batch structure review** (`batch-review`, `/batch-review`)
+- **Weekly ops pack** (`weekly-ops`, `/weekly-ops`)
+- **Multi-symbol quote cache** (`quotes-cache`, `/quotes/cache`)
+- UI Analytics: health, quality board, batch review, weekly ops
+- Docs: `docs/PROFESSIONAL_WORKSTATION.md`
+- CI: workspace-health smoke + eval history artifact
+
+### Positioning
+- Research **ops** workstation (coverage → thesis → evidence → gate → archive)
+- Still **not** a market-data terminal or investment advice product
+
 ## 4.7.0 — 2026-07-12
 
 ### Added

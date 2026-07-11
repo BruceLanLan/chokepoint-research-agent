@@ -65,7 +65,9 @@
 | **v4.5.0** | Workspace digest, map compare, hypotheses, enrich frontmatter | **Shipped** |
 | **v4.6.0** | Checklist gate, eval history/trend | **Shipped** |
 | **v4.7.0** | Local marketplace, live queue safety, quotes caps | **Shipped** |
-| v4.8 | Heavier realtime MD, optional remote plugin install | Future |
+| **v4.8–v4.9** | Quote cache, workspace health, runbook, batch review | **Shipped** |
+| **v5.0.0** | Professional workstation maturity cut | **Shipped** |
+| v5.1 | Heavier realtime MD, optional remote plugin install | Future |
 
 ---
 

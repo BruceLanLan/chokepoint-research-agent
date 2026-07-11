@@ -15,13 +15,25 @@
 
 ## Next up (edit as you go)
 
-- [ ] v4.8 candidates:
-  - Optional remote plugin install design (still careful; maybe signed URL only)
-  - Richer quote history cache / multi-symbol SSE
-  - CI artifact upload for eval_history.jsonl
+- [ ] v5.1 candidates (post-maturity):
+  - Multi-symbol SSE multiplex / history charts from quote_cache
+  - Optional remote plugin install design (signed URL only)
   - Notion MCP wire-up only if user asks
-  - UI workstation polish (quality-board panel)
+  - Deeper bilingual UI labels / EN-first mode polish
 - [ ] Keep offline tests green; avoid live research unless requested
+- [ ] Overnight: prefer weekly-ops + mock queue + ship only when meaningful
+
+---
+
+## 2026-07-12 — v5.0.0 (overnight YOLO train)
+
+- **Shipped:** workspace-health, runbook, batch-review, weekly-ops, quote_cache, pro workstation docs, UI analytics panel, CI eval artifact
+- **Tests:** 97 passed
+- **Tag / Release:** yes
+- **Positioning:** professional research **ops** agent (not trading bot / not MD terminal)
+- **Next up:** v5.1 items above
+- **Blocked:** none
+- **User:** sleeping — autonomous YOLO authorized via AGENTS.md
 
 ---
 
