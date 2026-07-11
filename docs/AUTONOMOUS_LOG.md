@@ -15,14 +15,24 @@
 
 ## Next up (edit as you go)
 
-- [ ] v4.7 candidates (pick 2–4 per batch):
-  - Local plugin “marketplace” index (README + discoverability; still no remote install unless designed)
-  - Stronger realtime quotes (document limits; optional WS improvements)
-  - Queue live safety (explicit confirm flag already; maybe cost estimate banner)
-  - Notion export → optional MCP wire-up only if user asks
-  - CI: run `eval-record` artifact / summary
-  - UI polish for digest / checklist / queue
+- [ ] v4.8 candidates:
+  - Optional remote plugin install design (still careful; maybe signed URL only)
+  - Richer quote history cache / multi-symbol SSE
+  - CI artifact upload for eval_history.jsonl
+  - Notion MCP wire-up only if user asks
+  - UI workstation polish (quality-board panel)
 - [ ] Keep offline tests green; avoid live research unless requested
+
+---
+
+## 2026-07-12 — v4.7.0
+
+- **Shipped:** local marketplace, live queue safety (`--i-accept-live-costs`), quotes capabilities, CI eval-record smoke, Ops UI buttons
+- **Tests:** 93 passed
+- **Tag / Release:** yes
+- **Key paths:** `src/ops/marketplace.py`, `live_safety.py`, `quotes_meta.py`
+- **Next up:** v4.8 items above
+- **Blocked:** none
 
 ---
 

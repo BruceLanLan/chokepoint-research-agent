@@ -185,8 +185,20 @@
         <button class="btn" id="o-qrun">Run queue (mock×1)</button>
       </div>
       <div class="row">
+        <button class="btn sec" id="o-qest">Live cost estimate</button>
+        <button class="btn sec" id="o-qmap">Enqueue map:cpo</button>
+      </div>
+      <div class="row">
         <button class="btn sec" id="o-thealth">Thesis health</button>
         <button class="btn sec" id="o-pcat">Plugin catalog</button>
+      </div>
+      <div class="row">
+        <button class="btn sec" id="o-mkt">Marketplace</button>
+        <button class="btn sec" id="o-qcap">Quotes caps</button>
+      </div>
+      <div class="row">
+        <input id="o-check-name" placeholder="report name for checklist…" />
+        <button class="btn sec" id="o-check">Checklist</button>
       </div>
       <button class="btn sec" id="o-digest">Workspace digest</button>
       <button class="btn" id="o-snap">Workspace snapshot (zip)</button>
@@ -384,10 +396,17 @@ $("o-plan").onclick=async()=>{
 };
 $("o-queue").onclick=async()=>{ showOps(await jget("/queue?summary=true")); };
 $("o-qrun").onclick=async()=>{ showOps(await jpost("/queue/run",{n:1, live:false})); };
+$("o-qest").onclick=async()=>{ showOps(await jget("/queue/estimate-live?n=3")); };
+$("o-qmap").onclick=async()=>{ showOps(await jpost("/queue",{from_map:"cpo_ai_interconnect"})); };
 $("o-thealth").onclick=async()=>{ showOps(await jget("/thesis-health")); };
 $("o-pcat").onclick=async()=>{ showOps(await jget("/plugin-catalog")); };
+$("o-mkt").onclick=async()=>{ showOps(await jget("/marketplace")); };
+$("o-qcap").onclick=async()=>{ showOps(await jget("/quotes/capabilities")); };
+$("o-check").onclick=async()=>{
+  const name=$("o-check-name").value.trim(); if(!name){ alert("report name required"); return; }
+  showOps(await jget("/checklist/"+encodeURIComponent(name)));
+};
 $("o-snap").onclick=async()=>{ showOps(await jpost("/snapshot",{})); };
-// digest button if present later
 if($("o-digest")) $("o-digest").onclick=async()=>{ showOps(await jget("/digest")); };
 
 // initial loads

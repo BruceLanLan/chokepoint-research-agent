@@ -1037,6 +1037,14 @@ def api_queue_run(
 
     run_fn = None
     if live:
+        from src.ops.live_safety import assert_live_allowed
+
+        accept = bool(body.get("i_accept_live_costs") or body.get("accept_live_costs"))
+        try:
+            assert_live_allowed(flag=accept)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
         from src.agents.research_agent import build_investment_agent, extract_final_text
 
         settings = get_settings()
@@ -1051,6 +1059,17 @@ def api_queue_run(
             return {"report": extract_final_text(result)}
 
     return process_batch(n=n, run_fn=run_fn, dry_run=not live)
+
+
+@app.get("/queue/estimate-live")
+def api_queue_estimate_live(
+    n: int = 1,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.live_safety import estimate_queue_live_cost
+
+    return estimate_queue_live_cost(n=n)
 
 
 @app.post("/export-pack")
@@ -1119,6 +1138,25 @@ def api_plugin_catalog(x_api_key: str | None = Header(default=None, alias="X-API
     from src.ops.plugin_catalog import plugin_catalog
 
     return plugin_catalog()
+
+
+@app.get("/marketplace")
+def api_marketplace(
+    q: str | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.marketplace import marketplace_index, marketplace_search
+
+    return marketplace_search(q) if q else marketplace_index()
+
+
+@app.get("/quotes/capabilities")
+def api_quotes_capabilities(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.quotes_meta import quotes_capabilities
+
+    return quotes_capabilities()
 
 
 @app.post("/watchlist/bulk")

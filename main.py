@@ -1141,6 +1141,14 @@ def queue_cmd(
     limit: int = typer.Option(10, "--limit"),
     run: int = typer.Option(0, "--run", help="Process N items (uses mock unless --live)"),
     live: bool = typer.Option(False, "--live", help="With --run: call real LLM (costs tokens)"),
+    i_accept_live_costs: bool = typer.Option(
+        False,
+        "--i-accept-live-costs",
+        help="Required with --live (or set CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1)",
+    ),
+    estimate_live: bool = typer.Option(
+        False, "--estimate-live", help="Show heuristic live cost banner and exit"
+    ),
     cancel: Optional[str] = typer.Option(None, "--cancel", help="Cancel item id"),
     cancel_queued: bool = typer.Option(False, "--cancel-queued"),
 ):
@@ -1162,11 +1170,26 @@ def queue_cmd(
     if cancel_queued:
         console.print({"cancelled": cancel_all_queued()})
         return
+    if estimate_live:
+        from src.ops.live_safety import estimate_queue_live_cost
+
+        console.print(estimate_queue_live_cost(n=max(run, 1)))
+        return
     if run and run > 0:
         from src.ops.queue_worker import process_batch
 
         run_fn = None
         if live:
+            from src.ops.live_safety import assert_live_allowed, estimate_queue_live_cost
+
+            try:
+                gate = assert_live_allowed(flag=i_accept_live_costs)
+            except ValueError as exc:
+                console.print(f"[red]{exc}[/red]")
+                console.print(estimate_queue_live_cost(n=run))
+                raise typer.Exit(2) from exc
+            console.print(f"[yellow]Live LLM accepted. estimate={gate.get('estimate')}[/yellow]")
+
             from src.agents.research_agent import build_investment_agent, extract_final_text
             from src.config import get_settings
 
@@ -1259,6 +1282,16 @@ def plugin_catalog_cmd():
     from src.ops.plugin_catalog import plugin_catalog
 
     console.print(plugin_catalog())
+
+
+@app.command("marketplace")
+def marketplace_cmd(
+    q: Optional[str] = typer.Option(None, "--q", help="Search listings"),
+):
+    """Local extension marketplace index (plugins/skills/templates/maps)."""
+    from src.ops.marketplace import marketplace_index, marketplace_search
+
+    console.print(marketplace_search(q) if q else marketplace_index())
 
 
 @app.command("quality-board")

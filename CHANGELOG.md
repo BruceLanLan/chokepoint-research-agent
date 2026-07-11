@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.7.0 — 2026-07-12
+
+### Added
+- **Local marketplace** index (`marketplace`, `/marketplace`) — plugins/skills/templates/maps
+- **Live queue safety**: `--estimate-live`, require `--i-accept-live-costs` or `CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1`
+- **Quotes capabilities** doc API (`/quotes/capabilities`)
+- CI: `eval-record` + marketplace/live-safety smoke
+- UI Ops: marketplace, live estimate, enqueue map, checklist, quotes caps
+- Docs: `docs/PLUGIN_MARKETPLACE.md`
+
 ## 4.6.0 — 2026-07-12
 
 ### Added
