@@ -244,6 +244,7 @@ def list_saved_reports(limit: int = 20) -> str:
 
 def all_tools():
     """Tools available to lead + sub agents."""
+    from src.tools.filings import sec_recent_filings, sec_search_company, validate_citations
     from src.tools.knowledge import list_knowledge_maps, load_knowledge_map
     from src.tools.market_cn import get_cn_stock_quote, search_cn_company_news
 
@@ -253,6 +254,9 @@ def all_tools():
         get_market_snapshot,
         get_cn_stock_quote,
         search_cn_company_news,
+        sec_search_company,
+        sec_recent_filings,
+        validate_citations,
         save_research_report,
         list_saved_reports,
         list_knowledge_maps,
@@ -262,6 +266,7 @@ def all_tools():
 
 def researcher_tools():
     """Tools for specialist researchers (no save needed usually)."""
+    from src.tools.filings import sec_recent_filings, sec_search_company, validate_citations
     from src.tools.knowledge import list_knowledge_maps, load_knowledge_map
     from src.tools.market_cn import get_cn_stock_quote, search_cn_company_news
 
@@ -271,6 +276,9 @@ def researcher_tools():
         get_market_snapshot,
         get_cn_stock_quote,
         search_cn_company_news,
+        sec_search_company,
+        sec_recent_filings,
+        validate_citations,
         list_knowledge_maps,
         load_knowledge_map,
     ]

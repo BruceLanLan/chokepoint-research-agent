@@ -5,9 +5,10 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v0.10.0**
+**English → [README.md](README.md)** · **当前版本 v1.0.0-rc1**
 
-**专业投研工作台**：用 **Chokepoint Theory（供应链瓶颈 / 卡脖子）** 做自下而上研究，并补齐覆盖名单、论点台账、模板、研报目录、多面板 UI、自选简报等运营能力。
+**成熟投研 Agent**：Chokepoint 多专家研究 + 覆盖/论点运营 + SEC 文件 + 异步任务 + 工作台统计。  
+**研究用途，非投资建议。**
 
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 
@@ -133,8 +134,12 @@ Markdown 研报 → reports/（可选 JSON / HTML）
 | 知识图谱 | CPO / 机器人 / 稀土 / 电力 / HBM / 光模块 |
 | 会话记忆 | `--session` 多轮 |
 | 质检 / 导出 | quality score + MD/JSON/**打印友好 HTML** |
-| Web 工作台 | 研究 / 覆盖 / 论点 / 研报 / 模板 / Doctor 多面板 |
-| 路线图 | [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md) |
+| Web 工作台 | 研究 / 覆盖 / 论点 / 研报 / 模板 / Analytics / Jobs / Doctor |
+| **SEC 文件** | `sec_search_company` / `sec_recent_filings`（美股） |
+| **异步任务** | `job` / `POST /jobs` 后台研究 |
+| **工作台统计** | `analytics` / `GET /analytics` |
+| 可插拔数据源 | `src/providers/` 注册表 |
+| 路线图 | [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md) · [docs/zh/RELEASE_NOTES_1.0.md](docs/zh/RELEASE_NOTES_1.0.md) |
 
 ---
 
@@ -448,11 +453,12 @@ python main.py eval
 | 版本 | 主题 |
 |------|------|
 | v0.1–v0.7 | 多专家核心 → 模式/UI/评测/会话 |
-| **v0.8** | 运营层：doctor / watchlist / thesis / catalog / templates |
-| **v0.9** | 多面板工作台 UI + REST |
-| **v0.10** | brief 简报 + 打印 HTML + 路线图文档 |
+| **v0.8–v0.10** | 运营层 + 工作台 UI + brief |
+| **v0.11** | SEC EDGAR + Provider 注册表 + 引用检查 |
+| **v0.12** | 异步 Jobs + Analytics |
+| **v1.0.0-rc1** | 成熟度收口 / 双语文档 / 测试 |
 
-详见：[docs/zh/VERSIONS.md](docs/zh/VERSIONS.md) · [docs/zh/RELEASE_NOTES_0.10.md](docs/zh/RELEASE_NOTES_0.10.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
+详见：[docs/zh/VERSIONS.md](docs/zh/VERSIONS.md) · [docs/zh/RELEASE_NOTES_1.0.md](docs/zh/RELEASE_NOTES_1.0.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
 
 ---
 

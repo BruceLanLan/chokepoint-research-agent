@@ -60,6 +60,8 @@
     <button data-tab="thesis">Theses 论点</button>
     <button data-tab="reports">Reports 研报</button>
     <button data-tab="templates">Templates 模板</button>
+    <button data-tab="analytics">Analytics 统计</button>
+    <button data-tab="jobs">Jobs 异步</button>
     <button data-tab="doctor">Doctor 体检</button>
   </nav>
   <main>
@@ -144,6 +146,36 @@
       <label>Template id</label><input id="tpl-id" placeholder="chokepoint_map" />
       <label>Vars JSON</label><textarea id="tpl-vars" placeholder='{"system":"AI GPU optical interconnect","context":""}'></textarea>
       <button class="btn" id="tpl-run">Render & fill Research tab</button>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="tab-analytics" class="card hidden">
+      <h3 style="margin-top:0">Workspace analytics</h3>
+      <button class="btn sec" id="a-run">Refresh</button>
+      <pre id="a-out" class="mono" style="white-space:pre-wrap"></pre>
+    </section>
+
+    <!-- JOBS -->
+    <section id="tab-jobs" class="card hidden">
+      <h3 style="margin-top:0">Async research jobs</h3>
+      <label>Question</label>
+      <textarea id="j-q" placeholder="Submit background research…"></textarea>
+      <div class="row">
+        <div>
+          <label>Mode</label>
+          <select id="j-mode">
+            <option value="chokepoint_fast">chokepoint_fast</option>
+            <option value="full">full</option>
+            <option value="risk_only">risk_only</option>
+            <option value="compare">compare</option>
+          </select>
+        </div>
+        <div style="align-self:end">
+          <button class="btn" id="j-submit">Submit job</button>
+        </div>
+      </div>
+      <button class="btn sec" id="j-refresh">Refresh jobs</button>
+      <pre id="j-out" class="mono" style="white-space:pre-wrap;max-height:50vh;overflow:auto"></pre>
     </section>
 
     <!-- DOCTOR -->
@@ -264,7 +296,18 @@ $("tpl-run").onclick=async()=>{
   document.querySelector('nav button[data-tab="research"]').click();
 };
 
-// doctor
+// analytics / jobs / doctor
+$("a-run").onclick=async()=>{ const j=await jget("/analytics"); $("a-out").textContent=JSON.stringify(j,null,2); };
+$("j-submit").onclick=async()=>{
+  const q=$("j-q").value.trim(); if(!q) return;
+  const j=await jpost("/jobs",{question:q,mode:$("j-mode").value});
+  $("j-out").textContent=JSON.stringify(j,null,2);
+  setTimeout(()=>$("j-refresh").click(), 2000);
+};
+$("j-refresh").onclick=async()=>{
+  const j=await jget("/jobs?limit=20");
+  $("j-out").textContent=JSON.stringify(j,null,2);
+};
 $("d-run").onclick=async()=>{ const j=await jget("/doctor"); $("d-out").textContent=JSON.stringify(j,null,2); };
 
 // initial loads

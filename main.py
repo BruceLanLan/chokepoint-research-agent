@@ -483,6 +483,71 @@ def server(
     uvicorn.run("src.api:app", host=host, port=port, reload=False)
 
 
+@app.command()
+def analytics():
+    """Print workspace analytics (reports / watchlist / theses)."""
+    _boot_env()
+    from src.ops.analytics import workspace_analytics
+
+    console.print_json(json.dumps(workspace_analytics(), ensure_ascii=False))
+
+
+@app.command("providers")
+def providers_cmd():
+    """List registered data providers."""
+    from src.providers.base import get_registry
+
+    console.print(get_registry().list_providers())
+
+
+@app.command()
+def job(
+    question: str = typer.Argument(..., help="research question"),
+    mode: str = typer.Option("chokepoint_fast", "--mode", "-m"),
+    wait: bool = typer.Option(False, "--wait", help="poll until done"),
+):
+    """Submit async research job."""
+    _boot_env()
+    import time
+
+    from src.agents.research_agent import build_investment_agent, extract_final_text
+    from src.config import get_settings
+    from src.ops.jobs import get_job, submit_research_job
+    from src.schemas.scorecard import validate_report_structure
+    from src.tools.reports import save_report_file
+    from src.tools.resilience import get_cost_tracker, reset_cost_tracker
+
+    settings = get_settings()
+
+    def run_fn(q: str, m: str) -> dict:
+        reset_cost_tracker()
+        agent = build_investment_agent(settings, mode=m)  # type: ignore[arg-type]
+        result = agent.invoke({"messages": [{"role": "user", "content": q}]})
+        report = extract_final_text(result)
+        quality = validate_report_structure(report)
+        saved = save_report_file(title=q[:40], markdown_body=report, mode=m, quality=quality)
+        return {
+            "report_preview": report[:2000],
+            "quality": quality,
+            "saved_path": saved,
+            "cost": get_cost_tracker().summary(),
+        }
+
+    j = submit_research_job(question=question, mode=mode, run_fn=run_fn)
+    console.print(j)
+    if not wait:
+        return
+    while True:
+        cur = get_job(j["id"])
+        if not cur:
+            break
+        console.print(f"status={cur.get('status')}")
+        if cur.get("status") in {"completed", "failed"}:
+            console.print(cur)
+            break
+        time.sleep(2)
+
+
 @app.command("version")
 def show_version():
     from src import __version__

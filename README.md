@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**Professional research workstation (v0.10)** powered by **Chokepoint Theory** — bottom-up supply-chain reverse engineering, not mega-cap narrative chat.
+**Mature research agent (v1.0.0-rc1)** powered by **Chokepoint Theory** — multi-agent synthesis, SEC filings, async jobs, coverage ops. Not mega-cap narrative chat.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
@@ -30,6 +30,9 @@ Most “AI stock bots” chat about NVDA Capex. This project is a **research ops
 | Multi-agent synthesis | Lead + specialists + red-team |
 | Environment health | `python main.py doctor` |
 | Scheduled-style digest | `python main.py brief` |
+| US filings | SEC EDGAR tools (`sec_search_company` / `sec_recent_filings`) |
+| Async research | `python main.py job "..."` + `/jobs` |
+| Workspace analytics | `python main.py analytics` |
 
 Methodology:
 
@@ -184,8 +187,11 @@ make server
 | Templates | `templates` / `--template` | `/templates` |
 | Catalog | `list-reports --q` | `/reports?q=` |
 | Brief | `brief` | `POST /brief` |
+| Jobs | `job` | `/jobs` |
+| Analytics | `analytics` | `/analytics` |
+| Providers | `providers` | `/providers` |
 
-Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · Versions: [`docs/VERSIONS.md`](docs/VERSIONS.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
+Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · Release: [`docs/RELEASE_NOTES_1.0.md`](docs/RELEASE_NOTES_1.0.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
 
 ---
 

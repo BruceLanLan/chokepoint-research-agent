@@ -405,3 +405,77 @@ def brief(
         return extract_final_text(result)
 
     return run_brief(invoke_fn=invoke_fn, limit=limit, save=True)
+
+
+# ── analytics / providers / async jobs ────────────────────────────────────
+
+
+@app.get("/analytics")
+def analytics(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.analytics import workspace_analytics
+
+    return workspace_analytics()
+
+
+@app.get("/providers")
+def providers(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.providers.base import get_registry
+
+    return get_registry().list_providers()
+
+
+class JobSubmit(BaseModel):
+    question: str = Field(..., min_length=2)
+    mode: Mode = "chokepoint_fast"
+
+
+@app.post("/jobs")
+def jobs_submit(body: JobSubmit, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    """Submit async research job (poll GET /jobs/{id})."""
+    _check_access(x_api_key)
+    from src.ops.jobs import submit_research_job
+
+    settings = get_settings()
+
+    def run_fn(question: str, mode: str) -> dict[str, Any]:
+        reset_cost_tracker()
+        agent = build_investment_agent(settings, mode=mode)  # type: ignore[arg-type]
+        result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+        report = extract_final_text(result)
+        quality = validate_report_structure(report)
+        saved = save_report_file(
+            title=question[:40], markdown_body=report, mode=mode, quality=quality
+        )
+        return {
+            "report_preview": (report or "")[:3000],
+            "report_chars": len(report or ""),
+            "quality": quality,
+            "saved_path": saved,
+            "cost": get_cost_tracker().summary(),
+        }
+
+    return submit_research_job(question=body.question, mode=body.mode, run_fn=run_fn)
+
+
+@app.get("/jobs")
+def jobs_list(
+    limit: int = 20,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.jobs import list_jobs
+
+    return {"items": list_jobs(limit=limit)}
+
+
+@app.get("/jobs/{job_id}")
+def jobs_get(job_id: str, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.jobs import get_job
+
+    job = get_job(job_id)
+    if not job:
+        raise HTTPException(404, "job not found")
+    return job

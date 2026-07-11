@@ -43,10 +43,11 @@
 | v0.7 | Multi-agent core + modes + UI shell | Shipped |
 | **v0.8** | Coverage book, thesis registry, report catalog, `doctor` | This cycle |
 | **v0.9** | Research workstation UI + templates API | This cycle |
-| **v0.10** | Scheduled brief, print-ready export, expanded evals | This cycle |
-| v0.11 | Filings/search connectors (SEC / exchange) | Planned |
-| v0.12 | Charting & table widgets in reports | Planned |
-| v1.0 | Hardened API, auth plugins, plugin SDK | Planned |
+| **v0.10** | Scheduled brief, print-ready export, expanded evals | Shipped |
+| **v0.11** | SEC EDGAR + provider registry + citation check | **Shipped** |
+| **v0.12** | Async jobs + workspace analytics | **Shipped** |
+| **v1.0.0-rc1** | Hardening / bilingual docs / tests | **Shipped** |
+| v1.0 | Auth plugins, more exchanges, chart widgets | Next |
 
 ---
 

@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     openai_base_url: str | None = None
     ai_gateway_api_key: str | None = None
     ai_gateway_base_url: str | None = None
+    # Alias for MiniMax OpenAI-compatible API (https://api.minimax.io/v1)
+    minimax_api_key: str | None = None
 
     # Search
     tavily_api_key: str | None = None
@@ -53,17 +55,25 @@ class Settings(BaseSettings):
                 raise ValueError("ANTHROPIC_API_KEY is required for model_provider=anthropic")
             return key
 
-        key = self.ai_gateway_api_key or self.openai_api_key
+        key = self.ai_gateway_api_key or self.openai_api_key or self.minimax_api_key
         if not key:
             raise ValueError(
-                "AI_GATEWAY_API_KEY or OPENAI_API_KEY is required for openai_compatible provider"
+                "AI_GATEWAY_API_KEY / OPENAI_API_KEY / MINIMAX_API_KEY is required "
+                "for openai_compatible provider"
             )
         return key
 
     def resolved_base_url(self) -> str | None:
         if self.model_provider == "anthropic":
             return None
-        return self.ai_gateway_base_url or self.openai_base_url
+        url = self.ai_gateway_base_url or self.openai_base_url
+        # Default MiniMax OpenAI-compatible endpoint when using MiniMax models
+        if not url and (
+            self.minimax_api_key
+            or (self.model_name or "").lower().startswith("minimax")
+        ):
+            return "https://api.minimax.io/v1"
+        return url
 
     def validate_runtime(self, *, require_tavily: bool = True) -> list[str]:
         """Return human-readable problems; empty list means OK to run research."""

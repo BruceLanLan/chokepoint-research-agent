@@ -72,6 +72,10 @@ python main.py research --template chokepoint_map --var system="AI CPO" --var co
 python main.py list-reports --q CPO
 python main.py brief --dry-run
 python main.py brief -n 3          # 会真实调用模型，注意成本
+python main.py providers
+python main.py analytics
+python main.py job "CPO 卡点快扫" --mode chokepoint_fast
+# python main.py job "..." --wait   # 轮询直到完成
 ```
 
 ## 评测与版本
