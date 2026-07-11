@@ -2,6 +2,22 @@
 
 Five review → debug → fix → plan → ship cycles after v0.1.0.
 
+## 2026-07-12 — SuperGrok autonomous train (v3.0 → v4.3)
+
+Shipped and tagged on GitHub (`BruceLanLan/chokepoint-research-agent`):
+
+| Tag | Theme |
+|-----|--------|
+| v3.0.0 | HTTP cache, postprocess, skill packs, mock-eval, plugin SDK |
+| v4.0.0 | Evidence ledger, thesis graph, tags, compare, audit, DOCX, coverage, kill monitor |
+| v4.1.0 | Citation network, lineage, offline plan, provider health, WS quotes |
+| v4.2.0 | Knowledge maps, cost dashboard, brief process health |
+| v4.3.0 | SQLite FTS memo index, research queue |
+
+Also: GitHub Releases for v3.0–v4.3; jobs.json corrupt-file harden; **75** offline tests green.
+
+Principles unchanged: research-only / not investment advice; secrets never committed.
+
 ## Iteration 1 — Foundation correctness + fast mode
 
 ### Review
