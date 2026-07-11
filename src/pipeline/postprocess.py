@@ -52,6 +52,22 @@ def postprocess_memo(
     if min_quality and not quality.get("pass"):
         gate_ok = False
 
+    evidence_meta: dict[str, Any] = {}
+    try:
+        from src.ops.evidence import extract_evidence
+
+        evidence_meta = extract_evidence(enriched, report_name=title)
+        # keep ledger slim in return payload
+        evidence_meta = {
+            "url_count": evidence_meta.get("url_count"),
+            "domains": evidence_meta.get("domains"),
+            "tickers_cn": evidence_meta.get("tickers_cn"),
+            "tickers_us": evidence_meta.get("tickers_us"),
+            "claim_count": len(evidence_meta.get("claims") or []),
+        }
+    except Exception:  # noqa: BLE001
+        evidence_meta = {}
+
     result = {
         "title": title,
         "mode": mode,
@@ -60,6 +76,7 @@ def postprocess_memo(
         "citations": cite,
         "scorecard_nodes": len(card.nodes),
         "charts": charts_meta,
+        "evidence": evidence_meta,
         "gate_ok": gate_ok,
         "min_quality": min_quality,
         "processed_at": datetime.now().isoformat(timespec="seconds"),

@@ -1,5 +1,28 @@
 # Changelog
 
+## 4.0.0 — 2026-07-12
+
+Research ops maturity wave (v3.1–v4.0).
+
+### Added
+- **Evidence ledger** — extract URLs/claims/tickers; `evidence`, `/evidence`
+- **Thesis graph** — theses ↔ chokepoints ↔ symbols; Mermaid export; `graph`, `/graph`
+- **Structured memo compare** — `compare-memos`, `/compare-memos`
+- **Report tags & collections** — `tag`, `collections`, `/tags`, `/collections`
+- **Kill-criteria monitor** — process-risk dashboard; `kill-monitor`, `/kill-monitor`
+- **Coverage heat map** — watchlist × theses × reports; `coverage`, `/coverage`
+- **Audit trail** — append-only actions log; `audit`, `/audit`
+- **Workspace snapshot** zip (no secrets); `snapshot`, `/snapshot`
+- **DOCX export** (stdlib OOXML); `docx`, `/export/docx`; auto in export bundle
+- **Plugin auto-loader** for `./plugins/`; `plugins`, `/plugins`
+- Skill packs: `ai_infra`, `biotech_tools`
+- UI **Ops** tab (graph / coverage / kill / evidence / audit / snapshot)
+- Tests: `tests/test_v4_ops.py`
+
+### Changed
+- Post-process pipeline includes evidence summary fields
+- Research save path writes audit + evidence ledger entries
+
 ## 3.0.0 — 2026-07-12
 
 Optimization wave to v3.0.

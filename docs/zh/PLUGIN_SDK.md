@@ -27,3 +27,14 @@ get_registry().register_filings(ExampleStaticProvider())
 python main.py skills
 python main.py research "..." --skill semiconductor
 ```
+
+## v4 自动发现
+
+将 `.py` 放入项目 `./plugins/`：
+
+```bash
+python main.py plugins
+python main.py plugins --load example_provider
+```
+
+完整说明见 [../PLUGIN_SDK.md](../PLUGIN_SDK.md)。

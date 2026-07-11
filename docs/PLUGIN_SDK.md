@@ -52,4 +52,22 @@ python main.py skills
 python main.py research "..." --skill semiconductor
 ```
 
+## Auto-discovery (v4)
+
+Drop a `.py` file into project `./plugins/` and list/load:
+
+```bash
+python main.py plugins
+python main.py plugins --load example_provider
+```
+
+```python
+from src.plugins.loader import list_plugin_files, load_plugin, load_all_plugins
+
+list_plugin_files()
+load_plugin("example_provider")
+```
+
+API: `GET /plugins`.
+
 中文简版见 [zh/PLUGIN_SDK.md](./zh/PLUGIN_SDK.md)。

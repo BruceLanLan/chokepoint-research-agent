@@ -197,6 +197,22 @@ def _run_research(
             title=question[:40], markdown_body=final_text, mode=mode, quality=quality
         )
         console.print(f"[green]Saved: {path}[/green]")
+        try:
+            from src.ops.audit import log_event
+            from src.ops.evidence import extract_and_store
+
+            extract_and_store(final_text, report_name=Path(path).name, title=question[:40])
+            log_event(
+                "research_saved",
+                detail={
+                    "path": str(path),
+                    "mode": mode,
+                    "quality": quality.get("score"),
+                    "skill": skill,
+                },
+            )
+        except Exception:  # noqa: BLE001
+            pass
         if export_all or settings.export_html_json:
             from src.tools.export import export_report_bundle
 
@@ -833,6 +849,164 @@ def clear_cache_cmd():
 
     n = clear_http_cache()
     console.print(f"cleared {n} cache files")
+
+
+@app.command("evidence")
+def evidence_cmd(
+    report: Optional[str] = typer.Option(None, "--report", help="Extract from saved report name"),
+    summary: bool = typer.Option(False, "--summary", help="Ledger summary only"),
+):
+    """Evidence ledger — extract URLs/claims or show summary."""
+    _boot_env()
+    from src.ops.evidence import evidence_summary, extract_and_store, list_evidence
+    from src.tools.reports import read_report
+
+    if summary or not report:
+        console.print(evidence_summary() if summary else {"recent": list_evidence(limit=10)})
+        if not report:
+            return
+    body = read_report(report)
+    if not body:
+        console.print(f"[red]not found: {report}[/red]")
+        raise typer.Exit(1)
+    row = extract_and_store(body, report_name=report)
+    console.print(row)
+
+
+@app.command("graph")
+def graph_cmd(
+    mermaid: bool = typer.Option(False, "--mermaid", help="Emit Mermaid flowchart"),
+):
+    """Thesis / chokepoint / symbol graph."""
+    _boot_env()
+    from src.ops.thesis_graph import build_thesis_graph, to_mermaid
+
+    g = build_thesis_graph()
+    if mermaid:
+        console.print(to_mermaid(g))
+    else:
+        console.print(g)
+
+
+@app.command("compare-memos")
+def compare_memos_cmd(
+    names: list[str] = typer.Argument(..., help="Two or more report filenames"),
+):
+    """Structured comparison of saved research memos."""
+    _boot_env()
+    from src.ops.compare_memos import compare_memos
+
+    if len(names) < 2:
+        console.print("[red]need at least 2 report names[/red]")
+        raise typer.Exit(2)
+    console.print(compare_memos(names))
+
+
+@app.command("tag")
+def tag_cmd(
+    report: str = typer.Argument(..., help="Report filename"),
+    tags: str = typer.Option(..., "--tags", help="Comma-separated tags"),
+):
+    """Tag a report for collections / filtering."""
+    _boot_env()
+    from src.ops.tags import tag_report
+
+    console.print(tag_report(report, [t.strip() for t in tags.split(",") if t.strip()]))
+
+
+@app.command("collections")
+def collections_cmd(
+    create: Optional[str] = typer.Option(None, "--create", help="Create collection name"),
+    add: Optional[str] = typer.Option(None, "--add", help="Add report to collection id"),
+    collection: Optional[str] = typer.Option(None, "--collection", help="Collection id for --add"),
+):
+    """List or manage report collections."""
+    _boot_env()
+    from src.ops.tags import add_to_collection, create_collection, list_collections
+
+    if create:
+        console.print(create_collection(create))
+        return
+    if add:
+        if not collection:
+            console.print("[red]--collection required with --add[/red]")
+            raise typer.Exit(2)
+        row = add_to_collection(collection, add)
+        if not row:
+            console.print("[red]collection not found[/red]")
+            raise typer.Exit(1)
+        console.print(row)
+        return
+    console.print(list_collections())
+
+
+@app.command("kill-monitor")
+def kill_monitor_cmd():
+    """Dashboard: active theses missing kill criteria / reviews."""
+    _boot_env()
+    from src.ops.kill_monitor import kill_criteria_dashboard
+
+    console.print(kill_criteria_dashboard())
+
+
+@app.command("coverage")
+def coverage_cmd():
+    """Coverage heat map (watchlist × theses × reports)."""
+    _boot_env()
+    from src.ops.coverage_heat import coverage_heatmap
+
+    console.print(coverage_heatmap())
+
+
+@app.command("audit")
+def audit_cmd(
+    limit: int = typer.Option(20, "--limit"),
+    summary: bool = typer.Option(False, "--summary"),
+):
+    """Research audit trail."""
+    _boot_env()
+    from src.ops.audit import audit_summary, list_events
+
+    console.print(audit_summary() if summary else list_events(limit=limit))
+
+
+@app.command("snapshot")
+def snapshot_cmd():
+    """Zip workspace data + recent reports (never includes .env)."""
+    _boot_env()
+    from src.ops.snapshot import create_snapshot
+
+    console.print(create_snapshot())
+
+
+@app.command("docx")
+def docx_cmd(
+    report: str = typer.Argument(..., help="Saved report .md name"),
+):
+    """Export a saved memo to DOCX."""
+    _boot_env()
+    from src.tools.docx_report import markdown_to_docx
+    from src.tools.reports import read_report
+
+    body = read_report(report)
+    if not body:
+        console.print(f"[red]not found: {report}[/red]")
+        raise typer.Exit(1)
+    meta = markdown_to_docx(Path(report).stem, body)
+    console.print(meta)
+
+
+@app.command("plugins")
+def plugins_cmd(
+    load: Optional[str] = typer.Option(None, "--load", help="Load plugin by name"),
+):
+    """List / load plugins under ./plugins/."""
+    from src.plugins.loader import list_plugin_files, load_all_plugins, load_plugin
+
+    if load:
+        console.print(load_plugin(load))
+        return
+    console.print({"files": list_plugin_files(), "loaded": load_all_plugins()})
 
 
 @app.command("version")

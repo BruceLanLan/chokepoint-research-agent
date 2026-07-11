@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v3.0.0**
+**English → [README.md](README.md)** · **当前版本 v4.0.0**
 
 **成熟投研 Agent v3**：多专家 + 运营台 + 定时/PDF + 鉴权/图表/检索 + **技能包** + **后处理管线** + **插件 SDK** + 缓存/指标。  
 **研究用途，非投资建议。**  
@@ -461,6 +461,7 @@ python main.py eval
 | **v2.0.0** | 真定时任务 + PDF + 多源 A 股公告 |
 | **v2.1–v2.5** | 鉴权 / 图表 / 检索 / HK / SSE 行情流 |
 | **v2.6–v3.0** | 缓存 / 后处理 / 技能包 / mock-eval / 插件 SDK |
+| **v3.1–v4.0** | 证据账本 / 论点图谱 / 标签 / 对比 / 审计 / DOCX / 覆盖热力 |
 
 详见：[docs/zh/RELEASE_NOTES_3.0.md](docs/zh/RELEASE_NOTES_3.0.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
 

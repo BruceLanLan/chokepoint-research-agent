@@ -649,3 +649,184 @@ async def quotes_stream(
         yield {"event": "done", "data": "[DONE]"}
 
     return EventSourceResponse(gen())
+
+
+@app.get("/evidence")
+def api_evidence(
+    summary: bool = False,
+    limit: int = 30,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.evidence import evidence_summary, list_evidence
+
+    if summary:
+        return evidence_summary()
+    return {"items": list_evidence(limit=limit)}
+
+
+@app.post("/evidence/extract")
+def api_evidence_extract(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.evidence import extract_and_store
+    from src.tools.reports import read_report
+
+    name = body.get("report") or ""
+    md = body.get("markdown") or ""
+    if name and not md:
+        md = read_report(name) or ""
+    if not md:
+        raise HTTPException(400, "markdown or report required")
+    return extract_and_store(md, report_name=name, title=body.get("title") or name)
+
+
+@app.get("/graph")
+def api_graph(
+    mermaid: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.thesis_graph import build_thesis_graph, to_mermaid
+
+    g = build_thesis_graph()
+    if mermaid:
+        return {"mermaid": to_mermaid(g), "stats": g.get("stats")}
+    return g
+
+
+@app.post("/compare-memos")
+def api_compare_memos(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.compare_memos import compare_memos
+
+    names = body.get("names") or body.get("reports") or []
+    if len(names) < 2:
+        raise HTTPException(400, "need at least 2 report names")
+    return compare_memos(list(names))
+
+
+@app.get("/tags")
+def api_tags(
+    report: str | None = None,
+    tag: str | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.tags import find_by_tag, get_tags
+
+    if tag:
+        return {"tag": tag, "reports": find_by_tag(tag)}
+    return get_tags(report)
+
+
+@app.post("/tags")
+def api_tag_report(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.tags import tag_report
+
+    name = body.get("report") or ""
+    tags = body.get("tags") or []
+    if not name:
+        raise HTTPException(400, "report required")
+    return tag_report(name, list(tags))
+
+
+@app.get("/collections")
+def api_collections(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.tags import list_collections
+
+    return {"items": list_collections()}
+
+
+@app.post("/collections")
+def api_create_collection(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.tags import add_to_collection, create_collection
+
+    if body.get("add") and body.get("collection"):
+        row = add_to_collection(body["collection"], body["add"])
+        if not row:
+            raise HTTPException(404, "collection not found")
+        return row
+    name = body.get("name") or ""
+    if not name:
+        raise HTTPException(400, "name required")
+    return create_collection(name, body.get("reports"), body.get("note") or "")
+
+
+@app.get("/kill-monitor")
+def api_kill_monitor(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.kill_monitor import kill_criteria_dashboard
+
+    return kill_criteria_dashboard()
+
+
+@app.get("/coverage")
+def api_coverage(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.coverage_heat import coverage_heatmap
+
+    return coverage_heatmap()
+
+
+@app.get("/audit")
+def api_audit(
+    limit: int = 30,
+    summary: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.audit import audit_summary, list_events
+
+    if summary:
+        return audit_summary()
+    return {"items": list_events(limit=limit)}
+
+
+@app.post("/snapshot")
+def api_snapshot(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.snapshot import create_snapshot
+
+    return create_snapshot()
+
+
+@app.post("/export/docx")
+def api_export_docx(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.tools.docx_report import markdown_to_docx
+    from src.tools.reports import read_report
+
+    name = body.get("report") or ""
+    md = body.get("markdown") or ""
+    title = body.get("title") or name or "memo"
+    if name and not md:
+        md = read_report(name) or ""
+    if not md:
+        raise HTTPException(400, "markdown or report required")
+    return markdown_to_docx(title, md, mode=body.get("mode") or "full")
+
+
+@app.get("/plugins")
+def api_plugins(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.plugins.loader import list_plugin_files, load_all_plugins
+
+    return {"files": list_plugin_files(), "loaded": load_all_plugins()}

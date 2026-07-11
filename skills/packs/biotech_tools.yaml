@@ -1,0 +1,14 @@
+id: biotech_tools
+name: Biotech Tools & Platforms
+description: Research tools, consumables, diagnostics platforms, and regulatory chokepoints.
+focus_nodes:
+  - Platform stickiness / switching cost
+  - Consumable pull-through
+  - Regulatory clearances (FDA / NMPA)
+  - IP / reagent exclusivity
+  - Distribution & lab workflow integration
+suggested_kill_criteria:
+  - Platform displacement by lower-cost open protocols
+  - Key reagent sole-source disrupted without dual source
+  - Major regulatory rejection for lead assay/platform
+default_mode: full

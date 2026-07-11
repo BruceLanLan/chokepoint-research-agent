@@ -64,6 +64,26 @@ def run_doctor() -> dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         add("agent_build", False, str(exc), "warn")
 
+    # Ops surface (v4)
+    try:
+        from src.ops.kill_monitor import kill_criteria_dashboard
+        from src.plugins.loader import list_plugin_files
+        from src.skills.loader import list_skill_packs
+
+        km = kill_criteria_dashboard()
+        add(
+            "kill_monitor",
+            True,
+            f"high_process_risk={km.get('high_risk_count', 0)} theses={len(km.get('items') or [])}",
+            "warn" if km.get("high_risk_count") else "ok",
+        )
+        packs = list_skill_packs()
+        add("skill_packs", bool(packs), f"{len(packs)} packs", "warn" if not packs else "ok")
+        plugs = list_plugin_files()
+        add("plugins_dir", True, f"{len(plugs)} files under ./plugins/")
+    except Exception as exc:  # noqa: BLE001
+        add("ops_surface", False, str(exc), "warn")
+
     errors = sum(1 for c in checks if not c["ok"] and c["level"] == "error")
     warns = sum(1 for c in checks if not c["ok"] and c["level"] == "warn")
     return {

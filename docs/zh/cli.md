@@ -77,6 +77,18 @@ python main.py analytics
 python main.py job "CPO 卡点快扫" --mode chokepoint_fast
 # python main.py job "..." --wait   # 轮询直到完成
 
+# v3–v4 运营增强
+python main.py evidence --summary
+python main.py graph --mermaid
+python main.py compare-memos a.md b.md
+python main.py tag a.md --tags cpo,optics
+python main.py kill-monitor
+python main.py coverage
+python main.py audit --summary
+python main.py snapshot
+python main.py docx a.md
+python main.py plugins
+
 # v2.0 定时任务（macOS launchd / 通用 cron 行）
 python main.py schedule install --hour 9 --minute 0 --limit 3
 python main.py schedule status

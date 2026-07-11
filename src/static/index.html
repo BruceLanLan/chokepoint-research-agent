@@ -61,6 +61,7 @@
     <button data-tab="reports">Reports 研报</button>
     <button data-tab="templates">Templates 模板</button>
     <button data-tab="analytics">Analytics 统计</button>
+    <button data-tab="ops">Ops 图谱/证据</button>
     <button data-tab="search">Search 检索</button>
     <button data-tab="jobs">Jobs 异步</button>
     <button data-tab="doctor">Doctor 体检</button>
@@ -154,6 +155,25 @@
       <h3 style="margin-top:0">Workspace analytics</h3>
       <button class="btn sec" id="a-run">Refresh</button>
       <pre id="a-out" class="mono" style="white-space:pre-wrap"></pre>
+    </section>
+
+    <!-- OPS -->
+    <section id="tab-ops" class="card hidden">
+      <h3 style="margin-top:0">Ops — Graph · Coverage · Kill · Evidence · Audit</h3>
+      <div class="row">
+        <button class="btn sec" id="o-graph">Thesis graph</button>
+        <button class="btn sec" id="o-mermaid">Mermaid</button>
+      </div>
+      <div class="row">
+        <button class="btn sec" id="o-cov">Coverage heat</button>
+        <button class="btn sec" id="o-kill">Kill monitor</button>
+      </div>
+      <div class="row">
+        <button class="btn sec" id="o-ev">Evidence summary</button>
+        <button class="btn sec" id="o-audit">Audit trail</button>
+      </div>
+      <button class="btn" id="o-snap">Workspace snapshot (zip)</button>
+      <pre id="o-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto;margin-top:12px"></pre>
     </section>
 
     <!-- SEARCH -->
@@ -325,6 +345,16 @@ $("j-refresh").onclick=async()=>{
   $("j-out").textContent=JSON.stringify(j,null,2);
 };
 $("d-run").onclick=async()=>{ const j=await jget("/doctor"); $("d-out").textContent=JSON.stringify(j,null,2); };
+
+// ops
+const showOps = j => { $("o-out").textContent = typeof j === "string" ? j : JSON.stringify(j,null,2); };
+$("o-graph").onclick=async()=>{ showOps(await jget("/graph")); };
+$("o-mermaid").onclick=async()=>{ const j=await jget("/graph?mermaid=true"); showOps(j.mermaid||j); };
+$("o-cov").onclick=async()=>{ showOps(await jget("/coverage")); };
+$("o-kill").onclick=async()=>{ showOps(await jget("/kill-monitor")); };
+$("o-ev").onclick=async()=>{ showOps(await jget("/evidence?summary=true")); };
+$("o-audit").onclick=async()=>{ showOps(await jget("/audit?summary=true")); };
+$("o-snap").onclick=async()=>{ showOps(await jpost("/snapshot",{})); };
 
 // initial loads
 loadWatch().catch(()=>{}); loadTheses().catch(()=>{}); loadReports().catch(()=>{}); loadTpl().catch(()=>{});

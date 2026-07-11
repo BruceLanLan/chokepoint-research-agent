@@ -76,6 +76,16 @@ def export_report_bundle(
         result["pdf"] = pdf_meta["path"]
     if pdf_meta.get("error"):
         result["pdf_error"] = pdf_meta["error"]
+
+    try:
+        from src.tools.docx_report import markdown_to_docx
+
+        docx_meta = markdown_to_docx(title, markdown_body, out_path=base.with_suffix(".docx"), mode=mode)
+        if docx_meta.get("path"):
+            result["docx"] = docx_meta["path"]
+    except Exception as exc:  # noqa: BLE001
+        result["docx_error"] = str(exc)
+
     return result
 
 

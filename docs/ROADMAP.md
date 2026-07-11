@@ -56,7 +56,9 @@
 | **v2.5.0** | Polish, bilingual docs, tests | **Shipped** |
 | **v2.6–v2.9** | Cache, postprocess, skills, mock-eval/CI | **Shipped** |
 | **v3.0.0** | Plugin SDK docs + maturity cut | **Shipped** |
-| v3.1 | Realtime websockets, plugin marketplace | Future |
+| **v3.1–v3.9** | Evidence, graph, tags, compare, audit, docx, coverage | **Shipped** |
+| **v4.0.0** | Research ops maturity cut | **Shipped** |
+| v4.1 | Realtime websockets, plugin marketplace | Future |
 
 ---
 
@@ -96,7 +98,10 @@
 - [x] Team auth plugins (API key / bearer / OIDC JWT)  
 - [x] Local search over past memos (TF-IDF)  
 - [x] Chart widgets in reports (SVG)  
-- [~] Real-time quotes via **SSE polling** (full websockets → v3)  
+- [x] Evidence ledger, thesis graph, tags/collections, structured compare  
+- [x] Kill monitor, coverage heat, audit trail, workspace snapshot, DOCX  
+- [x] Plugin auto-discovery from `./plugins/`  
+- [~] Real-time quotes via **SSE polling** (full websockets → v4.1)  
 - [ ] Plugin marketplace / third-party packages  
 
 

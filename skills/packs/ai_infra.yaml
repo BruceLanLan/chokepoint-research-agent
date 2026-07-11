@@ -1,0 +1,15 @@
+id: ai_infra
+name: AI Infrastructure
+description: GPU clusters, optical interconnect, power, networking, and rack-level chokepoints.
+focus_nodes:
+  - GPU / accelerator supply
+  - HBM / advanced packaging
+  - Optical (CPO / DSP / laser)
+  - Power delivery & cooling
+  - Network fabric (IB / RoCE / Ethernet)
+  - Foundry / capacity
+suggested_kill_criteria:
+  - Critical node capacity overshoots demand with multi-vendor substitution
+  - Key customer roadmap de-emphasizes the assumed interconnect path
+  - Regulatory or export controls invalidate supply assumptions
+default_mode: chokepoint_fast

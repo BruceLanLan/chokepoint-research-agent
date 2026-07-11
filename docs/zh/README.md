@@ -26,6 +26,7 @@
 | [RELEASE_NOTES_2.0.md](./RELEASE_NOTES_2.0.md) | v2.0 定时任务 / PDF / A股公告 |
 | [RELEASE_NOTES_2.5.md](./RELEASE_NOTES_2.5.md) | v2.1–v2.5 路线图收官 |
 | [RELEASE_NOTES_3.0.md](./RELEASE_NOTES_3.0.md) | v2.6–v3.0 优化与插件 |
+| [RELEASE_NOTES_4.0.md](./RELEASE_NOTES_4.0.md) | v3.1–v4.0 研究运营层 |
 | [PLUGIN_SDK.md](./PLUGIN_SDK.md) | 插件 SDK |
 
 ## 其他中文相关
