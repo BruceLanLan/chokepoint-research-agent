@@ -12,7 +12,8 @@ build/
 reports/*
 !reports/.gitkeep
 !reports/SAMPLE_REPORT_FORMAT.md
-data/sessions/
+data/
+!data/.gitkeep
 *.html
 !src/static/index.html
 .pytest_cache/

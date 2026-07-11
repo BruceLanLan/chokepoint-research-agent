@@ -3,74 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chokepoint Research Agent</title>
+  <title>Chokepoint Research Workstation</title>
   <style>
     :root {
-      --bg: #0b1020; --panel: #121a2f; --text: #e8eefc; --muted: #93a0bf;
-      --accent: #5b9dff; --ok: #3ecf8e; --warn: #f0b429; --border: #243152;
+      --bg:#0a0e17; --panel:#121826; --panel2:#0f1522; --border:#243047;
+      --text:#e8eefc; --muted:#8b9bb8; --accent:#5b9dff; --ok:#3ecf8e; --warn:#f0b429; --danger:#ff6b6b;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
-      background: radial-gradient(1200px 600px at 10% -10%, #1a2748 0%, var(--bg) 55%);
-      color: var(--text); min-height: 100vh;
-    }
-    header, main, footer { max-width: 1100px; margin: 0 auto; padding: 16px 20px; }
-    header { padding-top: 28px; }
-    h1 { margin: 0 0 8px; font-size: 1.55rem; }
-    .sub { color: var(--muted); line-height: 1.5; }
-    .warn {
-      display: inline-block; margin-top: 10px; padding: 6px 10px;
-      border: 1px solid #5a4818; background: #2a220e; color: var(--warn);
-      border-radius: 8px; font-size: 0.85rem;
-    }
-    main { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 16px; }
-    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-    .card {
-      background: color-mix(in srgb, var(--panel) 92%, black);
-      border: 1px solid var(--border); border-radius: 14px; padding: 16px;
-    }
-    label { display: block; font-size: 0.85rem; color: var(--muted); margin: 8px 0 6px; }
-    textarea, select, input {
-      width: 100%; background: #0d1426; color: var(--text);
-      border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font: inherit;
-    }
-    textarea { min-height: 110px; resize: vertical; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    button {
-      margin-top: 10px; width: 100%; border: 0; border-radius: 10px; padding: 12px;
-      background: linear-gradient(180deg, #6aa8ff, #3d7fe0); color: #fff; font-weight: 600; cursor: pointer;
-    }
-    button.secondary { background: #2a3555; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
-    #status, .meta, .tiny { color: var(--muted); font-size: 0.88rem; }
-    .meta { color: var(--ok); margin-top: 8px; }
-    #live, #out {
-      margin-top: 10px; white-space: pre-wrap; background: #0a1120; border: 1px solid var(--border);
-      border-radius: 10px; padding: 12px; max-height: 36vh; overflow: auto; font-size: 0.9rem; line-height: 1.5;
-    }
-    #out { max-height: 48vh; }
-    ul.reports { list-style: none; padding: 0; margin: 0; }
-    ul.reports li { border-bottom: 1px solid var(--border); padding: 10px 0; cursor: pointer; }
-    ul.reports li:hover { color: var(--accent); }
-    a { color: var(--accent); }
-    footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 28px; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"PingFang SC","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#121a2c,#0a0e17)}
+    h1{margin:0;font-size:1.25rem}
+    .sub{color:var(--muted);font-size:.88rem;margin-top:4px;line-height:1.4}
+    .warn{color:var(--warn);font-size:.8rem;margin-top:8px}
+    .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 88px)}
+    nav{border-right:1px solid var(--border);padding:12px;background:var(--panel2)}
+    nav button{display:block;width:100%;text-align:left;margin:4px 0;padding:10px 12px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);cursor:pointer}
+    nav button.active,nav button:hover{background:#1a2438;border-color:var(--border)}
+    main{padding:16px 18px 40px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+    label{display:block;color:var(--muted);font-size:.82rem;margin:8px 0 4px}
+    input,select,textarea{width:100%;background:#0c121f;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 11px;font:inherit}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{margin-top:10px;border:0;border-radius:10px;padding:10px 12px;background:linear-gradient(180deg,#6aa8ff,#3d7fe0);color:#fff;font-weight:600;cursor:pointer}
+    .btn.sec{background:#2a3555}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    table{width:100%;border-collapse:collapse;font-size:.9rem}
+    th,td{border-bottom:1px solid var(--border);padding:8px 6px;text-align:left;vertical-align:top}
+    th{color:var(--muted);font-weight:600}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem}
+    #out,#live{white-space:pre-wrap;background:#0a1120;border:1px solid var(--border);border-radius:10px;padding:12px;max-height:42vh;overflow:auto;font-size:.9rem;line-height:1.5}
+    .meta{color:var(--ok);font-size:.85rem;margin-top:8px}
+    .tiny{color:var(--muted);font-size:.8rem}
+    .hidden{display:none}
+    a{color:var(--accent)}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}nav{display:flex;flex-wrap:wrap;gap:6px;border-right:0;border-bottom:1px solid var(--border)}.row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Chokepoint Research Agent</h1>
-    <div class="sub">Bottom-up supply-chain multi-agent research · 自下而上供应链多专家研究</div>
+<header>
+  <div>
+    <h1>Chokepoint Research Workstation</h1>
+    <div class="sub">专业投研工作台 · Coverage · Thesis · Templates · Reports<br/>Framework-first multi-agent research (not a trading bot)</div>
     <div class="warn">⚠️ 仅供研究学习，不构成投资建议 · Research only — not investment advice</div>
-  </header>
+  </div>
+  <div class="tiny" style="min-width:180px">
+    <label>X-API-Key</label>
+    <input id="key" type="password" placeholder="optional" />
+    <div id="health" class="tiny" style="margin-top:8px"></div>
+  </div>
+</header>
+<div class="layout">
+  <nav>
+    <button class="active" data-tab="research">Research 研究</button>
+    <button data-tab="watch">Watchlist 覆盖</button>
+    <button data-tab="thesis">Theses 论点</button>
+    <button data-tab="reports">Reports 研报</button>
+    <button data-tab="templates">Templates 模板</button>
+    <button data-tab="doctor">Doctor 体检</button>
+  </nav>
   <main>
-    <section class="card">
-      <label for="q">研究问题</label>
-      <textarea id="q" placeholder="例：对比两家 CPO 相关公司谁更接近物理开关；或 600519 基本面+卡脖子位置"></textarea>
+    <!-- RESEARCH -->
+    <section id="tab-research" class="card">
+      <h3 style="margin-top:0">Run research</h3>
+      <label>Question / 问题</label>
+      <textarea id="q" placeholder="例：以 B200 集群拆解 CPO 卡点…"></textarea>
       <div class="row">
         <div>
-          <label for="mode">模式</label>
+          <label>Mode</label>
           <select id="mode">
             <option value="full">full</option>
             <option value="chokepoint_fast">chokepoint_fast</option>
@@ -79,161 +79,196 @@
           </select>
         </div>
         <div>
-          <label for="key">X-API-Key（可选）</label>
-          <input id="key" type="password" />
+          <label>Session id</label>
+          <input id="session" placeholder="optional" />
         </div>
       </div>
       <div class="row">
-        <div>
-          <label for="session">session id（可选）</label>
-          <input id="session" placeholder="留空或点 New session" />
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <label style="display:flex;gap:8px;align-items:center;color:var(--text)">
-            <input type="checkbox" id="stream" checked /> 使用 SSE 流式
-          </label>
-          <label style="display:flex;gap:8px;align-items:center;color:var(--text)">
-            <input type="checkbox" id="bilingual" /> 双语 one-pager
-          </label>
-        </div>
+        <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="stream" checked /> SSE stream</label>
+        <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="bilingual" /> Bilingual</label>
       </div>
-      <button id="run">开始研究 / Run</button>
-      <button id="newSession" class="secondary">New session</button>
-      <div id="status"></div>
+      <button class="btn" id="run">Run / 开始</button>
+      <button class="btn sec" id="newSession">New session</button>
+      <div id="status" class="tiny"></div>
       <div id="meta" class="meta"></div>
-      <label>Live events</label>
-      <div id="live"></div>
-      <label>Report</label>
-      <div id="out"></div>
+      <label>Live</label><div id="live"></div>
+      <label>Report</label><div id="out"></div>
     </section>
-    <section class="card">
-      <h3 style="margin-top:0">历史研报</h3>
-      <button id="refresh" class="secondary">刷新列表</button>
-      <ul class="reports" id="list"></ul>
+
+    <!-- WATCH -->
+    <section id="tab-watch" class="card hidden">
+      <h3 style="margin-top:0">Watchlist / Coverage book</h3>
+      <div class="row">
+        <div><label>Symbol</label><input id="w-sym" placeholder="NVDA / 600519" /></div>
+        <div><label>Name</label><input id="w-name" /></div>
+      </div>
+      <label>Thesis note</label><input id="w-thesis" />
+      <div class="row">
+        <div><label>Priority</label>
+          <select id="w-pri"><option>medium</option><option>high</option><option>low</option></select>
+        </div>
+        <div><label>Tags (comma)</label><input id="w-tags" /></div>
+      </div>
+      <button class="btn" id="w-add">Add</button>
+      <button class="btn sec" id="w-refresh">Refresh</button>
+      <table><thead><tr><th>ID</th><th>Symbol</th><th>Name</th><th>Pri</th><th>Thesis</th></tr></thead><tbody id="w-body"></tbody></table>
+    </section>
+
+    <!-- THESIS -->
+    <section id="tab-thesis" class="card hidden">
+      <h3 style="margin-top:0">Thesis registry</h3>
+      <label>Title</label><input id="t-title" />
+      <label>Statement</label><textarea id="t-statement"></textarea>
+      <label>System boundary</label><input id="t-system" />
+      <label>Kill criteria (; separated)</label><input id="t-kills" />
+      <button class="btn" id="t-add">Add thesis</button>
+      <button class="btn sec" id="t-refresh">Refresh</button>
+      <div id="t-list" class="tiny" style="margin-top:12px"></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="tab-reports" class="card hidden">
+      <h3 style="margin-top:0">Report catalog</h3>
+      <div class="row">
+        <input id="r-q" placeholder="search…" />
+        <button class="btn sec" id="r-refresh">Search / Refresh</button>
+      </div>
+      <table><thead><tr><th>Name</th><th>Mode</th><th>Q</th><th>Modified</th></tr></thead><tbody id="r-body"></tbody></table>
+      <label>Preview</label><div id="r-out" style="white-space:pre-wrap;max-height:40vh;overflow:auto" class="mono"></div>
+    </section>
+
+    <!-- TEMPLATES -->
+    <section id="tab-templates" class="card hidden">
+      <h3 style="margin-top:0">Research templates</h3>
+      <div id="tpl-list" class="tiny"></div>
+      <label>Template id</label><input id="tpl-id" placeholder="chokepoint_map" />
+      <label>Vars JSON</label><textarea id="tpl-vars" placeholder='{"system":"AI GPU optical interconnect","context":""}'></textarea>
+      <button class="btn" id="tpl-run">Render & fill Research tab</button>
+    </section>
+
+    <!-- DOCTOR -->
+    <section id="tab-doctor" class="card hidden">
+      <h3 style="margin-top:0">Doctor</h3>
+      <button class="btn sec" id="d-run">Run doctor</button>
+      <pre id="d-out" class="mono" style="white-space:pre-wrap"></pre>
     </section>
   </main>
-  <footer>
-    <a href="https://github.com/BruceLanLan/chokepoint-research-agent" target="_blank" rel="noreferrer">GitHub</a>
-    · <a href="/docs">API docs</a>
-  </footer>
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const headers = () => {
-      const h = { "Content-Type": "application/json" };
-      const k = $("key").value.trim();
-      if (k) h["X-API-Key"] = k;
-      return h;
-    };
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const headers = () => {
+  const h = {"Content-Type":"application/json"};
+  const k = $("key").value.trim(); if(k) h["X-API-Key"]=k; return h;
+};
+async function jget(url){ const r=await fetch(url,{headers:headers()}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+async function jpost(url,body){ const r=await fetch(url,{method:"POST",headers:headers(),body:JSON.stringify(body||{})}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+async function jdel(url){ const r=await fetch(url,{method:"DELETE",headers:headers()}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
 
-    async function loadReports() {
-      try {
-        const res = await fetch("/reports?limit=30", { headers: headers() });
-        const data = await res.json();
-        const ul = $("list");
-        ul.innerHTML = "";
-        (data.items || []).forEach((it) => {
-          const li = document.createElement("li");
-          li.innerHTML = `<div>${it.name}</div><div class="tiny">${it.modified} · ${it.size_kb} KB</div>`;
-          li.onclick = async () => {
-            const r = await fetch("/reports/" + encodeURIComponent(it.name), { headers: headers() });
-            const j = await r.json();
-            $("out").textContent = j.content || "";
-          };
-          ul.appendChild(li);
-        });
-        if (!(data.items || []).length) ul.innerHTML = '<li class="tiny">暂无研报</li>';
-      } catch (e) {
-        $("list").innerHTML = `<li class="tiny">${e}</li>`;
-      }
-    }
+// tabs
+document.querySelectorAll("nav button").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll("main > section").forEach(s=>s.classList.add("hidden"));
+    $("tab-"+btn.dataset.tab).classList.remove("hidden");
+  };
+});
 
-    $("refresh").onclick = loadReports;
-    $("newSession").onclick = async () => {
-      const res = await fetch("/sessions", { method: "POST", headers: headers() });
-      const j = await res.json();
-      $("session").value = j.session_id || "";
-    };
+// health
+(async()=>{ try{ const h=await jget("/health"); $("health").textContent=`v${h.version} · ${h.status}`; }catch(e){ $("health").textContent="API offline"; }})();
 
-    async function runSync(body) {
-      const res = await fetch("/research", { method: "POST", headers: headers(), body: JSON.stringify(body) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
-      $("out").textContent = data.report || "";
-      $("meta").textContent = `mode=${data.mode} quality=${data.quality?.score} cost_tokens≈${data.cost?.total_tokens_est}`;
-      $("status").textContent = "完成 / Done";
-      loadReports();
-    }
-
-    async function runStream(body) {
-      const res = await fetch("/research/stream", {
-        method: "POST",
-        headers: headers(),
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
-      let buf = "";
-      $("live").textContent = "";
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        const parts = buf.split("\n\n");
-        buf = parts.pop();
-        for (const chunk of parts) {
-          const lines = chunk.split("\n");
-          let ev = "message", data = "";
-          for (const line of lines) {
-            if (line.startsWith("event:")) ev = line.slice(6).trim();
-            if (line.startsWith("data:")) data += line.slice(5).trim();
+// research
+$("newSession").onclick=async()=>{ const j=await jpost("/sessions",{}); $("session").value=j.session_id||""; };
+$("run").onclick=async()=>{
+  const question=$("q").value.trim(); if(!question) return;
+  $("run").disabled=true; $("status").textContent="Running…"; $("live").textContent=""; $("out").textContent="";
+  const body={question, mode:$("mode").value, save_report:true, export:true, bilingual:$("bilingual").checked, session_id:$("session").value.trim()||null};
+  try{
+    if($("stream").checked){
+      const res=await fetch("/research/stream",{method:"POST",headers:headers(),body:JSON.stringify(body)});
+      if(!res.ok) throw new Error(await res.text());
+      const reader=res.body.getReader(); const dec=new TextDecoder(); let buf="";
+      while(true){
+        const {value,done}=await reader.read(); if(done) break;
+        buf+=dec.decode(value,{stream:true});
+        const parts=buf.split("\n\n"); buf=parts.pop();
+        for(const chunk of parts){
+          let ev="message", data="";
+          for(const line of chunk.split("\n")){
+            if(line.startsWith("event:")) ev=line.slice(6).trim();
+            if(line.startsWith("data:")) data+=line.slice(5).trim();
           }
-          if (ev === "update") {
-            try {
-              const j = JSON.parse(data);
-              $("live").textContent += `[${j.node}] ${(j.preview || "").slice(0, 200)}\n\n`;
-              $("live").scrollTop = $("live").scrollHeight;
-            } catch {}
-          } else if (ev === "final") {
-            const j = JSON.parse(data);
-            $("out").textContent = j.report || "";
-            $("meta").textContent = `quality=${j.quality?.score} tokens≈${j.cost?.total_tokens_est}`;
-          } else if (ev === "error") {
-            throw new Error(data);
-          }
+          if(ev==="update"){ try{ const j=JSON.parse(data); $("live").textContent+=`[${j.node}] ${(j.preview||"").slice(0,180)}\n\n`; }catch{} }
+          if(ev==="final"){ const j=JSON.parse(data); $("out").textContent=j.report||""; $("meta").textContent=`quality=${j.quality?.score} tokens≈${j.cost?.total_tokens_est}`; }
+          if(ev==="error") throw new Error(data);
         }
       }
-      $("status").textContent = "完成 / Done";
-      loadReports();
+    }else{
+      const j=await jpost("/research", body);
+      $("out").textContent=j.report||""; $("meta").textContent=`quality=${j.quality?.score} tokens≈${j.cost?.total_tokens_est}`;
     }
+    $("status").textContent="Done"; loadReports();
+  }catch(e){ $("status").textContent="Failed: "+e; }
+  finally{ $("run").disabled=false; }
+};
 
-    $("run").onclick = async () => {
-      const question = $("q").value.trim();
-      if (!question) return;
-      $("run").disabled = true;
-      $("status").textContent = "研究中…";
-      $("out").textContent = "";
-      $("live").textContent = "";
-      const body = {
-        question,
-        mode: $("mode").value,
-        save_report: true,
-        export: true,
-        bilingual: $("bilingual").checked,
-        session_id: $("session").value.trim() || null,
-      };
-      try {
-        if ($("stream").checked) await runStream(body);
-        else await runSync(body);
-      } catch (e) {
-        $("status").textContent = "失败: " + e;
-      } finally {
-        $("run").disabled = false;
-      }
-    };
+// watch
+async function loadWatch(){
+  const j=await jget("/watchlist"); const tb=$("w-body"); tb.innerHTML="";
+  (j.items||[]).forEach(it=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="mono">${it.id}</td><td>${it.symbol}</td><td>${it.name||""}</td><td>${it.priority}</td><td>${(it.thesis||"").slice(0,48)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+$("w-refresh").onclick=()=>loadWatch().catch(e=>alert(e));
+$("w-add").onclick=async()=>{
+  await jpost("/watchlist",{symbol:$("w-sym").value,name:$("w-name").value,thesis:$("w-thesis").value,priority:$("w-pri").value,tags:($("w-tags").value||"").split(",").map(s=>s.trim()).filter(Boolean)});
+  loadWatch();
+};
 
-    loadReports();
-  </script>
+// thesis
+async function loadTheses(){
+  const j=await jget("/theses"); $("t-list").innerHTML=(j.items||[]).map(t=>`<div style="margin:8px 0;padding:8px;border:1px solid var(--border);border-radius:8px"><b class="mono">${t.id}</b> [${t.status}] ${t.title}<div class="tiny">${t.statement}</div></div>`).join("")||"empty";
+}
+$("t-refresh").onclick=()=>loadTheses().catch(e=>alert(e));
+$("t-add").onclick=async()=>{
+  await jpost("/theses",{title:$("t-title").value,statement:$("t-statement").value,system:$("t-system").value,kill_criteria:($("t-kills").value||"").split(";").map(s=>s.trim()).filter(Boolean)});
+  loadTheses();
+};
+
+// reports
+async function loadReports(){
+  const q=$("r-q")?$("r-q").value:"";
+  const j=await jget("/reports?limit=40&q="+encodeURIComponent(q||""));
+  const tb=$("r-body"); if(!tb) return; tb.innerHTML="";
+  (j.items||[]).forEach(it=>{
+    const tr=document.createElement("tr");
+    tr.style.cursor="pointer";
+    tr.innerHTML=`<td class="mono">${it.name}</td><td>${it.mode||"-"}</td><td>${it.quality_score||"-"}</td><td>${it.modified||""}</td>`;
+    tr.onclick=async()=>{ const d=await jget("/reports/"+encodeURIComponent(it.name)); $("r-out").textContent=d.content||""; };
+    tb.appendChild(tr);
+  });
+}
+$("r-refresh").onclick=()=>loadReports().catch(e=>alert(e));
+
+// templates
+async function loadTpl(){
+  const j=await jget("/templates");
+  $("tpl-list").innerHTML=(j.items||[]).map(t=>`<div><b class="mono">${t.id}</b> — ${t.name} <span class="tiny">mode=${t.mode}</span><div class="tiny">${t.description}</div></div>`).join("");
+}
+$("tpl-run").onclick=async()=>{
+  let vars={}; try{ vars=JSON.parse($("tpl-vars").value||"{}"); }catch(e){ alert("Invalid JSON vars"); return; }
+  const j=await jpost("/templates/"+$("tpl-id").value.trim()+"/render", vars);
+  $("q").value=j.question||""; $("mode").value=j.mode||"full";
+  document.querySelector('nav button[data-tab="research"]').click();
+};
+
+// doctor
+$("d-run").onclick=async()=>{ const j=await jget("/doctor"); $("d-out").textContent=JSON.stringify(j,null,2); };
+
+// initial loads
+loadWatch().catch(()=>{}); loadTheses().catch(()=>{}); loadReports().catch(()=>{}); loadTpl().catch(()=>{});
+</script>
 </body>
 </html>

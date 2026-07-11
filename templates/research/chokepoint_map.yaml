@@ -1,0 +1,14 @@
+name: "卡脖子制图 / Chokepoint map"
+description: "自下而上拆系统，输出 Scorecard 与路径依赖"
+mode: chokepoint_fast
+bilingual: false
+question_template: |
+  以「{{system}}」为物理系统边界，做供应链逆向工程：
+  1) 画 3–6 层拆解树
+  2) 输出 Chokepoint Scorecard（1–5 分五维）
+  3) 区分卡点本体 vs 下游 beta
+  4) 红蓝对抗与 kill criteria
+  5) 来源列表
+  附加上下文：{{context}}
+  仅供研究学习，不构成投资建议。
+notes: "变量：system, context"

@@ -1,0 +1,10 @@
+name: "覆盖简报 / Coverage brief"
+description: "适合 watchlist 单标的快扫"
+mode: chokepoint_fast
+bilingual: false
+question_template: |
+  覆盖更新：{{symbol}} {{name}}
+  既有论点：{{thesis}}
+  请更新：卡点位置是否变化、近月催化、关键风险、kill criteria 是否触发。
+  仅供研究学习，不构成投资建议。
+notes: "变量：symbol, name, thesis"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI entrypoint for Chokepoint Research Agent."""
+"""CLI entrypoint for Chokepoint Research Agent (research workstation)."""
 
 from __future__ import annotations
 
@@ -21,49 +21,100 @@ if str(ROOT) not in sys.path:
 app = typer.Typer(
     add_completion=False,
     help=(
-        "Chokepoint Research Agent — multi-specialist investment research "
-        "(Bottom-up supply-chain / 卡脖子框架). Not investment advice."
+        "Chokepoint Research Agent — professional research workstation "
+        "(Chokepoint Theory). Not investment advice."
     ),
 )
-console = Console()
+watch_app = typer.Typer(help="Coverage book / watchlist")
+thesis_app = typer.Typer(help="Thesis registry")
+app.add_typer(watch_app, name="watch")
+app.add_typer(thesis_app, name="thesis")
 
+console = Console()
 VALID_MODES = {"full", "chokepoint_fast", "risk_only", "compare"}
+
+
+def _boot_env():
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env")
+    from src.config import clear_settings_cache
+
+    clear_settings_cache()
+
+
+# ── research ──────────────────────────────────────────────────────────────
 
 
 @app.command()
 def research(
     question: Optional[str] = typer.Argument(None, help="研究问题"),
-    stream: bool = typer.Option(False, "--stream", "-s", help="流式打印中间过程"),
-    save: bool = typer.Option(True, "--save/--no-save", help="是否落盘最终答案"),
-    mode: str = typer.Option(
-        "full",
-        "--mode",
-        "-m",
-        help="full | chokepoint_fast | risk_only | compare",
+    stream: bool = typer.Option(False, "--stream", "-s"),
+    save: bool = typer.Option(True, "--save/--no-save"),
+    mode: str = typer.Option("full", "--mode", "-m"),
+    session: Optional[str] = typer.Option(None, "--session"),
+    bilingual: bool = typer.Option(False, "--bilingual"),
+    export_all: bool = typer.Option(False, "--export"),
+    template: Optional[str] = typer.Option(None, "--template", "-t", help="template id"),
+    var: Optional[list[str]] = typer.Option(
+        None, "--var", help="template var key=value (repeatable)"
     ),
-    session: Optional[str] = typer.Option(None, "--session", help="session id for memory"),
-    bilingual: bool = typer.Option(False, "--bilingual", help="append English one-pager"),
-    export_all: bool = typer.Option(False, "--export", help="also write JSON+HTML"),
 ):
-    """对一个投研问题跑完整研究流程。"""
-    if not question:
-        question = typer.prompt("请输入研究问题")
+    """Run multi-agent research (or render --template first)."""
+    vars_list = list(var) if var else []
+    _run_research(
+        question=question,
+        stream=stream,
+        save=save,
+        mode=mode,
+        session=session,
+        bilingual=bilingual,
+        export_all=export_all,
+        template=template,
+        var=vars_list,
+    )
 
-    from dotenv import load_dotenv
 
-    load_dotenv(ROOT / ".env")
-
-    from src.config import clear_settings_cache, get_settings
+def _run_research(
+    *,
+    question: Optional[str],
+    stream: bool = False,
+    save: bool = True,
+    mode: str = "full",
+    session: Optional[str] = None,
+    bilingual: bool = False,
+    export_all: bool = False,
+    template: Optional[str] = None,
+    var: Optional[list[str]] = None,
+) -> None:
+    _boot_env()
+    from src.config import get_settings
     from src.logging_utils import setup_logging
     from src.tools.resilience import reset_cost_tracker
 
-    clear_settings_cache()
     settings = get_settings()
     if bilingual:
-        # mutate cached settings instance
         object.__setattr__(settings, "bilingual_memo", True)
     setup_logging(settings.log_level)
     reset_cost_tracker()
+
+    if template:
+        from src.ops.templates import render_template
+
+        variables: dict[str, str] = {}
+        for item in var or []:
+            if "=" in item:
+                k, v = item.split("=", 1)
+                variables[k.strip()] = v.strip()
+        rendered = render_template(template, variables)
+        question = rendered["question"]
+        mode = rendered.get("mode") or mode
+        if rendered.get("bilingual"):
+            object.__setattr__(settings, "bilingual_memo", True)
+        console.print(f"[cyan]template={template} mode={mode}[/cyan]")
+
+    if not question:
+        question = typer.prompt("请输入研究问题")
 
     if mode not in VALID_MODES:
         console.print(f"[red]Unknown mode: {mode}[/red]")
@@ -74,29 +125,21 @@ def research(
         for p in problems:
             console.print(f"[yellow]! {p}[/yellow]")
         if any("API_KEY" in p and "TAVILY" not in p for p in problems):
-            console.print("[red]模型 Key 缺失，无法继续。[/red]")
             raise typer.Exit(1)
 
-    session_id = session
-    context = ""
-    if session_id:
+    question_for_agent = question
+    if session:
         from src.memory.sessions import session_context_block
 
-        context = session_context_block(session_id)
-        if context:
-            question_for_agent = f"{question}\n\n{context}"
-        else:
-            question_for_agent = question
-    else:
-        question_for_agent = question
+        ctx = session_context_block(session)
+        if ctx:
+            question_for_agent = f"{question}\n\n{ctx}"
 
     console.print(
         Panel.fit(
             f"[bold cyan]Chokepoint Research Agent[/bold cyan]\n"
-            f"问题：{question}\n"
-            f"模式：{mode}"
-            + (f"\nsession：{session_id}" if session_id else "")
-            + "\n[dim]研究学习用途 · 不构成投资建议[/dim]",
+            f"Q: {question[:200]}\nmode={mode}\n"
+            f"[dim]Research only — not investment advice[/dim]",
             border_style="cyan",
         )
     )
@@ -105,31 +148,21 @@ def research(
     from src.schemas.scorecard import extract_scorecard_table, validate_report_structure
 
     settings.reports_dir.mkdir(parents=True, exist_ok=True)
-
-    try:
-        agent = build_investment_agent(settings, mode=mode)  # type: ignore[arg-type]
-    except Exception as exc:  # noqa: BLE001
-        console.print(f"[red]Agent 初始化失败：{exc}[/red]")
-        raise typer.Exit(1) from exc
-
+    agent = build_investment_agent(settings, mode=mode)  # type: ignore[arg-type]
     payload = {"messages": [{"role": "user", "content": question_for_agent}]}
 
     if stream:
-        console.print("[dim]Streaming events…[/dim]\n")
         final_text = _stream_agent(agent, payload)
     else:
-        with console.status("[bold green]多专家研究中（可能需要 1–10 分钟）…"):
+        with console.status("[bold green]Researching…"):
             result = agent.invoke(payload)
         final_text = extract_final_text(result)
 
     quality = validate_report_structure(final_text)
     card = extract_scorecard_table(final_text)
-
-    console.print("\n")
-    console.print(Panel(Markdown(final_text), title="投研简报", border_style="green"))
+    console.print(Panel(Markdown(final_text), title="Research memo", border_style="green"))
     console.print(
-        f"[dim]quality_score={quality['score']} pass={quality['pass']} "
-        f"scorecard_nodes={len(card.nodes)} urls={quality['url_count']}[/dim]"
+        f"[dim]quality={quality['score']} nodes={len(card.nodes)} urls={quality['url_count']}[/dim]"
     )
 
     from src.tools.resilience import get_cost_tracker
@@ -141,34 +174,23 @@ def research(
         from src.tools.reports import save_report_file
 
         path = save_report_file(
-            title=question[:40],
-            markdown_body=final_text,
-            mode=mode,
-            quality=quality,
+            title=question[:40], markdown_body=final_text, mode=mode, quality=quality
         )
-        console.print(f"[green]Report saved: {path}[/green]")
+        console.print(f"[green]Saved: {path}[/green]")
         if export_all or settings.export_html_json:
             from src.tools.export import export_report_bundle
 
             paths = export_report_bundle(
-                title=question[:40],
-                markdown_body=final_text,
-                mode=mode,
-                extra={"cost": cost},
+                title=question[:40], markdown_body=final_text, mode=mode, extra={"cost": cost}
             )
             console.print(f"[green]Export: {paths}[/green]")
 
-    if session_id and final_text:
+    if session and final_text:
         from src.memory.sessions import append_turn
 
         append_turn(
-            session_id,
-            question=question,
-            report=final_text,
-            mode=mode,
-            meta={"quality": quality, "cost": cost},
+            session, question=question, report=final_text, mode=mode, meta={"quality": quality}
         )
-        console.print(f"[cyan]Session updated: {session_id}[/cyan]")
 
 
 def _stream_agent(agent, payload: dict) -> str:
@@ -180,60 +202,255 @@ def _stream_agent(agent, payload: dict) -> str:
             for node, update in event.items():
                 if not isinstance(update, dict):
                     continue
-                messages = update.get("messages") or []
-                for msg in messages:
+                for msg in update.get("messages") or []:
                     content = getattr(msg, "content", None)
-                    role = getattr(msg, "type", getattr(msg, "role", node))
-                    if not content:
-                        tool_calls = getattr(msg, "tool_calls", None)
-                        if tool_calls:
-                            for tc in tool_calls:
-                                name = (
-                                    tc.get("name")
-                                    if isinstance(tc, dict)
-                                    else getattr(tc, "name", "?")
-                                )
-                                console.print(f"[yellow]→ tool[/yellow] {name}")
-                        continue
-                    text = content if isinstance(content, str) else str(content)
-                    preview = text[:400] + ("…" if len(text) > 400 else "")
-                    console.print(f"[blue]{role}/{node}[/blue]: {preview}\n")
-                    if role in {"ai", "AIMessage"} or "model" in str(node):
-                        final_chunks.append(text)
+                    if isinstance(content, str) and content.strip():
+                        console.print(f"[blue]{node}[/blue]: {content[:300]}…\n")
+                        final_chunks.append(content)
     except Exception as exc:  # noqa: BLE001
-        console.print(f"[yellow]stream 失败，回退 invoke：{exc}[/yellow]")
-        result = agent.invoke(payload)
+        console.print(f"[yellow]stream failed: {exc}[/yellow]")
         from src.agents.research_agent import extract_final_text
 
-        return extract_final_text(result)
+        return extract_final_text(agent.invoke(payload))
+    return final_chunks[-1] if final_chunks else "(empty)"
 
-    return final_chunks[-1] if final_chunks else "(empty stream)"
+
+# ── doctor / catalog / templates / brief ───────────────────────────────────
+
+
+@app.command()
+def doctor():
+    """Health-check environment, deps, and config."""
+    _boot_env()
+    from src.ops.doctor import run_doctor
+
+    result = run_doctor()
+    table = Table(title="Doctor")
+    table.add_column("Check")
+    table.add_column("OK")
+    table.add_column("Detail")
+    for c in result["checks"]:
+        mark = "[green]yes[/green]" if c["ok"] else f"[red]{c['level']}[/red]"
+        table.add_row(c["name"], mark, str(c["detail"])[:80])
+    console.print(table)
+    console.print(
+        f"ok={result['ok']} errors={result['errors']} warnings={result['warnings']}"
+    )
+    if not result["ok"]:
+        raise typer.Exit(1)
 
 
 @app.command("list-reports")
-def list_reports_cmd(limit: int = typer.Option(20, "--limit", "-n")):
-    """List saved research reports."""
-    from dotenv import load_dotenv
+def list_reports_cmd(limit: int = typer.Option(20, "-n"), q: str = typer.Option("", "--q")):
+    """List / search report catalog."""
+    _boot_env()
+    from src.ops.catalog import search_catalog
 
-    load_dotenv(ROOT / ".env")
-    from src.tools.reports import list_reports
-
-    items = list_reports(limit=limit)
+    items = search_catalog(q, limit=limit)
     if not items:
-        console.print("[dim]No reports yet.[/dim]")
+        console.print("[dim]No reports.[/dim]")
         return
-    table = Table(title="Saved reports")
+    table = Table(title="Report catalog")
     table.add_column("Name")
-    table.add_column("KB", justify="right")
+    table.add_column("Mode")
+    table.add_column("Q")
     table.add_column("Modified")
     for it in items:
-        table.add_row(it["name"], str(it["size_kb"]), it["modified"])
+        table.add_row(it["name"][:40], it.get("mode") or "-", str(it.get("quality_score") or "-"), it["modified"])
     console.print(table)
+
+
+@app.command("templates")
+def templates_cmd():
+    """List research templates."""
+    from src.ops.templates import list_templates
+
+    for t in list_templates():
+        console.print(f"[cyan]{t['id']}[/cyan]  {t['name']}  mode={t['mode']}\n  {t['description']}")
+
+
+@app.command()
+def brief(
+    limit: int = typer.Option(3, "--limit", "-n", help="max watchlist items"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="only print questions"),
+):
+    """Batch chokepoint_fast brief over watchlist (expensive if not dry-run)."""
+    _boot_env()
+    from src.ops.brief import build_brief_questions, run_brief
+
+    jobs = build_brief_questions(limit=limit)
+    if not jobs:
+        console.print("[yellow]Watchlist empty. Add with: python main.py watch add SYMBOL[/yellow]")
+        raise typer.Exit(1)
+    for j in jobs:
+        console.print(f"- {j['item'].get('symbol')}: {j['question'][:100]}…")
+    if dry_run:
+        return
+
+    from src.agents.research_agent import build_investment_agent, extract_final_text
+    from src.config import get_settings
+
+    settings = get_settings()
+    cache: dict = {}
+
+    def invoke_fn(question: str, mode: str) -> str:
+        if mode not in cache:
+            cache[mode] = build_investment_agent(settings, mode=mode)  # type: ignore[arg-type]
+        agent = cache[mode]
+        result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+        return extract_final_text(result)
+
+    with console.status("[bold green]Running watchlist brief…"):
+        out = run_brief(invoke_fn=invoke_fn, limit=limit, save=True)
+    console.print(f"[green]Brief saved: {out.get('saved_path')}[/green]")
+    console.print(out.get("results"))
+
+
+# ── watchlist ─────────────────────────────────────────────────────────────
+
+
+@watch_app.command("list")
+def watch_list():
+    _boot_env()
+    from src.ops.watchlist import list_items
+
+    items = list_items()
+    if not items:
+        console.print("[dim]Empty watchlist.[/dim]")
+        return
+    table = Table(title="Watchlist / Coverage book")
+    table.add_column("ID")
+    table.add_column("Symbol")
+    table.add_column("Name")
+    table.add_column("Pri")
+    table.add_column("Thesis")
+    for it in items:
+        table.add_row(
+            it["id"],
+            it.get("symbol") or "",
+            (it.get("name") or "")[:16],
+            it.get("priority") or "",
+            (it.get("thesis") or "")[:40],
+        )
+    console.print(table)
+
+
+@watch_app.command("add")
+def watch_add(
+    symbol: str = typer.Argument(...),
+    name: str = typer.Option("", "--name"),
+    thesis: str = typer.Option("", "--thesis"),
+    priority: str = typer.Option("medium", "--priority"),
+    tags: str = typer.Option("", "--tags", help="comma-separated"),
+):
+    _boot_env()
+    from src.ops.watchlist import add_item
+
+    item = add_item(
+        symbol=symbol,
+        name=name,
+        thesis=thesis,
+        priority=priority,
+        tags=[t.strip() for t in tags.split(",") if t.strip()],
+    )
+    console.print(item)
+
+
+@watch_app.command("rm")
+def watch_rm(item_id: str = typer.Argument(...)):
+    _boot_env()
+    from src.ops.watchlist import remove_item
+
+    ok = remove_item(item_id)
+    console.print("removed" if ok else "not found")
+    if not ok:
+        raise typer.Exit(1)
+
+
+@watch_app.command("research")
+def watch_research(
+    item_id: str = typer.Argument(...),
+    mode: str = typer.Option("chokepoint_fast", "--mode", "-m"),
+):
+    """Research one watchlist item."""
+    _boot_env()
+    from src.ops.watchlist import get_item, research_question_for
+
+    item = get_item(item_id)
+    if not item:
+        raise typer.Exit(1)
+    _run_research(question=research_question_for(item), mode=mode, save=True)
+
+
+# ── thesis ────────────────────────────────────────────────────────────────
+
+
+@thesis_app.command("list")
+def thesis_list(status: str = typer.Option("", "--status")):
+    _boot_env()
+    from src.ops.theses import list_theses
+
+    items = list_theses(status=status or None)
+    for t in items:
+        console.print(
+            f"[cyan]{t['id']}[/cyan] [{t['status']}] {t['title']}\n  {t['statement'][:120]}"
+        )
+
+
+@thesis_app.command("add")
+def thesis_add(
+    title: str = typer.Option(..., "--title"),
+    statement: str = typer.Option(..., "--statement"),
+    system: str = typer.Option("", "--system"),
+    kills: str = typer.Option("", "--kills", help="semicolon-separated kill criteria"),
+    symbols: str = typer.Option("", "--symbols", help="comma-separated"),
+):
+    _boot_env()
+    from src.ops.theses import add_thesis
+
+    item = add_thesis(
+        title=title,
+        statement=statement,
+        system=system,
+        kill_criteria=[k.strip() for k in kills.split(";") if k.strip()],
+        related_symbols=[s.strip() for s in symbols.split(",") if s.strip()],
+    )
+    console.print(item)
+
+
+@thesis_app.command("status")
+def thesis_status(
+    thesis_id: str = typer.Argument(...),
+    status: str = typer.Argument(..., help="active|watching|invalidated|archived"),
+    note: str = typer.Option("", "--note"),
+):
+    _boot_env()
+    from src.ops.theses import set_status
+
+    item = set_status(thesis_id, status, note=note)  # type: ignore[arg-type]
+    if not item:
+        raise typer.Exit(1)
+    console.print(item)
+
+
+@thesis_app.command("redteam")
+def thesis_redteam(thesis_id: str = typer.Argument(...)):
+    _boot_env()
+    from src.ops.theses import get_thesis, research_question_for
+
+    t = get_thesis(thesis_id)
+    if not t:
+        raise typer.Exit(1)
+    _run_research(
+        question=research_question_for(t, mode="risk_only"), mode="risk_only", save=True
+    )
+
+
+# ── misc ──────────────────────────────────────────────────────────────────
 
 
 @app.command("eval")
 def eval_cmd():
-    """Run offline golden-structure eval harness."""
     from src.eval.harness import run_all
 
     result = run_all()
@@ -244,11 +461,9 @@ def eval_cmd():
 
 @app.command("new-session")
 def new_session_cmd():
-    """Create a new research session id."""
     from src.memory.sessions import new_session_id
 
-    sid = new_session_id()
-    console.print(sid)
+    console.print(new_session_id())
 
 
 @app.command()
@@ -256,18 +471,14 @@ def server(
     host: str = typer.Option("0.0.0.0", "--host"),
     port: int = typer.Option(8000, "--port"),
 ):
-    """启动 FastAPI（UI + API）。"""
-    from dotenv import load_dotenv
-
-    load_dotenv(ROOT / ".env")
+    _boot_env()
     import uvicorn
 
-    from src.config import clear_settings_cache, get_settings
+    from src.config import get_settings
     from src.logging_utils import setup_logging
 
-    clear_settings_cache()
     setup_logging(get_settings().log_level)
-    console.print(f"[cyan]API/UI → http://{host}:{port}/[/cyan]")
+    console.print(f"[cyan]Workstation → http://{host}:{port}/[/cyan]")
     console.print("[dim]Research only — not investment advice.[/dim]")
     uvicorn.run("src.api:app", host=host, port=port, reload=False)
 
@@ -282,31 +493,22 @@ def show_version():
 @app.callback(invoke_without_command=True)
 def default(
     ctx: typer.Context,
-    question: Optional[str] = typer.Argument(None),
-    stream: bool = typer.Option(False, "--stream", "-s"),
-    server_mode: bool = typer.Option(False, "--server"),
+    server_mode: bool = typer.Option(False, "--server", help="start API/UI server"),
     host: str = typer.Option("0.0.0.0", "--host"),
     port: int = typer.Option(8000, "--port"),
-    mode: str = typer.Option("full", "--mode", "-m"),
-    session: Optional[str] = typer.Option(None, "--session"),
-    bilingual: bool = typer.Option(False, "--bilingual"),
 ):
+    """Root callback. Prefer subcommands: research / doctor / watch / thesis / server."""
     if ctx.invoked_subcommand is not None:
         return
     if server_mode:
         server(host=host, port=port)
         return
-    if question:
-        research(
-            question=question,
-            stream=stream,
-            save=True,
-            mode=mode,
-            session=session,
-            bilingual=bilingual,
-        )
-    else:
-        console.print(ctx.get_help())
+    console.print(ctx.get_help())
+    console.print(
+        "\n[dim]Tip: python main.py research \"your question\"\n"
+        "     python main.py doctor\n"
+        "     python main.py --server[/dim]"
+    )
 
 
 if __name__ == "__main__":

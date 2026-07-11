@@ -1,0 +1,11 @@
+name: "多标的对照 / Multi-name compare"
+description: "2–4 个名称强制对照表"
+mode: compare
+bilingual: true
+question_template: |
+  对照研究：{{names}}
+  维度重点：{{dimensions}}
+  输出强制对照表（是否 chokepoint 本体、集中度、认证壁垒、流动性、路径依赖、研究优先级），
+  再给每个标的要点与统一 kill criteria，并追加 English one-pager。
+  仅供研究学习，不构成投资建议。
+notes: "变量：names, dimensions"

@@ -5,10 +5,9 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v0.7.0**
+**English → [README.md](README.md)** · **当前版本 v0.10.0**
 
-用 **Chokepoint Theory（供应链瓶颈 / 卡脖子）** 驱动的多专家投研 Agent：  
-**自下而上**拆物理系统，找「沉默的、不可替代的物理开关」，而不是复述大市值共识叙事。
+**专业投研工作台**：用 **Chokepoint Theory（供应链瓶颈 / 卡脖子）** 做自下而上研究，并补齐覆盖名单、论点台账、模板、研报目录、多面板 UI、自选简报等运营能力。
 
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 
@@ -118,21 +117,24 @@ Markdown 研报 → reports/（可选 JSON / HTML）
 
 ---
 
-## 4. 功能一览（v0.7）
+## 4. 功能一览（v0.10）
 
 | 能力 | 说明 |
 |------|------|
 | 多专家研究 | 规划 → 并行专家 → 综合 |
 | 研究模式 | `full` / `chokepoint_fast` / `risk_only` / `compare` |
-| 工具 | 网页搜索、抓取、Yahoo 行情、**A 股/港股报价**、CN 新闻辅助 |
-| 知识图谱 | YAML 供应链草图（CPO / 机器人 / 稀土 / 电力 / HBM / 光模块） |
-| 会话记忆 | `--session`，多轮追问带上下文 |
-| 质检 | 研报结构分 + Scorecard 表格解析 |
-| 导出 | Markdown / JSON / HTML |
-| 成本估算 | 粗算 token / 调用次数（非账单） |
-| Web UI | `http://localhost:8000/`，支持 SSE 流式 |
-| 评测 | `python main.py eval` 离线结构回归 |
-| 上线指引 | EdgeOne Makers 文档 |
+| **环境体检** | `python main.py doctor` |
+| **覆盖名单** | `watch list/add/rm/research` + API/UI |
+| **论点台账** | `thesis *`（含 kill criteria 状态流转） |
+| **研究模板** | `templates/research/*.yaml` + `--template` |
+| **研报目录** | `list-reports --q` 检索 frontmatter |
+| **自选简报** | `brief` 对 watchlist 批处理快扫 |
+| 工具 | 搜索、抓取、Yahoo、A 股/港股、CN 新闻 |
+| 知识图谱 | CPO / 机器人 / 稀土 / 电力 / HBM / 光模块 |
+| 会话记忆 | `--session` 多轮 |
+| 质检 / 导出 | quality score + MD/JSON/**打印友好 HTML** |
+| Web 工作台 | 研究 / 覆盖 / 论点 / 研报 / 模板 / Doctor 多面板 |
+| 路线图 | [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md) |
 
 ---
 
@@ -445,16 +447,12 @@ python main.py eval
 
 | 版本 | 主题 |
 |------|------|
-| v0.1 | 首发：多专家 + 卡脖子 Prompt |
-| v0.2 | 模式 / 研报库 / 质检 / 初版 UI |
-| v0.3 | A 股工具 + 评测 + SSE UI |
-| v0.4 | compare + session 记忆 |
-| v0.5 | 重试 / 成本估算 / 多格式导出 |
-| v0.6 | EdgeOne 文档 / 新地图 / 双语 |
-| **v0.7** | 打磨、测试与文档收口 |
+| v0.1–v0.7 | 多专家核心 → 模式/UI/评测/会话 |
+| **v0.8** | 运营层：doctor / watchlist / thesis / catalog / templates |
+| **v0.9** | 多面板工作台 UI + REST |
+| **v0.10** | brief 简报 + 打印 HTML + 路线图文档 |
 
-详见：[docs/zh/VERSIONS.md](docs/zh/VERSIONS.md)  
-Releases：https://github.com/BruceLanLan/chokepoint-research-agent/releases
+详见：[docs/zh/VERSIONS.md](docs/zh/VERSIONS.md) · [docs/zh/RELEASE_NOTES_0.10.md](docs/zh/RELEASE_NOTES_0.10.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
 
 ---
 

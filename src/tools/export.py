@@ -56,21 +56,48 @@ def export_report_bundle(
 
 
 def _to_html(title: str, markdown_body: str, quality: dict[str, Any]) -> str:
-    # Minimal, dependency-free markdown-ish rendering
+    """Print-optimized HTML (use browser Print → PDF)."""
     escaped = html.escape(markdown_body)
-    # preserve newlines
-    body = escaped.replace("\n", "<br>\n")
+    # light markdown: headings & bullets
+    lines = []
+    for raw in escaped.splitlines():
+        line = raw.rstrip()
+        if line.startswith("### "):
+            lines.append(f"<h3>{line[4:]}</h3>")
+        elif line.startswith("## "):
+            lines.append(f"<h2>{line[3:]}</h2>")
+        elif line.startswith("# "):
+            lines.append(f"<h1>{line[2:]}</h1>")
+        elif line.startswith("- "):
+            lines.append(f"<li>{line[2:]}</li>")
+        elif line.strip() == "":
+            lines.append("<br/>")
+        else:
+            lines.append(f"<p>{line}</p>")
+    body = "\n".join(lines)
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <title>{html.escape(title)}</title>
 <style>
-body{{font-family:system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.55;color:#111}}
-.banner{{background:#fff3cd;border:1px solid #ffecb5;padding:.75rem 1rem;border-radius:8px;margin-bottom:1rem}}
-.meta{{color:#555;font-size:.9rem;margin-bottom:1.5rem}}
+:root {{ --fg:#111; --muted:#555; --line:#ddd; }}
+body {{ font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+  max-width: 820px; margin: 0 auto; padding: 1.5rem; line-height: 1.6; color: var(--fg); }}
+.banner {{ background:#fff8e1; border:1px solid #ffe082; padding:.75rem 1rem; border-radius:8px; margin-bottom:1rem; font-size:.92rem; }}
+.meta {{ color:var(--muted); font-size:.9rem; margin-bottom:1.25rem; border-bottom:1px solid var(--line); padding-bottom:.75rem; }}
+h1,h2,h3 {{ line-height:1.25; }}
+h1 {{ font-size:1.5rem; }} h2 {{ font-size:1.2rem; margin-top:1.4rem; }} h3 {{ font-size:1.05rem; }}
+p {{ margin:.35rem 0; }} li {{ margin-left:1.1rem; }}
+footer {{ margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); color:var(--muted); font-size:.85rem; }}
+@media print {{
+  body {{ max-width:100%; padding:0; }}
+  .banner {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+  a {{ color:inherit; text-decoration:none; }}
+}}
 </style></head><body>
-<div class="banner"><strong>免责声明</strong>：仅供研究学习，不构成投资建议。 / Research only — not investment advice.</div>
+<div class="banner"><strong>免责声明 / Disclaimer</strong>：仅供研究学习，不构成投资建议。 Research only — not investment advice.</div>
 <h1>{html.escape(title)}</h1>
-<div class="meta">quality_score={quality.get("score")} · pass={quality.get("pass")}</div>
+<div class="meta">quality_score={quality.get("score")} · pass={quality.get("pass")} · generator=chokepoint-research-agent</div>
 <article>{body}</article>
+<footer>Print this page to PDF from your browser. Do not treat as investment advice.</footer>
 </body></html>
 """

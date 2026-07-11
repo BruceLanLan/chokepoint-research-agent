@@ -1,0 +1,12 @@
+name: "红蓝对抗 / Red team"
+description: "对既有论点做魔鬼代言人"
+mode: risk_only
+bilingual: false
+question_template: |
+  请对以下投资/研究论点做魔鬼代言人压力测试：
+
+  {{thesis}}
+
+  要求：最强反证、路径依赖、数据疑点、流动性风险、kill criteria、来源。
+  仅供研究学习，不构成投资建议。
+notes: "变量：thesis"

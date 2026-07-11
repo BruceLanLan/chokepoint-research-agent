@@ -1,0 +1,10 @@
+name: "个股/节点深度 / Company deep dive"
+description: "完整五专家深度备忘录"
+mode: full
+bilingual: false
+question_template: |
+  深度研究标的：{{name}}（{{symbol}}）
+  关注点：{{focus}}
+  请用 Chokepoint Theory 判断产业链位置，覆盖基本面、催化、宏观政策、风险证伪与来源。
+  仅供研究学习，不构成投资建议。
+notes: "变量：name, symbol, focus"

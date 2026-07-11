@@ -60,6 +60,20 @@ python main.py list-reports -n 50
 
 ---
 
+## 运营命令（v0.8+）
+
+```bash
+python main.py doctor
+python main.py watch add NVDA --name NVIDIA --thesis "AI GPU" --priority high
+python main.py watch list
+python main.py thesis add --title "CPO" --statement "..." --kills "copper wins"
+python main.py templates
+python main.py research --template chokepoint_map --var system="AI CPO" --var context=""
+python main.py list-reports --q CPO
+python main.py brief --dry-run
+python main.py brief -n 3          # 会真实调用模型，注意成本
+```
+
 ## 评测与版本
 
 ```bash

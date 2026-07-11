@@ -5,37 +5,36 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**多专家投研 Agent** — 用 **Chokepoint Theory（供应链瓶颈 / 卡脖子）** 做自下而上的深度研究，而不是复述大市值共识叙事。
+**Professional research workstation (v0.10)** powered by **Chokepoint Theory** — bottom-up supply-chain reverse engineering, not mega-cap narrative chat.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 
-**English:** Multi-agent investment *research* system (Deep Agents + specialist analysts).  
-**中文主文档 → [README.zh-CN.md](README.zh-CN.md)**（推荐中文用户阅读）  
-**中文文档目录 → [docs/zh/README.md](docs/zh/README.md)**
+**中文主文档 → [README.zh-CN.md](README.zh-CN.md)** · **中文文档目录 → [docs/zh/README.md](docs/zh/README.md)**  
+**Roadmap → [docs/ROADMAP.md](docs/ROADMAP.md)** · **Release notes → [docs/RELEASE_NOTES_0.10.md](docs/RELEASE_NOTES_0.10.md)**
 
-⚠️ **[免责声明](DISCLAIMER.md)：仅供研究学习，不构成投资建议。**
+⚠️ **[Disclaimer](DISCLAIMER.md): research/education only — not investment advice.**
 
 ---
 
 ## Why this project
 
-Most “AI stock bots” chat about NVDA Capex. This project is built around a different lens:
+Most “AI stock bots” chat about NVDA Capex. This project is a **research ops workstation**:
 
-| Default market lens | This agent |
-|---------------------|------------|
-| Top-down mega-cap narratives | Bottom-up **supply-chain reverse engineering** |
-| “What will beat next quarter?” | “Which node freezes the whole stack if cut?” |
-| Single LLM essay | Lead + specialists + **devil’s advocate** |
-| Demo chatbot | CLI + FastAPI + EdgeOne-ready prompts |
+| Pro-tool capability | Here |
+|---------------------|------|
+| Coverage book | Watchlist CLI + API + UI |
+| Thesis registry | Kill-criteria tracked theses |
+| Analyst templates | Builtin YAML templates |
+| Report library | Catalog search + exports |
+| Multi-agent synthesis | Lead + specialists + red-team |
+| Environment health | `python main.py doctor` |
+| Scheduled-style digest | `python main.py brief` |
 
-Methodology notes:
+Methodology:
 
-- Framework essay (reference, not a buy list): [BruceBlue on X](https://x.com/BruceBlue/status/2058901845402325243)
-- Project write-up: [`docs/methodology.md`](docs/methodology.md)
-- Knowledge sketches: [`knowledge/maps/`](knowledge/maps/)
-
-Inspired by multi-agent deep research patterns (plan → parallel subagents → synthesize) and long-horizon verification loops.
+- Framework essay (not a buy list): [BruceBlue on X](https://x.com/BruceBlue/status/2058901845402325243)
+- [`docs/methodology.md`](docs/methodology.md) · [`knowledge/maps/`](knowledge/maps/)
 
 ---
 
@@ -144,23 +143,26 @@ python main.py "继续深挖 ELS" --session <id>
 # bilingual one-pager + full export
 python main.py "HBM 供应链卡点" --bilingual --export
 
+# health + coverage book + templates (v0.8+)
+python main.py doctor
+python main.py watch add NVDA --name "NVIDIA" --thesis "AI GPU stack" --priority high
+python main.py templates
+python main.py research --template chokepoint_map --var system="AI optical interconnect" --var context=""
+python main.py list-reports --q CPO
+python main.py brief --dry-run
+
 # offline structure evals
 python main.py eval
 
-# list saved memos
-python main.py list-reports
-
-# API + web UI (SSE streaming supported)
+# workstation UI + API
 python main.py --server
-# → http://127.0.0.1:8000/      (UI)
+# → http://127.0.0.1:8000/      (multi-panel UI)
 # → http://127.0.0.1:8000/docs  (OpenAPI)
 ```
 
-Or:
-
 ```bash
-make check     # smoke + unit tests (no live keys)
-make server    # FastAPI + UI
+make check     # smoke + unit tests + eval
+make server
 ```
 
 ### Research modes
@@ -172,7 +174,18 @@ make server    # FastAPI + UI
 | `risk_only` | risk-reviewer | stress-test a thesis |
 | `compare` | mapper + fundamental + risk | 2–4 names side-by-side |
 
-Version history: [`docs/VERSIONS.md`](docs/VERSIONS.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
+### Workstation modules (v0.8–v0.10)
+
+| Module | CLI | API |
+|--------|-----|-----|
+| Doctor | `doctor` | `GET /doctor` |
+| Watchlist | `watch *` | `/watchlist` |
+| Theses | `thesis *` | `/theses` |
+| Templates | `templates` / `--template` | `/templates` |
+| Catalog | `list-reports --q` | `/reports?q=` |
+| Brief | `brief` | `POST /brief` |
+
+Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · Versions: [`docs/VERSIONS.md`](docs/VERSIONS.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
 
 ---
 

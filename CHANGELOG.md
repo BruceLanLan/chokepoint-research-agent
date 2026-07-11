@@ -1,48 +1,29 @@
 # Changelog
 
+## 0.10.0 — 2026-07-11
+
+Professional workstation cycle (v0.8–v0.10).
+
+### Added
+- Product roadmap EN/ZH (`docs/ROADMAP.md`)
+- `doctor` health checks
+- Watchlist / coverage book (CLI + API + UI)
+- Thesis registry with status + kill criteria
+- Report catalog search
+- Builtin research templates (`templates/research/`)
+- Multi-panel workstation UI
+- `brief` watchlist batch digest
+- Print-optimized HTML export
+- Ops tests
+
+### Changed
+- Version alignment to 0.10.0
+- Bilingual README updates
+
 ## 0.7.0 — 2026-07-10
 
-Polish release after five major version iterations (0.3→0.7).
+Five major versions stack (0.3–0.7): China tools, sessions, export, EdgeOne docs, polish.
 
-### Added / hardened
-- Full docs update (EdgeOne, modes, eval CLI)
-- CI remains green; expanded regression suite
-- Version alignment across package, API, CLI
+## 0.2.0 / 0.1.0
 
-## 0.6.0 — 2026-07-10
-
-### Added
-- `docs/edgeone.md` packaging guide for EdgeOne Makers
-- Knowledge maps: HBM stack, optical pluggables
-- Bilingual memo flag (`--bilingual` / API `bilingual`)
-- Compare mode refinements
-
-## 0.5.0 — 2026-07-10
-
-### Added
-- Tool retry helper + cost tracker estimates
-- Export bundle: Markdown + JSON + HTML
-- API returns cost + export paths
-
-## 0.4.0 — 2026-07-10
-
-### Added
-- Research mode `compare` (multi-name对照表)
-- File-backed session memory (`--session`, `POST /sessions`)
-- Session context injection into follow-up questions
-
-## 0.3.0 — 2026-07-10
-
-### Added
-- A-share / HK quote tool (`get_cn_stock_quote`) + CN news helper
-- Offline eval harness (`python main.py eval`, `eval/golden/*`)
-- Streaming-friendly web UI (SSE)
-- Report quality already from 0.2 remains
-
-## 0.2.0 — 2026-07-10
-
-Five review-fix-ship micro-iterations: modes, reports API, UI, scorecard parse, maps.
-
-## 0.1.0 — 2026-07-10
-
-Initial public multi-agent chokepoint research agent.
+See git history / older release notes.

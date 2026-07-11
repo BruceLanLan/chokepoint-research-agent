@@ -1,10 +1,10 @@
-"""FastAPI surface for the chokepoint research agent."""
+"""FastAPI research workstation API."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import AsyncIterator, Literal, Optional
+from typing import Any, AsyncIterator, Literal, Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException
@@ -21,6 +21,12 @@ from src.agents.research_agent import build_investment_agent, extract_final_text
 from src.config import clear_settings_cache, get_settings  # noqa: E402
 from src.logging_utils import get_logger, setup_logging  # noqa: E402
 from src.memory.sessions import append_turn, new_session_id, session_context_block  # noqa: E402
+from src.ops.brief import run_brief  # noqa: E402
+from src.ops.catalog import build_catalog, search_catalog  # noqa: E402
+from src.ops.doctor import run_doctor  # noqa: E402
+from src.ops.templates import list_templates, render_template  # noqa: E402
+from src.ops import theses as theses_ops  # noqa: E402
+from src.ops import watchlist as watch_ops  # noqa: E402
 from src.schemas.scorecard import extract_scorecard_table, validate_report_structure  # noqa: E402
 from src.tools.export import export_report_bundle  # noqa: E402
 from src.tools.reports import list_reports, read_report, save_report_file  # noqa: E402
@@ -32,19 +38,17 @@ STATIC_DIR = Path(__file__).resolve().parent / "static"
 app = FastAPI(
     title="Chokepoint Research Agent",
     description=(
-        "Multi-agent investment research system powered by Chokepoint Theory. "
-        "For research/education only — not investment advice."
+        "Professional multi-agent research workstation powered by Chokepoint Theory. "
+        "Research/education only — not investment advice."
     ),
     version=__version__,
 )
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 if STATIC_DIR.is_dir():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
@@ -54,9 +58,7 @@ Mode = Literal["full", "chokepoint_fast", "risk_only", "compare"]
 
 def _check_access(x_api_key: str | None) -> None:
     expected = get_settings().api_access_key
-    if not expected:
-        return
-    if not x_api_key or x_api_key != expected:
+    if expected and (not x_api_key or x_api_key != expected):
         raise HTTPException(status_code=401, detail="Invalid or missing X-API-Key")
 
 
@@ -74,6 +76,8 @@ class ResearchRequest(BaseModel):
     session_id: Optional[str] = None
     bilingual: bool = False
     export: bool = True
+    template_id: Optional[str] = None
+    template_vars: Optional[dict[str, str]] = None
 
 
 class ResearchResponse(BaseModel):
@@ -88,34 +92,59 @@ class ResearchResponse(BaseModel):
     cost: dict
 
 
+class WatchAdd(BaseModel):
+    symbol: str
+    name: str = ""
+    thesis: str = ""
+    priority: str = "medium"
+    tags: list[str] = Field(default_factory=list)
+    notes: str = ""
+
+
+class ThesisAdd(BaseModel):
+    title: str
+    statement: str
+    system: str = ""
+    chokepoints: list[str] = Field(default_factory=list)
+    kill_criteria: list[str] = Field(default_factory=list)
+    related_symbols: list[str] = Field(default_factory=list)
+
+
+class ThesisStatus(BaseModel):
+    status: Literal["active", "watching", "invalidated", "archived"]
+    note: str = ""
+
+
 @app.on_event("startup")
 def _startup():
     clear_settings_cache()
     setup_logging(get_settings().log_level)
-    log.info("API starting v%s", __version__)
+    log.info("API v%s starting", __version__)
 
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    index_path = STATIC_DIR / "index.html"
-    if index_path.is_file():
-        return FileResponse(index_path)
-    return HTMLResponse("<h1>Chokepoint Research Agent</h1><a href='/docs'>/docs</a>")
+    p = STATIC_DIR / "index.html"
+    if p.is_file():
+        return FileResponse(p)
+    return HTMLResponse("<h1>Chokepoint Agent</h1><a href='/docs'>/docs</a>")
 
 
 @app.get("/health")
 def health():
-    settings = get_settings()
-    problems = settings.validate_runtime(require_tavily=True)
+    d = run_doctor()
     return {
-        "status": "ok"
-        if not any("API_KEY" in p and "TAVILY" not in p for p in problems)
-        else "degraded",
-        "service": "chokepoint-research-agent",
+        "status": "ok" if d["ok"] else "degraded",
         "version": __version__,
-        "config_warnings": problems,
+        "doctor": d,
         "disclaimer": "research/education only — not investment advice",
     }
+
+
+@app.get("/doctor")
+def doctor(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    return run_doctor()
 
 
 @app.post("/sessions")
@@ -124,45 +153,133 @@ def create_session(x_api_key: str | None = Header(default=None, alias="X-API-Key
     return {"session_id": new_session_id()}
 
 
+# ── reports / catalog ─────────────────────────────────────────────────────
+
+
 @app.get("/reports")
 def reports(
     limit: int = 20,
+    q: str = "",
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
 ):
     _check_access(x_api_key)
-    return {"items": list_reports(limit=limit)}
+    if q:
+        return {"items": search_catalog(q, limit=limit)}
+    return {"items": build_catalog(limit=limit)}
 
 
 @app.get("/reports/{name}")
-def report_detail(
-    name: str,
-    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
-):
+def report_detail(name: str, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
     _check_access(x_api_key)
     body = read_report(name)
     if body is None:
-        raise HTTPException(status_code=404, detail="Report not found")
+        raise HTTPException(404, "Report not found")
     return {"name": Path(name).name, "content": body}
 
 
-@app.post("/research", response_model=ResearchResponse)
-def research(
-    req: ResearchRequest,
+# ── watchlist ─────────────────────────────────────────────────────────────
+
+
+@app.get("/watchlist")
+def watchlist_list(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    return {"items": watch_ops.list_items()}
+
+
+@app.post("/watchlist")
+def watchlist_add(body: WatchAdd, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    return watch_ops.add_item(**body.model_dump())
+
+
+@app.delete("/watchlist/{item_id}")
+def watchlist_del(item_id: str, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    if not watch_ops.remove_item(item_id):
+        raise HTTPException(404, "not found")
+    return {"ok": True}
+
+
+# ── theses ────────────────────────────────────────────────────────────────
+
+
+@app.get("/theses")
+def theses_list(
+    status: str = "",
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
 ):
+    _check_access(x_api_key)
+    return {"items": theses_ops.list_theses(status=status or None)}
+
+
+@app.post("/theses")
+def theses_add(body: ThesisAdd, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    return theses_ops.add_thesis(**body.model_dump())
+
+
+@app.post("/theses/{thesis_id}/status")
+def theses_status(
+    thesis_id: str,
+    body: ThesisStatus,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    item = theses_ops.set_status(thesis_id, body.status, note=body.note)
+    if not item:
+        raise HTTPException(404, "not found")
+    return item
+
+
+# ── templates ─────────────────────────────────────────────────────────────
+
+
+@app.get("/templates")
+def templates(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    return {"items": list_templates()}
+
+
+@app.post("/templates/{template_id}/render")
+def template_render(
+    template_id: str,
+    variables: dict[str, str] | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    try:
+        return render_template(template_id, variables or {})
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+# ── research ──────────────────────────────────────────────────────────────
+
+
+def _resolve_question(req: ResearchRequest) -> tuple[str, str]:
+    mode = req.mode
+    question = req.question
+    if req.template_id:
+        rendered = render_template(req.template_id, req.template_vars or {})
+        question = rendered["question"]
+        mode = rendered.get("mode") or mode  # type: ignore[assignment]
+    if req.session_id:
+        ctx = session_context_block(req.session_id)
+        if ctx:
+            question = f"{question}\n\n{ctx}"
+    return question, mode  # type: ignore[return-value]
+
+
+@app.post("/research", response_model=ResearchResponse)
+def research(req: ResearchRequest, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
     _check_access(x_api_key)
     try:
         reset_cost_tracker()
         settings = get_settings()
         if req.bilingual:
             object.__setattr__(settings, "bilingual_memo", True)
-        agent = get_agent(req.mode)
-        q = req.question
-        if req.session_id:
-            ctx = session_context_block(req.session_id)
-            if ctx:
-                q = f"{req.question}\n\n{ctx}"
-        log.info("research mode=%s q=%s", req.mode, req.question[:80])
+        q, mode = _resolve_question(req)
+        agent = get_agent(mode)
         result = agent.invoke({"messages": [{"role": "user", "content": q}]})
         report = extract_final_text(result)
         quality = validate_report_structure(report)
@@ -172,30 +289,24 @@ def research(
         exports = None
         if req.save_report:
             saved = save_report_file(
-                title=req.question[:40],
-                markdown_body=report,
-                mode=req.mode,
-                quality=quality,
+                title=req.question[:40], markdown_body=report, mode=mode, quality=quality
             )
         if req.export:
             exports = export_report_bundle(
-                title=req.question[:40],
-                markdown_body=report,
-                mode=req.mode,
-                extra={"cost": cost},
+                title=req.question[:40], markdown_body=report, mode=mode, extra={"cost": cost}
             )
         if req.session_id:
             append_turn(
                 req.session_id,
                 question=req.question,
                 report=report,
-                mode=req.mode,
+                mode=mode,
                 meta={"quality": quality, "cost": cost},
             )
         return ResearchResponse(
             question=req.question,
             report=report,
-            mode=req.mode,
+            mode=mode,
             saved_path=saved,
             exports=exports,
             quality=quality,
@@ -207,36 +318,28 @@ def research(
         raise
     except Exception as exc:  # noqa: BLE001
         log.exception("research failed")
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise HTTPException(500, str(exc)) from exc
 
 
 @app.post("/research/stream")
 async def research_stream(
-    req: ResearchRequest,
-    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    req: ResearchRequest, x_api_key: str | None = Header(default=None, alias="X-API-Key")
 ):
     _check_access(x_api_key)
 
     async def event_gen() -> AsyncIterator[dict]:
         try:
             reset_cost_tracker()
-            agent = get_agent(req.mode)
-            q = req.question
-            if req.session_id:
-                ctx = session_context_block(req.session_id)
-                if ctx:
-                    q = f"{req.question}\n\n{ctx}"
-            payload = {"messages": [{"role": "user", "content": q}]}
+            q, mode = _resolve_question(req)
+            agent = get_agent(mode)
             yield {
                 "event": "start",
-                "data": json.dumps(
-                    {"question": req.question, "mode": req.mode, "session_id": req.session_id},
-                    ensure_ascii=False,
-                ),
+                "data": json.dumps({"question": req.question, "mode": mode}, ensure_ascii=False),
             }
-
             final_text = ""
-            for event in agent.stream(payload, stream_mode="updates"):
+            for event in agent.stream(
+                {"messages": [{"role": "user", "content": q}]}, stream_mode="updates"
+            ):
                 if not isinstance(event, dict):
                     continue
                 for node, update in event.items():
@@ -248,43 +351,23 @@ async def research_stream(
                             content = getattr(last, "content", "")
                             if isinstance(content, str):
                                 preview = content[:800]
-                                if getattr(last, "type", "") == "ai" or "model" in str(node):
-                                    final_text = content
+                                final_text = content
                     yield {
                         "event": "update",
-                        "data": json.dumps(
-                            {"node": str(node), "preview": preview},
-                            ensure_ascii=False,
-                        ),
+                        "data": json.dumps({"node": str(node), "preview": preview}, ensure_ascii=False),
                     }
-
             quality = validate_report_structure(final_text)
             cost = get_cost_tracker().summary()
             path = None
             exports = None
             if req.save_report and final_text:
                 path = save_report_file(
-                    title=req.question[:40],
-                    markdown_body=final_text,
-                    mode=req.mode,
-                    quality=quality,
+                    title=req.question[:40], markdown_body=final_text, mode=mode, quality=quality
                 )
             if req.export and final_text:
                 exports = export_report_bundle(
-                    title=req.question[:40],
-                    markdown_body=final_text,
-                    mode=req.mode,
-                    extra={"cost": cost},
+                    title=req.question[:40], markdown_body=final_text, mode=mode, extra={"cost": cost}
                 )
-            if req.session_id and final_text:
-                append_turn(
-                    req.session_id,
-                    question=req.question,
-                    report=final_text,
-                    mode=req.mode,
-                    meta={"quality": quality},
-                )
-
             yield {
                 "event": "final",
                 "data": json.dumps(
@@ -300,9 +383,25 @@ async def research_stream(
             }
             yield {"event": "done", "data": "[DONE]"}
         except Exception as exc:  # noqa: BLE001
-            yield {
-                "event": "error",
-                "data": json.dumps({"error": str(exc)}, ensure_ascii=False),
-            }
+            yield {"event": "error", "data": json.dumps({"error": str(exc)}, ensure_ascii=False)}
 
     return EventSourceResponse(event_gen())
+
+
+@app.post("/brief")
+def brief(
+    limit: int = 3,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    """Run watchlist brief (synchronous, can be slow)."""
+    _check_access(x_api_key)
+    settings = get_settings()
+    cache: dict[str, Any] = {}
+
+    def invoke_fn(question: str, mode: str) -> str:
+        if mode not in cache:
+            cache[mode] = build_investment_agent(settings, mode=mode)  # type: ignore[arg-type]
+        result = cache[mode].invoke({"messages": [{"role": "user", "content": question}]})
+        return extract_final_text(result)
+
+    return run_brief(invoke_fn=invoke_fn, limit=limit, save=True)

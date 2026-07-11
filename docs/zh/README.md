@@ -19,6 +19,8 @@
 | [cli.md](./cli.md) | 命令行速查 |
 | [faq.md](./faq.md) | 常见问题 |
 | [VERSIONS.md](./VERSIONS.md) | 版本历史 |
+| [ROADMAP.md](./ROADMAP.md) | 产品路线图（对标专业工具） |
+| [RELEASE_NOTES_0.10.md](./RELEASE_NOTES_0.10.md) | v0.8–v0.10 发布说明 |
 
 ## 其他中文相关
 
