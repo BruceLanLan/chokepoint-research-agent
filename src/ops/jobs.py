@@ -30,7 +30,18 @@ def _load() -> dict[str, Any]:
     p = _jobs_path()
     if not p.is_file():
         return {"jobs": {}}
-    return json.loads(p.read_text(encoding="utf-8"))
+    raw = p.read_text(encoding="utf-8").strip()
+    if not raw:
+        return {"jobs": {}}
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        log.warning("corrupt jobs.json — resetting empty store")
+        return {"jobs": {}}
+    if not isinstance(data, dict):
+        return {"jobs": {}}
+    data.setdefault("jobs", {})
+    return data
 
 
 def _save(data: dict[str, Any]) -> None:
