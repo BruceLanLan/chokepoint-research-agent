@@ -61,7 +61,8 @@
 | **v4.1.0** | Citations, lineage, plan, provider health, WS quotes | **Shipped** |
 | **v4.2.0** | Knowledge maps, cost dashboard, brief process health | **Shipped** |
 | **v4.3.0** | FTS memo index + research queue | **Shipped** |
-| v4.4 | Plugin marketplace, heavier realtime MD | Future |
+| **v4.4.0** | Queue worker, export pack, auto-tag, thesis health, catalog | **Shipped** |
+| v4.5 | Remote plugin marketplace, heavier realtime MD | Future |
 
 ---
 

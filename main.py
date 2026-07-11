@@ -406,6 +406,18 @@ def watch_rm(item_id: str = typer.Argument(...)):
         raise typer.Exit(1)
 
 
+@watch_app.command("bulk")
+def watch_bulk(
+    symbols: str = typer.Argument(..., help="Comma-separated symbols e.g. NVDA,AAPL,600519"),
+    priority: str = typer.Option("medium", "--priority"),
+):
+    """Bulk-add symbols to coverage book."""
+    _boot_env()
+    from src.ops.watchlist_bulk import bulk_add_symbols
+
+    console.print(bulk_add_symbols(symbols, priority=priority))
+
+
 @watch_app.command("research")
 def watch_research(
     item_id: str = typer.Argument(...),
@@ -1122,14 +1134,21 @@ def index_memos_cmd(
 def queue_cmd(
     add: Optional[str] = typer.Option(None, "--add", help="Enqueue a question"),
     mode: str = typer.Option("chokepoint_fast", "--mode"),
+    skill: Optional[str] = typer.Option(None, "--skill"),
     from_watchlist: bool = typer.Option(False, "--from-watchlist"),
     from_map: Optional[str] = typer.Option(None, "--from-map"),
     summary: bool = typer.Option(False, "--summary"),
     limit: int = typer.Option(10, "--limit"),
+    run: int = typer.Option(0, "--run", help="Process N items (uses mock unless --live)"),
+    live: bool = typer.Option(False, "--live", help="With --run: call real LLM (costs tokens)"),
+    cancel: Optional[str] = typer.Option(None, "--cancel", help="Cancel item id"),
+    cancel_queued: bool = typer.Option(False, "--cancel-queued"),
 ):
-    """Research queue (plan batch work; does not call LLM until research)."""
+    """Research queue — plan, then --run (mock) or --run --live (LLM)."""
     _boot_env()
     from src.ops.research_queue import (
+        cancel_all_queued,
+        cancel_item,
         enqueue,
         enqueue_from_map,
         enqueue_from_watchlist,
@@ -1137,8 +1156,37 @@ def queue_cmd(
         queue_summary,
     )
 
+    if cancel:
+        console.print(cancel_item(cancel) or {"error": "not found"})
+        return
+    if cancel_queued:
+        console.print({"cancelled": cancel_all_queued()})
+        return
+    if run and run > 0:
+        from src.ops.queue_worker import process_batch
+
+        run_fn = None
+        if live:
+            from src.agents.research_agent import build_investment_agent, extract_final_text
+            from src.config import get_settings
+
+            settings = get_settings()
+            cache: dict = {}
+
+            def run_fn(question: str, mode_s: str, skill_s: str | None = None) -> dict:
+                key = f"{mode_s}:{skill_s or ''}"
+                if key not in cache:
+                    cache[key] = build_investment_agent(
+                        settings, mode=mode_s, skill=skill_s
+                    )  # type: ignore[arg-type]
+                agent = cache[key]
+                result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+                return {"report": extract_final_text(result)}
+
+        console.print(process_batch(n=run, run_fn=run_fn, dry_run=not live))
+        return
     if add:
-        console.print(enqueue(add, mode=mode))
+        console.print(enqueue(add, mode=mode, skill=skill))
         return
     if from_watchlist:
         console.print(enqueue_from_watchlist(limit=limit))
@@ -1150,6 +1198,76 @@ def queue_cmd(
         console.print(queue_summary())
         return
     console.print(list_queue())
+
+
+@app.command("export-pack")
+def export_pack_cmd(report: str = typer.Argument(..., help="Report .md filename")):
+    """Zip memo + evidence + tags + lineage into a portable pack."""
+    _boot_env()
+    from src.ops.export_pack import build_export_pack
+
+    out = build_export_pack(report)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
+
+
+@app.command("auto-tag")
+def auto_tag_cmd(report: str = typer.Argument(..., help="Report filename")):
+    """Heuristic tags from memo content."""
+    _boot_env()
+    from src.ops.auto_tag import auto_tag_report
+
+    console.print(auto_tag_report(report))
+
+
+@app.command("thesis-health")
+def thesis_health_cmd():
+    """Process-quality scores for thesis registry (not investment merit)."""
+    _boot_env()
+    from src.ops.thesis_health import thesis_health_report
+
+    console.print(thesis_health_report())
+
+
+@app.command("config-show")
+def config_show_cmd():
+    """Sanitized config (secrets → set/missing only)."""
+    _boot_env()
+    from src.ops.config_export import sanitized_config
+
+    console.print(sanitized_config())
+
+
+@app.command("notion-export")
+def notion_export_cmd(report: str = typer.Argument(...)):
+    """Notion-friendly blocks/plain text for a saved memo."""
+    _boot_env()
+    from src.ops.notion_export import export_report_for_notion
+
+    out = export_report_for_notion(report)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
+
+
+@app.command("plugin-catalog")
+def plugin_catalog_cmd():
+    """Local plugin / provider / skill catalog."""
+    from src.ops.plugin_catalog import plugin_catalog
+
+    console.print(plugin_catalog())
+
+
+@app.command("quality-board")
+def quality_board_cmd(limit: int = typer.Option(30, "--limit")):
+    """Structure-quality leaderboard for recent memos."""
+    _boot_env()
+    from src.ops.quality_board import quality_leaderboard
+
+    console.print(quality_leaderboard(limit=limit))
 
 
 @app.command("version")

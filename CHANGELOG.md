@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.4.0 — 2026-07-12
+
+### Added
+- **Queue worker**: `queue --run N` (mock) / `--run N --live` (LLM); `POST /queue/run`
+- **Export pack** zip (memo + evidence + lineage + tags): `export-pack`, `/export-pack`
+- **Auto-tag** heuristics: `auto-tag`, `/auto-tag`
+- **Thesis process health** scores: `thesis-health`, `/thesis-health`
+- **Sanitized config**: `config-show`, `/config` (secrets → set/missing)
+- **Notion-friendly export**: `notion-export`, `/notion-export/{name}`
+- **Plugin catalog**: `plugin-catalog`, `/plugin-catalog`
+- **Watchlist bulk add**: `watch bulk NVDA,AAPL`, `/watchlist/bulk`
+- **Quality leaderboard**: `quality-board`, `/quality-board`
+- **Scheduled queue tick** (mock only): `scripts/run_scheduled_queue.py`
+- Skill pack: `materials_chem`
+- UI Ops: queue run, thesis health, plugin catalog
+
+### Fixed
+- Research queue JSON load hardened against empty/corrupt files
+
 ## 4.3.0 — 2026-07-12
 
 ### Added

@@ -1007,6 +1007,127 @@ def api_queue_add(
     )
 
 
+@app.post("/queue/run")
+def api_queue_run(
+    body: dict | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    """Process queue with mock runner by default. Set live=true to use LLM (costs tokens)."""
+    _check_access(x_api_key)
+    body = body or {}
+    n = int(body.get("n") or 1)
+    live = bool(body.get("live"))
+    from src.ops.queue_worker import process_batch
+
+    run_fn = None
+    if live:
+        from src.agents.research_agent import build_investment_agent, extract_final_text
+
+        settings = get_settings()
+        cache: dict = {}
+
+        def run_fn(question: str, mode_s: str, skill_s: str | None = None) -> dict:
+            key = f"{mode_s}:{skill_s or ''}"
+            if key not in cache:
+                cache[key] = build_investment_agent(settings, mode=mode_s, skill=skill_s)  # type: ignore[arg-type]
+            agent = cache[key]
+            result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+            return {"report": extract_final_text(result)}
+
+    return process_batch(n=n, run_fn=run_fn, dry_run=not live)
+
+
+@app.post("/export-pack")
+def api_export_pack(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.export_pack import build_export_pack
+
+    name = body.get("report") or ""
+    out = build_export_pack(name)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.post("/auto-tag")
+def api_auto_tag(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.auto_tag import auto_tag_report
+
+    name = body.get("report") or ""
+    out = auto_tag_report(name)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.get("/thesis-health")
+def api_thesis_health(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.thesis_health import thesis_health_report
+
+    return thesis_health_report()
+
+
+@app.get("/config")
+def api_config(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.config_export import sanitized_config
+
+    return sanitized_config()
+
+
+@app.get("/notion-export/{report_name}")
+def api_notion_export(
+    report_name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.notion_export import export_report_for_notion
+
+    out = export_report_for_notion(report_name)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.get("/plugin-catalog")
+def api_plugin_catalog(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.plugin_catalog import plugin_catalog
+
+    return plugin_catalog()
+
+
+@app.post("/watchlist/bulk")
+def api_watch_bulk(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.watchlist_bulk import bulk_add_symbols
+
+    symbols = body.get("symbols") or body.get("symbol") or ""
+    return bulk_add_symbols(symbols, priority=body.get("priority") or "medium")
+
+
+@app.get("/quality-board")
+def api_quality_board(
+    limit: int = 30,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.quality_board import quality_leaderboard
+
+    return quality_leaderboard(limit=limit)
+
+
 @app.websocket("/ws/quotes")
 async def ws_quotes(websocket):  # type: ignore[no-untyped-def]
     """WebSocket quote stream (polling under the hood; research utility only)."""

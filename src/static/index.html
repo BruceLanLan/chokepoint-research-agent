@@ -180,6 +180,14 @@
         <input id="o-topic" placeholder="plan topic e.g. CPO for B200 racks" />
         <button class="btn sec" id="o-plan">Offline plan</button>
       </div>
+      <div class="row">
+        <button class="btn sec" id="o-queue">Queue summary</button>
+        <button class="btn" id="o-qrun">Run queue (mock×1)</button>
+      </div>
+      <div class="row">
+        <button class="btn sec" id="o-thealth">Thesis health</button>
+        <button class="btn sec" id="o-pcat">Plugin catalog</button>
+      </div>
       <button class="btn" id="o-snap">Workspace snapshot (zip)</button>
       <div style="margin-top:10px"><img id="o-covimg" alt="coverage" style="max-width:100%;background:#0a0e17;border-radius:8px;display:none"/></div>
       <pre id="o-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto;margin-top:12px"></pre>
@@ -373,6 +381,10 @@ $("o-plan").onclick=async()=>{
   const topic=$("o-topic").value.trim(); if(!topic) return;
   showOps(await jpost("/plan",{topic, skill:"ai_infra"}));
 };
+$("o-queue").onclick=async()=>{ showOps(await jget("/queue?summary=true")); };
+$("o-qrun").onclick=async()=>{ showOps(await jpost("/queue/run",{n:1, live:false})); };
+$("o-thealth").onclick=async()=>{ showOps(await jget("/thesis-health")); };
+$("o-pcat").onclick=async()=>{ showOps(await jget("/plugin-catalog")); };
 $("o-snap").onclick=async()=>{ showOps(await jpost("/snapshot",{})); };
 
 // initial loads

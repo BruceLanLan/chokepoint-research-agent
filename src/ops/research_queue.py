@@ -23,7 +23,17 @@ def _load() -> dict[str, Any]:
     p = _path()
     if not p.is_file():
         return {"version": 1, "items": []}
-    return json.loads(p.read_text(encoding="utf-8"))
+    raw = p.read_text(encoding="utf-8").strip()
+    if not raw:
+        return {"version": 1, "items": []}
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return {"version": 1, "items": []}
+    if not isinstance(data, dict):
+        return {"version": 1, "items": []}
+    data.setdefault("items", [])
+    return data
 
 
 def _save(data: dict[str, Any]) -> None:
@@ -130,3 +140,15 @@ def queue_summary() -> dict[str, Any]:
         "next": next_queued(),
         "disclaimer": "research_only_not_investment_advice",
     }
+
+
+def cancel_item(item_id: str) -> dict[str, Any] | None:
+    return set_status(item_id, "cancelled")
+
+
+def cancel_all_queued() -> int:
+    n = 0
+    for it in list_queue(status="queued"):
+        if set_status(it["id"], "cancelled"):
+            n += 1
+    return n

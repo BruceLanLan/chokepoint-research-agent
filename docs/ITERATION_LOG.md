@@ -13,8 +13,9 @@ Shipped and tagged on GitHub (`BruceLanLan/chokepoint-research-agent`):
 | v4.1.0 | Citation network, lineage, offline plan, provider health, WS quotes |
 | v4.2.0 | Knowledge maps, cost dashboard, brief process health |
 | v4.3.0 | SQLite FTS memo index, research queue |
+| v4.4.0 | Queue worker, export pack, auto-tag, thesis health, catalog |
 
-Also: GitHub Releases for v3.0–v4.3; jobs.json corrupt-file harden; **75** offline tests green.
+Also: GitHub Releases for v3.0–v4.4; jobs.json corrupt-file harden; **83** offline tests green.
 
 Principles unchanged: research-only / not investment advice; secrets never committed.
 

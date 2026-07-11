@@ -92,6 +92,14 @@ python main.py citations --mermaid
 python main.py lineage --chain "系列" --reports a.md,b.md
 python main.py plan "系统边界" --skill semiconductor
 python main.py provider-health
+python main.py queue --from-map cpo_ai_interconnect
+python main.py queue --run 2
+python main.py export-pack some.md
+python main.py auto-tag some.md
+python main.py thesis-health
+python main.py quality-board
+python main.py config-show
+python main.py watch bulk NVDA,AVGO,COHR
 
 # v2.0 定时任务（macOS launchd / 通用 cron 行）
 python main.py schedule install --hour 9 --minute 0 --limit 3

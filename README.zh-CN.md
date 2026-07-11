@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v4.3.0**
+**English → [README.md](README.md)** · **当前版本 v4.4.0**
 
 **成熟投研 Agent v3**：多专家 + 运营台 + 定时/PDF + 鉴权/图表/检索 + **技能包** + **后处理管线** + **插件 SDK** + 缓存/指标。  
 **研究用途，非投资建议。**  
