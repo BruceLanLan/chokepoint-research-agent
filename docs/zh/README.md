@@ -28,6 +28,8 @@
 | [RELEASE_NOTES_3.0.md](./RELEASE_NOTES_3.0.md) | v2.6–v3.0 优化与插件 |
 | [RELEASE_NOTES_4.0.md](./RELEASE_NOTES_4.0.md) | v3.1–v4.0 研究运营层 |
 | [PLUGIN_SDK.md](./PLUGIN_SDK.md) | 插件 SDK |
+| [../AUTONOMOUS_SETUP.md](../AUTONOMOUS_SETUP.md) | 自主/过夜运行（AGENTS + 脚本） |
+| [../AUTONOMOUS_LOG.md](../AUTONOMOUS_LOG.md) | 自主进度日志（续跑用） |
 
 ## 其他中文相关
 

@@ -11,7 +11,8 @@
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 
 **中文主文档 → [README.zh-CN.md](README.zh-CN.md)** · **中文文档目录 → [docs/zh/README.md](docs/zh/README.md)**  
-**Roadmap → [docs/ROADMAP.md](docs/ROADMAP.md)** · **Release notes → [docs/RELEASE_NOTES_0.10.md](docs/RELEASE_NOTES_0.10.md)**
+**Roadmap → [docs/ROADMAP.md](docs/ROADMAP.md)** · **Release notes → [docs/RELEASE_NOTES_0.10.md](docs/RELEASE_NOTES_0.10.md)**  
+**Agent rules → [AGENTS.md](AGENTS.md)** · **Overnight autonomous → [docs/AUTONOMOUS_SETUP.md](docs/AUTONOMOUS_SETUP.md)**
 
 ⚠️ **[Disclaimer](DISCLAIMER.md): research/education only — not investment advice.**
 
