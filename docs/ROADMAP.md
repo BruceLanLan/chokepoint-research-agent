@@ -58,7 +58,8 @@
 | **v3.0.0** | Plugin SDK docs + maturity cut | **Shipped** |
 | **v3.1–v3.9** | Evidence, graph, tags, compare, audit, docx, coverage | **Shipped** |
 | **v4.0.0** | Research ops maturity cut | **Shipped** |
-| v4.1 | Realtime websockets, plugin marketplace | Future |
+| **v4.1.0** | Citations, lineage, plan, provider health, WS quotes | **Shipped** |
+| v4.2 | Plugin marketplace, heavier realtime MD | Future |
 
 ---
 

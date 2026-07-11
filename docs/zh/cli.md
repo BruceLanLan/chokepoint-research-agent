@@ -88,6 +88,10 @@ python main.py audit --summary
 python main.py snapshot
 python main.py docx a.md
 python main.py plugins
+python main.py citations --mermaid
+python main.py lineage --chain "系列" --reports a.md,b.md
+python main.py plan "系统边界" --skill semiconductor
+python main.py provider-health
 
 # v2.0 定时任务（macOS launchd / 通用 cron 行）
 python main.py schedule install --hour 9 --minute 0 --limit 3

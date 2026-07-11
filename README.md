@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**Mature research agent (v4.0.0)** powered by **Chokepoint Theory** — multi-agent research, filings, scheduling, PDF/DOCX, auth, charts, memo search, skill packs, evidence ledger, thesis graph, coverage heat, audit trail. Not investment advice.
+**Mature research agent (v4.1.0)** powered by **Chokepoint Theory** — multi-agent research, filings, scheduling, PDF/DOCX, auth, charts, memo search, skill packs, evidence ledger, thesis graph, citation network, lineage, offline plans. Not investment advice.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？

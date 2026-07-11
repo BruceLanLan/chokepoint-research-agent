@@ -830,3 +830,121 @@ def api_plugins(x_api_key: str | None = Header(default=None, alias="X-API-Key"))
     from src.plugins.loader import list_plugin_files, load_all_plugins
 
     return {"files": list_plugin_files(), "loaded": load_all_plugins()}
+
+
+@app.get("/citations")
+def api_citations(
+    mermaid: bool = False,
+    limit: int = 60,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.citation_network import build_citation_network, citation_mermaid
+
+    if mermaid:
+        return {"mermaid": citation_mermaid(limit_reports=limit)}
+    return build_citation_network(limit_reports=limit)
+
+
+@app.get("/lineage")
+def api_lineage(
+    report: str | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.lineage import lineage_for, list_lineage
+
+    if report:
+        return lineage_for(report)
+    return list_lineage()
+
+
+@app.post("/lineage")
+def api_lineage_write(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.lineage import create_chain, link_reports
+
+    if body.get("chain"):
+        return create_chain(body["chain"], body.get("reports") or [], body.get("note") or "")
+    parent, child = body.get("parent"), body.get("child")
+    if not parent or not child:
+        raise HTTPException(400, "parent+child or chain required")
+    return link_reports(parent, child, rel=body.get("rel") or "follows", note=body.get("note") or "")
+
+
+@app.get("/providers/health")
+def api_provider_health(
+    live: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.provider_health import probe_providers
+
+    return probe_providers(live=live)
+
+
+@app.post("/plan")
+def api_plan(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.research_plan import build_research_plan
+
+    topic = body.get("topic") or body.get("system") or ""
+    if not topic:
+        raise HTTPException(400, "topic required")
+    return build_research_plan(
+        topic,
+        skill=body.get("skill"),
+        template_id=body.get("template_id") or "chokepoint_map",
+        mode=body.get("mode"),
+    )
+
+
+@app.get("/charts/coverage")
+def chart_coverage(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from fastapi.responses import Response
+
+    from src.charts.coverage import coverage_heat_svg
+
+    return Response(content=coverage_heat_svg(), media_type="image/svg+xml")
+
+
+@app.websocket("/ws/quotes")
+async def ws_quotes(websocket):  # type: ignore[no-untyped-def]
+    """WebSocket quote stream (polling under the hood; research utility only)."""
+    await websocket.accept()
+    try:
+        import asyncio
+        import json as _json
+
+        from src.tools.research_tools import get_market_snapshot
+
+        # first message may be {"symbol":"AAPL","interval":5}
+        init = await websocket.receive_text()
+        try:
+            cfg = _json.loads(init)
+        except Exception:  # noqa: BLE001
+            cfg = {"symbol": init.strip()}
+        symbol = str(cfg.get("symbol") or "AAPL")
+        interval = max(2.0, min(float(cfg.get("interval") or 5), 60.0))
+        for _ in range(40):
+            try:
+                raw = get_market_snapshot.invoke({"symbol": symbol})
+                await websocket.send_text(raw if isinstance(raw, str) else _json.dumps(raw))
+            except Exception as exc:  # noqa: BLE001
+                await websocket.send_text(_json.dumps({"error": str(exc)}))
+            await asyncio.sleep(interval)
+        await websocket.send_text(_json.dumps({"event": "done"}))
+    except Exception:  # noqa: BLE001
+        pass
+    finally:
+        try:
+            await websocket.close()
+        except Exception:  # noqa: BLE001
+            pass

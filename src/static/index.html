@@ -172,7 +172,16 @@
         <button class="btn sec" id="o-ev">Evidence summary</button>
         <button class="btn sec" id="o-audit">Audit trail</button>
       </div>
+      <div class="row">
+        <button class="btn sec" id="o-cite">Citation network</button>
+        <button class="btn sec" id="o-prov">Provider health</button>
+      </div>
+      <div class="row">
+        <input id="o-topic" placeholder="plan topic e.g. CPO for B200 racks" />
+        <button class="btn sec" id="o-plan">Offline plan</button>
+      </div>
       <button class="btn" id="o-snap">Workspace snapshot (zip)</button>
+      <div style="margin-top:10px"><img id="o-covimg" alt="coverage" style="max-width:100%;background:#0a0e17;border-radius:8px;display:none"/></div>
       <pre id="o-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto;margin-top:12px"></pre>
     </section>
 
@@ -350,10 +359,20 @@ $("d-run").onclick=async()=>{ const j=await jget("/doctor"); $("d-out").textCont
 const showOps = j => { $("o-out").textContent = typeof j === "string" ? j : JSON.stringify(j,null,2); };
 $("o-graph").onclick=async()=>{ showOps(await jget("/graph")); };
 $("o-mermaid").onclick=async()=>{ const j=await jget("/graph?mermaid=true"); showOps(j.mermaid||j); };
-$("o-cov").onclick=async()=>{ showOps(await jget("/coverage")); };
+$("o-cov").onclick=async()=>{
+  showOps(await jget("/coverage"));
+  const img=$("o-covimg"); img.style.display="block";
+  img.src="/charts/coverage?"+Date.now();
+};
 $("o-kill").onclick=async()=>{ showOps(await jget("/kill-monitor")); };
 $("o-ev").onclick=async()=>{ showOps(await jget("/evidence?summary=true")); };
 $("o-audit").onclick=async()=>{ showOps(await jget("/audit?summary=true")); };
+$("o-cite").onclick=async()=>{ showOps(await jget("/citations")); };
+$("o-prov").onclick=async()=>{ showOps(await jget("/providers/health")); };
+$("o-plan").onclick=async()=>{
+  const topic=$("o-topic").value.trim(); if(!topic) return;
+  showOps(await jpost("/plan",{topic, skill:"ai_infra"}));
+};
 $("o-snap").onclick=async()=>{ showOps(await jpost("/snapshot",{})); };
 
 // initial loads

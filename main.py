@@ -1009,6 +1009,70 @@ def plugins_cmd(
     console.print({"files": list_plugin_files(), "loaded": load_all_plugins()})
 
 
+@app.command("citations")
+def citations_cmd(
+    mermaid: bool = typer.Option(False, "--mermaid"),
+    limit: int = typer.Option(60, "--limit"),
+):
+    """Citation / domain co-occurrence network across memos."""
+    _boot_env()
+    from src.ops.citation_network import build_citation_network, citation_mermaid
+
+    if mermaid:
+        console.print(citation_mermaid(limit_reports=limit))
+    else:
+        console.print(build_citation_network(limit_reports=limit))
+
+
+@app.command("lineage")
+def lineage_cmd(
+    parent: Optional[str] = typer.Option(None, "--parent"),
+    child: Optional[str] = typer.Option(None, "--child"),
+    chain: Optional[str] = typer.Option(None, "--chain", help="Create chain name"),
+    reports: Optional[str] = typer.Option(None, "--reports", help="Comma report names for chain"),
+    report: Optional[str] = typer.Option(None, "--report", help="Show lineage for one report"),
+):
+    """Report research lineage / chains."""
+    _boot_env()
+    from src.ops.lineage import create_chain, lineage_for, link_reports, list_lineage
+
+    if parent and child:
+        console.print(link_reports(parent, child))
+        return
+    if chain:
+        reps = [r.strip() for r in (reports or "").split(",") if r.strip()]
+        console.print(create_chain(chain, reps))
+        return
+    if report:
+        console.print(lineage_for(report))
+        return
+    console.print(list_lineage())
+
+
+@app.command("provider-health")
+def provider_health_cmd(
+    live: bool = typer.Option(False, "--live", help="Hit network probes (slow)"),
+):
+    """Probe registered data providers."""
+    _boot_env()
+    from src.ops.provider_health import probe_providers
+
+    console.print(probe_providers(live=live))
+
+
+@app.command("plan")
+def plan_cmd(
+    topic: str = typer.Argument(..., help="Research topic / system"),
+    skill: Optional[str] = typer.Option(None, "--skill"),
+    template: str = typer.Option("chokepoint_map", "--template"),
+):
+    """Offline research plan (no LLM)."""
+    _boot_env()
+    from src.ops.research_plan import build_research_plan
+
+    console.print(build_research_plan(topic, skill=skill, template_id=template))
+
+
 @app.command("version")
 def show_version():
     from src import __version__

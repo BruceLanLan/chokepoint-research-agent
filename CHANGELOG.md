@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.1.0 — 2026-07-12
+
+### Added
+- Citation / domain co-occurrence network (`citations`, `/citations`)
+- Report lineage chains (`lineage`, `/lineage`)
+- Offline research plan generator (`plan`, `/plan`) — no LLM
+- Provider health probes (`provider-health`, `/providers/health`)
+- Coverage heat SVG (`/charts/coverage`)
+- WebSocket quote stream `/ws/quotes` (polling-backed)
+- UI Ops: citations, provider health, offline plan, coverage image
+
 ## 4.0.0 — 2026-07-12
 
 Research ops maturity wave (v3.1–v4.0).
