@@ -491,3 +491,54 @@ def jobs_get(job_id: str, x_api_key: str | None = Header(default=None, alias="X-
     if not job:
         raise HTTPException(404, "job not found")
     return job
+
+
+class PdfRequest(BaseModel):
+    title: str = "Research Memo"
+    markdown: str = Field(..., min_length=2)
+
+
+@app.post("/export/pdf")
+def export_pdf(body: PdfRequest, x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.tools.pdf_report import markdown_to_pdf
+
+    out = markdown_to_pdf(body.title, body.markdown)
+    if out.get("error") and not out.get("path"):
+        raise HTTPException(500, out)
+    return out
+
+
+@app.get("/schedule/status")
+def api_schedule_status(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.scheduler import schedule_status
+
+    return schedule_status()
+
+
+class ScheduleInstall(BaseModel):
+    hour: int = 9
+    minute: int = 0
+    limit: int = 3
+
+
+@app.post("/schedule/install")
+def api_schedule_install(
+    body: ScheduleInstall, x_api_key: str | None = Header(default=None, alias="X-API-Key")
+):
+    _check_access(x_api_key)
+    from src.ops.scheduler import install_schedule, load_schedule, save_schedule
+
+    cfg = load_schedule()
+    cfg["limit"] = body.limit
+    save_schedule(cfg)
+    return install_schedule(hour=body.hour, minute=body.minute)
+
+
+@app.post("/schedule/uninstall")
+def api_schedule_uninstall(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.scheduler import uninstall_schedule
+
+    return uninstall_schedule()

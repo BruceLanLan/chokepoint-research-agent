@@ -28,3 +28,4 @@ htmlcov/
 .nox/
 *.swp
 *~
+reports/*.pdf

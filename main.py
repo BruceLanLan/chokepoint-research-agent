@@ -639,6 +639,81 @@ def job(
         time.sleep(2)
 
 
+# ── schedule (launchd / cron) ─────────────────────────────────────────────
+
+schedule_app = typer.Typer(help="Real scheduled tasks (launchd on macOS / cron elsewhere)")
+app.add_typer(schedule_app, name="schedule")
+
+
+@schedule_app.command("install")
+def schedule_install(
+    hour: int = typer.Option(9, "--hour"),
+    minute: int = typer.Option(0, "--minute"),
+    limit: int = typer.Option(3, "--limit"),
+):
+    """Install daily watchlist brief (launchd on macOS; prints cron line always)."""
+    _boot_env()
+    from src.ops.scheduler import install_schedule, load_schedule, save_schedule
+
+    cfg = load_schedule()
+    cfg["limit"] = limit
+    save_schedule(cfg)
+    result = install_schedule(hour=hour, minute=minute)
+    console.print(result)
+    console.print(f"[cyan]cron:[/cyan] {result.get('cron_line')}")
+
+
+@schedule_app.command("uninstall")
+def schedule_uninstall():
+    _boot_env()
+    from src.ops.scheduler import uninstall_schedule
+
+    console.print(uninstall_schedule())
+
+
+@schedule_app.command("status")
+def schedule_status_cmd():
+    _boot_env()
+    from src.ops.scheduler import schedule_status
+
+    console.print(schedule_status())
+
+
+@schedule_app.command("run")
+def schedule_run_now():
+    """Run the scheduled job once now (uses model keys; can cost money)."""
+    _boot_env()
+    from src.ops.scheduler import run_scheduled_job_once
+
+    with console.status("[bold green]Running scheduled brief…"):
+        out = run_scheduled_job_once()
+    console.print(out)
+
+
+@app.command()
+def pdf(
+    file: str = typer.Option("", "--file", help="markdown report path"),
+    title: str = typer.Option("Research Memo", "--title"),
+    text: str = typer.Option("", "--text", help="inline markdown"),
+):
+    """Generate a pretty PDF from markdown memo."""
+    _boot_env()
+    from pathlib import Path
+
+    from src.tools.pdf_report import markdown_to_pdf
+
+    body = text
+    if file:
+        body = Path(file).read_text(encoding="utf-8")
+    if not body.strip():
+        console.print("[red]provide --file or --text[/red]")
+        raise typer.Exit(1)
+    out = markdown_to_pdf(title, body)
+    console.print(out)
+    if out.get("error"):
+        raise typer.Exit(1)
+
+
 @app.command("version")
 def show_version():
     from src import __version__

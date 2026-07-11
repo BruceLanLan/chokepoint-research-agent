@@ -5,11 +5,11 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v1.20.0**
+**English → [README.md](README.md)** · **当前版本 v2.0.0**
 
-**成熟投研 Agent**：Chokepoint 多专家研究 + 覆盖/论点运营 + SEC + 异步任务 + 备份/diff/复审 + 统计。  
+**成熟投研 Agent v2**：多专家研究 + 覆盖/论点运营 + SEC + **多源 A 股公告** + 异步任务 + **launchd/cron 定时** + **精美 PDF**。  
 **研究用途，非投资建议。**  
-版本火车：[docs/zh/VERSIONS_1.1_to_1.20.md](docs/zh/VERSIONS_1.1_to_1.20.md)
+发布说明：[docs/zh/RELEASE_NOTES_2.0.md](docs/zh/RELEASE_NOTES_2.0.md)
 
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 
@@ -457,9 +457,10 @@ python main.py eval
 | **v0.8–v0.10** | 运营层 + 工作台 UI + brief |
 | **v0.11** | SEC EDGAR + Provider 注册表 + 引用检查 |
 | **v0.12** | 异步 Jobs + Analytics |
-| **v1.0.0-rc1** | 成熟度收口 / 双语文档 / 测试 |
+| **v1.0–v1.20** | 成熟度火车（运营/SEC/Jobs/备份…） |
+| **v2.0.0** | 真定时任务 + PDF + 多源 A 股公告 |
 
-详见：[docs/zh/VERSIONS.md](docs/zh/VERSIONS.md) · [docs/zh/RELEASE_NOTES_1.0.md](docs/zh/RELEASE_NOTES_1.0.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
+详见：[docs/zh/RELEASE_NOTES_2.0.md](docs/zh/RELEASE_NOTES_2.0.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
 
 ---
 

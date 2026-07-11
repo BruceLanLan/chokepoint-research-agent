@@ -2,9 +2,15 @@
 # Usage:
 #   cp .env.example .env   # fill secrets
 #   docker compose up --build
+#
+# Profiles:
+#   docker compose --profile api up --build
+#   # scheduled brief inside container (optional sidecar)
+#   docker compose --profile cron up --build
 
 services:
   agent:
+    profiles: ["api", "default"]
     build: .
     ports:
       - "8000:8000"
@@ -12,4 +18,29 @@ services:
       - .env
     volumes:
       - ./reports:/app/reports
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Optional: run scheduled brief every day at 01:00 UTC via simple loop
+  # Prefer host launchd/cron for production scheduling.
+  brief-cron:
+    profiles: ["cron"]
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/app/reports
+      - ./data:/app/data
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "brief-cron sidecar: daily watchlist brief (UTC 01:00)"
+        while true; do
+          H=$$(date -u +%H); M=$$(date -u +%M)
+          if [ "$$H" = "01" ] && [ "$$M" = "00" ]; then
+            python scripts/run_scheduled_brief.py || true
+            sleep 60
+          fi
+          sleep 20
+        done
     restart: unless-stopped

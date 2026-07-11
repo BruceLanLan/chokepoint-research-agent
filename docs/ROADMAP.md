@@ -47,7 +47,9 @@
 | **v0.11** | SEC EDGAR + provider registry + citation check | **Shipped** |
 | **v0.12** | Async jobs + workspace analytics | **Shipped** |
 | **v1.0.0-rc1** | Hardening / bilingual docs / tests | **Shipped** |
-| v1.0 | Auth plugins, more exchanges, chart widgets | Next |
+| **v1.1–v1.20** | Maturity train (ops/diff/backup/…) | **Shipped** |
+| **v2.0.0** | launchd/cron, pretty PDF, multi-source CN ann | **Shipped** |
+| v2.1 | Auth plugins, chart widgets, more exchanges | Next |
 
 ---
 

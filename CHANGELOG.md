@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.0 — 2026-07-11
+
+### Added
+- **Real scheduling**: launchd (macOS) + cron helpers (`schedule install/status/uninstall/run`)
+- **Pretty PDF**: fpdf2 generator, CLI `pdf`, API `/export/pdf`, auto in export bundle
+- **A-share multi-source announcements**: Eastmoney notice/CMS + Sina roll; tools `cn_search_announcements`
+- Docker compose profiles (`api` / `cron` sidecar)
+- Docs: RELEASE_NOTES_2.0 EN/ZH
+
+### Notes
+- Research only — not investment advice
+- Scheduled jobs use local model/search keys; monitor cost
+
 ## 1.20.0 — 2026-07-11
 
 Twenty-version maturity train (v1.1–v1.20). See `docs/VERSIONS_1.1_to_1.20.md`.

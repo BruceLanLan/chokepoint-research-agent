@@ -42,7 +42,8 @@ def _mode_suffix(mode: Mode, bilingual: bool = False) -> str:
     else:
         base = "\n\n# 本轮运行模式：full（完整多专家流程）\n"
         base += (
-            "A股/港股优先 get_cn_stock_quote / search_cn_company_news；"
+            "A股/港股优先 get_cn_stock_quote / search_cn_company_news / "
+            "cn_search_announcements（多源公告）；"
             "美股 get_market_snapshot；美股文件 sec_search_company / sec_recent_filings；"
             "搜索 web_search；写完可用 validate_citations 自检。\n"
         )

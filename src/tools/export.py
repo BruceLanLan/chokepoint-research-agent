@@ -48,11 +48,26 @@ def export_report_bundle(
     json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     html_path.write_text(_to_html(title, markdown_body, quality), encoding="utf-8")
 
-    return {
+    pdf_meta: dict[str, Any] = {}
+    try:
+        from src.tools.pdf_report import markdown_to_pdf
+
+        pdf_meta = markdown_to_pdf(
+            title, markdown_body, out_path=base.with_suffix(".pdf"), mode=mode
+        )
+    except Exception as exc:  # noqa: BLE001
+        pdf_meta = {"error": str(exc)}
+
+    result = {
         "md": str(md_path.resolve()),
         "json": str(json_path.resolve()),
         "html": str(html_path.resolve()),
     }
+    if pdf_meta.get("path"):
+        result["pdf"] = pdf_meta["path"]
+    if pdf_meta.get("error"):
+        result["pdf_error"] = pdf_meta["error"]
+    return result
 
 
 def _to_html(title: str, markdown_body: str, quality: dict[str, Any]) -> str:

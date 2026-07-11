@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**Mature research agent (v1.20.0)** powered by **Chokepoint Theory** — multi-agent synthesis, SEC filings, async jobs, coverage ops, backup/diff/peer-review. Not mega-cap narrative chat.
+**Mature research agent (v2.0.0)** powered by **Chokepoint Theory** — multi-agent research, SEC + multi-source A-share filings, async jobs, **launchd/cron scheduling**, **pretty PDF**, coverage ops. Not investment advice.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
@@ -190,8 +190,25 @@ make server
 | Jobs | `job` | `/jobs` |
 | Analytics | `analytics` | `/analytics` |
 | Providers | `providers` | `/providers` |
+| Schedule | `schedule *` | `/schedule/*` |
+| PDF | `pdf --file …` | `/export/pdf` |
 
-Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v1.1–v1.20 train:** [`docs/VERSIONS_1.1_to_1.20.md`](docs/VERSIONS_1.1_to_1.20.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
+### v2.0 highlights
+
+```bash
+# real daily brief (macOS launchd + prints cron line)
+python main.py schedule install --hour 9 --minute 0 --limit 3
+python main.py schedule status
+python main.py schedule run          # run once now (costs tokens)
+
+# pretty PDF
+python main.py pdf --file reports/xxx.md --title "CPO Memo"
+
+# A-share multi-source announcements (via agent tools / provider)
+python main.py providers
+```
+
+Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v2.0 notes:** [`docs/RELEASE_NOTES_2.0.md`](docs/RELEASE_NOTES_2.0.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
 
 ---
 

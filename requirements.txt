@@ -25,5 +25,8 @@ fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 sse-starlette>=2.0.0
 
+# PDF reports
+fpdf2>=2.7.0
+
 # Dev (also listed in pyproject [dev])
 pytest>=8.0

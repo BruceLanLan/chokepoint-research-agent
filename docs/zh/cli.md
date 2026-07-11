@@ -76,6 +76,15 @@ python main.py providers
 python main.py analytics
 python main.py job "CPO 卡点快扫" --mode chokepoint_fast
 # python main.py job "..." --wait   # 轮询直到完成
+
+# v2.0 定时任务（macOS launchd / 通用 cron 行）
+python main.py schedule install --hour 9 --minute 0 --limit 3
+python main.py schedule status
+python main.py schedule run
+python main.py schedule uninstall
+
+# 精美 PDF
+python main.py pdf --file reports/xxx.md --title "投研备忘录"
 ```
 
 ## 评测与版本
