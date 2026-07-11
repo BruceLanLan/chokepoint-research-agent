@@ -5,11 +5,11 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v2.0.0**
+**English → [README.md](README.md)** · **当前版本 v2.5.0**
 
-**成熟投研 Agent v2**：多专家研究 + 覆盖/论点运营 + SEC + **多源 A 股公告** + 异步任务 + **launchd/cron 定时** + **精美 PDF**。  
+**成熟投研 Agent v2.5（路线图已收官）**：多专家 + 覆盖/论点 + SEC/A股/HK + 定时 + PDF + **鉴权插件** + **图表** + **本地研报检索** + Jobs/统计。  
 **研究用途，非投资建议。**  
-发布说明：[docs/zh/RELEASE_NOTES_2.0.md](docs/zh/RELEASE_NOTES_2.0.md)
+发布说明：[docs/zh/RELEASE_NOTES_2.5.md](docs/zh/RELEASE_NOTES_2.5.md)
 
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 
@@ -459,8 +459,9 @@ python main.py eval
 | **v0.12** | 异步 Jobs + Analytics |
 | **v1.0–v1.20** | 成熟度火车（运营/SEC/Jobs/备份…） |
 | **v2.0.0** | 真定时任务 + PDF + 多源 A 股公告 |
+| **v2.1–v2.5** | 鉴权 / 图表 / 检索 / HK / SSE 行情流 |
 
-详见：[docs/zh/RELEASE_NOTES_2.0.md](docs/zh/RELEASE_NOTES_2.0.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
+详见：[docs/zh/RELEASE_NOTES_2.5.md](docs/zh/RELEASE_NOTES_2.5.md) · [docs/zh/ROADMAP.md](docs/zh/ROADMAP.md)
 
 ---
 

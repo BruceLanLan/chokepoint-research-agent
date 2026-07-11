@@ -68,10 +68,18 @@ _agents: dict[str, object] = {}
 Mode = Literal["full", "chokepoint_fast", "risk_only", "compare"]
 
 
-def _check_access(x_api_key: str | None) -> None:
-    expected = get_settings().api_access_key
-    if expected and (not x_api_key or x_api_key != expected):
-        raise HTTPException(status_code=401, detail="Invalid or missing X-API-Key")
+def _check_access(
+    x_api_key: str | None = None,
+    authorization: str | None = None,
+) -> None:
+    """Pluggable auth: API key / bearer / OIDC (see src/auth)."""
+    from src.auth.base import AuthError
+    from src.auth.plugins import authenticate_request
+
+    try:
+        authenticate_request(authorization, x_api_key)
+    except AuthError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message) from exc
 
 
 def get_agent(mode: str = "full"):
@@ -542,3 +550,71 @@ def api_schedule_uninstall(x_api_key: str | None = Header(default=None, alias="X
     from src.ops.scheduler import uninstall_schedule
 
     return uninstall_schedule()
+
+
+@app.get("/search/memos")
+def search_memos_api(
+    q: str,
+    limit: int = 10,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
+):
+    _check_access(x_api_key, authorization)
+    from src.ops.memo_search import search_memos
+
+    return {"query": q, "items": search_memos(q, limit=limit)}
+
+
+@app.get("/auth/plugins")
+def auth_plugins(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    # public-ish: list plugin names only (not secrets)
+    from src.auth.plugins import build_auth_chain
+
+    _check_access(x_api_key)
+    return {"plugins": [p.name for p in build_auth_chain()]}
+
+
+@app.get("/charts/scorecard")
+def chart_scorecard(
+    name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    """SVG scorecard from a saved report name."""
+    _check_access(x_api_key)
+    from src.charts.scorecard import charts_from_memo
+    from src.tools.reports import read_report
+    from fastapi.responses import Response
+
+    body = read_report(name)
+    if not body:
+        raise HTTPException(404, "report not found")
+    svg = charts_from_memo(body).get("scorecard_svg") or ""
+    return Response(content=svg, media_type="image/svg+xml")
+
+
+@app.get("/quotes/stream")
+async def quotes_stream(
+    symbol: str,
+    interval: float = 5.0,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    """SSE polling quote stream (best-effort, not a full market data terminal)."""
+    _check_access(x_api_key)
+    import asyncio
+    import json as _json
+
+    from src.tools.research_tools import get_market_snapshot
+
+    interval = max(2.0, min(float(interval or 5), 60.0))
+
+    async def gen():
+        for _ in range(30):  # cap ~ few minutes
+            try:
+                raw = get_market_snapshot.invoke({"symbol": symbol})
+                yield {"event": "quote", "data": raw if isinstance(raw, str) else _json.dumps(raw)}
+            except Exception as exc:  # noqa: BLE001
+                yield {"event": "error", "data": _json.dumps({"error": str(exc)})}
+            await asyncio.sleep(interval)
+        yield {"event": "done", "data": "[DONE]"}
+
+    return EventSourceResponse(gen())

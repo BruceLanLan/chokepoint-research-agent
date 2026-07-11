@@ -49,7 +49,12 @@
 | **v1.0.0-rc1** | Hardening / bilingual docs / tests | **Shipped** |
 | **v1.1–v1.20** | Maturity train (ops/diff/backup/…) | **Shipped** |
 | **v2.0.0** | launchd/cron, pretty PDF, multi-source CN ann | **Shipped** |
-| v2.1 | Auth plugins, chart widgets, more exchanges | Next |
+| **v2.1** | Auth plugins (API key / bearer / OIDC) | **Shipped** |
+| **v2.2** | Chart widgets (SVG scorecard + price) | **Shipped** |
+| **v2.3** | Local TF-IDF memo search | **Shipped** |
+| **v2.4** | HKEX provider + quote SSE stream | **Shipped** |
+| **v2.5.0** | Polish, bilingual docs, tests | **Shipped** |
+| v3.0 | Realtime websockets, OIDC polish, plugin marketplace | Future |
 
 ---
 
@@ -82,13 +87,16 @@
 
 ---
 
-## 7. Later (v0.11+)
+## 7. Later / done
 
-- SEC EDGAR / exchange filing snippets  
-- Real-time quote websockets (optional)  
-- Plugin interface for data vendors  
-- Team auth (OIDC)  
-- Vector search over past memos  
+- [x] SEC EDGAR / exchange filing snippets  
+- [x] Plugin interface for data vendors (`src/providers`)  
+- [x] Team auth plugins (API key / bearer / OIDC JWT)  
+- [x] Local search over past memos (TF-IDF)  
+- [x] Chart widgets in reports (SVG)  
+- [~] Real-time quotes via **SSE polling** (full websockets → v3)  
+- [ ] Plugin marketplace / third-party packages  
+
 
 ---
 

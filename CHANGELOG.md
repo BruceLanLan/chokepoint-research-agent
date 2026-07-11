@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.5.0 — 2026-07-12
+
+Roadmap completion train (v2.1–v2.5).
+
+### Added
+- Auth plugins: open / API key / bearer / OIDC JWT (`src/auth`)
+- SVG chart widgets (scorecard + price) + CLI `chart` + HTML embed
+- Local TF-IDF memo search (`search-memos`, `/search/memos`, UI tab)
+- HKEX-oriented news provider; quote SSE stream `/quotes/stream`
+- Docs: RELEASE_NOTES_2.5 EN/ZH
+
 ## 2.0.0 — 2026-07-11
 
 ### Added

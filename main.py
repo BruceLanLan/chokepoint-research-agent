@@ -714,6 +714,65 @@ def pdf(
         raise typer.Exit(1)
 
 
+@app.command("search-memos")
+def search_memos_cmd(
+    query: str = typer.Argument(..., help="search query"),
+    limit: int = typer.Option(10, "--limit", "-n"),
+):
+    """Local TF-IDF search over past memos in reports/."""
+    _boot_env()
+    from src.ops.memo_search import search_memos
+
+    hits = search_memos(query, limit=limit)
+    if not hits:
+        console.print("[dim]No hits.[/dim]")
+        return
+    for h in hits:
+        console.print(f"[cyan]{h['score']:.3f}[/cyan] {h['name']}\n  {h['preview'][:120]}…")
+
+
+@app.command()
+def chart(
+    kind: str = typer.Argument("scorecard", help="scorecard|price"),
+    report: str = typer.Option("", "--report", help="report filename for scorecard"),
+    symbol: str = typer.Option("", "--symbol", help="ticker for price chart"),
+    period: str = typer.Option("6mo", "--period"),
+):
+    """Render SVG charts into reports/charts/."""
+    _boot_env()
+    from pathlib import Path
+
+    from src.charts.scorecard import charts_from_memo, fetch_price_points, price_line_chart_svg
+    from src.config import get_settings
+    from src.tools.reports import read_report
+
+    out_dir = Path(get_settings().reports_dir) / "charts"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if kind == "scorecard":
+        if not report:
+            console.print("[red]--report required[/red]")
+            raise typer.Exit(1)
+        body = read_report(report)
+        if not body:
+            raise typer.Exit(1)
+        svg = charts_from_memo(body)["scorecard_svg"]
+        path = out_dir / f"scorecard_{Path(report).stem}.svg"
+        path.write_text(svg, encoding="utf-8")
+        console.print(f"[green]{path}[/green]")
+    elif kind == "price":
+        if not symbol:
+            console.print("[red]--symbol required[/red]")
+            raise typer.Exit(1)
+        pts = fetch_price_points(symbol, period=period)
+        svg = price_line_chart_svg(pts, title=f"{symbol} {period}")
+        path = out_dir / f"price_{symbol.replace('.', '_')}.svg"
+        path.write_text(svg, encoding="utf-8")
+        console.print(f"[green]{path}[/green] points={len(pts)}")
+    else:
+        console.print("[red]kind must be scorecard|price[/red]")
+        raise typer.Exit(2)
+
+
 @app.command("version")
 def show_version():
     from src import __version__

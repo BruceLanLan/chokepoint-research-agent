@@ -46,7 +46,16 @@ def export_report_bundle(
 
     md_path.write_text(markdown_body.strip() + "\n", encoding="utf-8")
     json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    html_path.write_text(_to_html(title, markdown_body, quality), encoding="utf-8")
+    chart_svg = ""
+    try:
+        from src.charts.scorecard import charts_from_memo
+
+        chart_svg = charts_from_memo(markdown_body).get("scorecard_svg") or ""
+    except Exception:  # noqa: BLE001
+        chart_svg = ""
+    html_path.write_text(
+        _to_html(title, markdown_body, quality, chart_svg=chart_svg), encoding="utf-8"
+    )
 
     pdf_meta: dict[str, Any] = {}
     try:
@@ -70,7 +79,12 @@ def export_report_bundle(
     return result
 
 
-def _to_html(title: str, markdown_body: str, quality: dict[str, Any]) -> str:
+def _to_html(
+    title: str,
+    markdown_body: str,
+    quality: dict[str, Any],
+    chart_svg: str = "",
+) -> str:
     """Print-optimized HTML (use browser Print → PDF)."""
     escaped = html.escape(markdown_body)
     # light markdown: headings & bullets
@@ -112,6 +126,7 @@ footer {{ margin-top:2rem; padding-top:1rem; border-top:1px solid var(--line); c
 <div class="banner"><strong>免责声明 / Disclaimer</strong>：仅供研究学习，不构成投资建议。 Research only — not investment advice.</div>
 <h1>{html.escape(title)}</h1>
 <div class="meta">quality_score={quality.get("score")} · pass={quality.get("pass")} · generator=chokepoint-research-agent</div>
+{f'<section class="chart">{chart_svg}</section>' if chart_svg else ""}
 <article>{body}</article>
 <footer>Print this page to PDF from your browser. Do not treat as investment advice.</footer>
 </body></html>

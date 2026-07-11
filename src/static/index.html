@@ -61,6 +61,7 @@
     <button data-tab="reports">Reports 研报</button>
     <button data-tab="templates">Templates 模板</button>
     <button data-tab="analytics">Analytics 统计</button>
+    <button data-tab="search">Search 检索</button>
     <button data-tab="jobs">Jobs 异步</button>
     <button data-tab="doctor">Doctor 体检</button>
   </nav>
@@ -153,6 +154,16 @@
       <h3 style="margin-top:0">Workspace analytics</h3>
       <button class="btn sec" id="a-run">Refresh</button>
       <pre id="a-out" class="mono" style="white-space:pre-wrap"></pre>
+    </section>
+
+    <!-- SEARCH -->
+    <section id="tab-search" class="card hidden">
+      <h3 style="margin-top:0">Search past memos (local TF-IDF)</h3>
+      <div class="row">
+        <input id="s-q" placeholder="CPO / 卡脖子 / kill criteria…" />
+        <button class="btn sec" id="s-run">Search</button>
+      </div>
+      <pre id="s-out" class="mono" style="white-space:pre-wrap;max-height:50vh;overflow:auto"></pre>
     </section>
 
     <!-- JOBS -->
@@ -298,6 +309,11 @@ $("tpl-run").onclick=async()=>{
 
 // analytics / jobs / doctor
 $("a-run").onclick=async()=>{ const j=await jget("/analytics"); $("a-out").textContent=JSON.stringify(j,null,2); };
+$("s-run").onclick=async()=>{
+  const q=$("s-q").value.trim(); if(!q) return;
+  const j=await jget("/search/memos?q="+encodeURIComponent(q)+"&limit=15");
+  $("s-out").textContent=JSON.stringify(j,null,2);
+};
 $("j-submit").onclick=async()=>{
   const q=$("j-q").value.trim(); if(!q) return;
   const j=await jpost("/jobs",{question:q,mode:$("j-mode").value});

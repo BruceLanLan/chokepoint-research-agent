@@ -24,6 +24,7 @@
 | [RELEASE_NOTES_1.0.md](./RELEASE_NOTES_1.0.md) | v0.11–v1.0.0-rc1 发布说明 |
 | [VERSIONS_1.1_to_1.20.md](./VERSIONS_1.1_to_1.20.md) | v1.1–v1.20 二十版本火车 |
 | [RELEASE_NOTES_2.0.md](./RELEASE_NOTES_2.0.md) | v2.0 定时任务 / PDF / A股公告 |
+| [RELEASE_NOTES_2.5.md](./RELEASE_NOTES_2.5.md) | v2.1–v2.5 路线图收官 |
 
 ## 其他中文相关
 

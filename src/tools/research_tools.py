@@ -244,6 +244,7 @@ def list_saved_reports(limit: int = 20) -> str:
 
 def all_tools():
     """Tools available to lead + sub agents."""
+    from src.tools.charts_tool import render_price_chart, render_scorecard_chart
     from src.tools.cn_filings import cn_company_suggest, cn_search_announcements
     from src.tools.filings import sec_recent_filings, sec_search_company, validate_citations
     from src.tools.knowledge import list_knowledge_maps, load_knowledge_map
@@ -260,6 +261,8 @@ def all_tools():
         sec_search_company,
         sec_recent_filings,
         validate_citations,
+        render_scorecard_chart,
+        render_price_chart,
         save_research_report,
         list_saved_reports,
         list_knowledge_maps,
@@ -269,6 +272,7 @@ def all_tools():
 
 def researcher_tools():
     """Tools for specialist researchers (no save needed usually)."""
+    from src.tools.charts_tool import render_price_chart, render_scorecard_chart
     from src.tools.cn_filings import cn_company_suggest, cn_search_announcements
     from src.tools.filings import sec_recent_filings, sec_search_company, validate_citations
     from src.tools.knowledge import list_knowledge_maps, load_knowledge_map
@@ -285,6 +289,8 @@ def researcher_tools():
         sec_search_company,
         sec_recent_filings,
         validate_citations,
+        render_scorecard_chart,
+        render_price_chart,
         list_knowledge_maps,
         load_knowledge_map,
     ]

@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**Mature research agent (v2.0.0)** powered by **Chokepoint Theory** — multi-agent research, SEC + multi-source A-share filings, async jobs, **launchd/cron scheduling**, **pretty PDF**, coverage ops. Not investment advice.
+**Mature research agent (v2.5.0)** powered by **Chokepoint Theory** — multi-agent research, SEC + multi-source A-share/HK news, async jobs, **scheduling**, **PDF**, **auth plugins**, **charts**, **memo search**. Not investment advice.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
@@ -208,7 +208,16 @@ python main.py pdf --file reports/xxx.md --title "CPO Memo"
 python main.py providers
 ```
 
-Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v2.0 notes:** [`docs/RELEASE_NOTES_2.0.md`](docs/RELEASE_NOTES_2.0.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
+### v2.1–v2.5 (roadmap done)
+
+```bash
+python main.py search-memos "CPO kill criteria"
+python main.py chart scorecard --report some_report.md
+python main.py chart price --symbol NVDA --period 6mo
+# Auth: set API_ACCESS_KEY or API_BEARER_TOKEN or OIDC_* in .env
+```
+
+Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v2.5 notes:** [`docs/RELEASE_NOTES_2.5.md`](docs/RELEASE_NOTES_2.5.md)
 
 ---
 

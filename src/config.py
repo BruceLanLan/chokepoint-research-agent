@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     api_rate_window_seconds: int = Field(default=60, ge=10, le=3600)
     # Report default language preference for prompts
     report_language: Literal["zh", "en", "bilingual"] = "zh"
+    # Auth plugins
+    api_bearer_token: str | None = None
+    oidc_issuer: str | None = None
+    oidc_audience: str | None = None
+    oidc_jwks_url: str | None = None
 
     def resolved_api_key(self) -> str:
         if self.model_provider == "anthropic":
