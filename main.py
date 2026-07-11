@@ -1103,6 +1103,55 @@ def dashboard_cmd():
     console.print(cost_quality_dashboard())
 
 
+@app.command("index-memos")
+def index_memos_cmd(
+    rebuild: bool = typer.Option(True, "--rebuild/--no-rebuild"),
+    q: Optional[str] = typer.Option(None, "--q", help="Search after index"),
+):
+    """Build/search local SQLite FTS index over memos."""
+    _boot_env()
+    from src.ops.memo_index import rebuild_index, search_index
+
+    if rebuild or not q:
+        console.print(rebuild_index())
+    if q:
+        console.print(search_index(q))
+
+
+@app.command("queue")
+def queue_cmd(
+    add: Optional[str] = typer.Option(None, "--add", help="Enqueue a question"),
+    mode: str = typer.Option("chokepoint_fast", "--mode"),
+    from_watchlist: bool = typer.Option(False, "--from-watchlist"),
+    from_map: Optional[str] = typer.Option(None, "--from-map"),
+    summary: bool = typer.Option(False, "--summary"),
+    limit: int = typer.Option(10, "--limit"),
+):
+    """Research queue (plan batch work; does not call LLM until research)."""
+    _boot_env()
+    from src.ops.research_queue import (
+        enqueue,
+        enqueue_from_map,
+        enqueue_from_watchlist,
+        list_queue,
+        queue_summary,
+    )
+
+    if add:
+        console.print(enqueue(add, mode=mode))
+        return
+    if from_watchlist:
+        console.print(enqueue_from_watchlist(limit=limit))
+        return
+    if from_map:
+        console.print(enqueue_from_map(from_map))
+        return
+    if summary:
+        console.print(queue_summary())
+        return
+    console.print(list_queue())
+
+
 @app.command("version")
 def show_version():
     from src import __version__

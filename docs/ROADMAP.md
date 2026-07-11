@@ -60,7 +60,8 @@
 | **v4.0.0** | Research ops maturity cut | **Shipped** |
 | **v4.1.0** | Citations, lineage, plan, provider health, WS quotes | **Shipped** |
 | **v4.2.0** | Knowledge maps, cost dashboard, brief process health | **Shipped** |
-| v4.3 | Plugin marketplace, heavier realtime MD | Future |
+| **v4.3.0** | FTS memo index + research queue | **Shipped** |
+| v4.4 | Plugin marketplace, heavier realtime MD | Future |
 
 ---
 

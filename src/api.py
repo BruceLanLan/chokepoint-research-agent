@@ -951,6 +951,62 @@ def api_dashboard(x_api_key: str | None = Header(default=None, alias="X-API-Key"
     return cost_quality_dashboard()
 
 
+@app.post("/index/memos")
+def api_index_memos(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.memo_index import rebuild_index
+
+    return rebuild_index()
+
+
+@app.get("/index/search")
+def api_index_search(
+    q: str,
+    limit: int = 15,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.memo_index import search_index
+
+    return {"query": q, "items": search_index(q, limit=limit)}
+
+
+@app.get("/queue")
+def api_queue(
+    summary: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.research_queue import list_queue, queue_summary
+
+    if summary:
+        return queue_summary()
+    return {"items": list_queue()}
+
+
+@app.post("/queue")
+def api_queue_add(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.research_queue import enqueue, enqueue_from_map, enqueue_from_watchlist
+
+    if body.get("from_watchlist"):
+        return {"items": enqueue_from_watchlist(limit=int(body.get("limit") or 10))}
+    if body.get("from_map"):
+        return enqueue_from_map(body["from_map"])
+    q = body.get("question") or ""
+    if not q:
+        raise HTTPException(400, "question or from_watchlist/from_map required")
+    return enqueue(
+        q,
+        mode=body.get("mode") or "chokepoint_fast",
+        skill=body.get("skill"),
+        priority=int(body.get("priority") or 50),
+    )
+
+
 @app.websocket("/ws/quotes")
 async def ws_quotes(websocket):  # type: ignore[no-untyped-def]
     """WebSocket quote stream (polling under the hood; research utility only)."""

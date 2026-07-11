@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.3.0 — 2026-07-12
+
+### Added
+- SQLite FTS memo index (`index-memos`, `/index/memos`, `/index/search`)
+- Research queue for batch planning (`queue`, `/queue`) — no LLM until run
+- GitHub Releases published for v3.0–v4.2
+
 ## 4.2.0 — 2026-07-12
 
 ### Added
