@@ -25,6 +25,16 @@
 
 ---
 
+## 2026-07-12 — v5.1.0 (overnight continued)
+
+- **Shipped:** grade-memo, quotes-cache --from-watchlist / coverage_refresh
+- **Tests:** 98 passed
+- **Tag / Release:** yes
+- **Next up:** multi-symbol SSE charts; remote plugin design; EN UI polish
+- **Blocked:** none
+
+---
+
 ## 2026-07-12 — v5.0.0 (overnight YOLO train)
 
 - **Shipped:** workspace-health, runbook, batch-review, weekly-ops, quote_cache, pro workstation docs, UI analytics panel, CI eval artifact

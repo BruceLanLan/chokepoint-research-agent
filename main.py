@@ -1347,11 +1347,17 @@ def quotes_cache_cmd(
     symbols: Optional[str] = typer.Option(None, "--symbols", help="Comma symbols to refresh"),
     history: Optional[str] = typer.Option(None, "--history", help="Symbol for history"),
     summary: bool = typer.Option(False, "--summary"),
+    from_watchlist: bool = typer.Option(False, "--from-watchlist"),
 ):
     """Local multi-symbol quote snapshot cache (research utility)."""
     _boot_env()
     from src.ops.quote_cache import history_summary, load_history, refresh_symbols
 
+    if from_watchlist:
+        from src.ops.coverage_refresh import refresh_watchlist_quotes
+
+        console.print(refresh_watchlist_quotes())
+        return
     if symbols:
         syms = [s.strip() for s in symbols.split(",") if s.strip()]
         console.print(refresh_symbols(syms))
@@ -1359,7 +1365,20 @@ def quotes_cache_cmd(
     if history:
         console.print(load_history(history, limit=50))
         return
-    console.print(history_summary() if summary or True else history_summary())
+    console.print(history_summary())
+
+
+@app.command("grade-memo")
+def grade_memo_cmd(report: str = typer.Argument(...)):
+    """Professional structure/evidence grade for one memo (not investment merit)."""
+    _boot_env()
+    from src.ops.memo_grade import grade_memo
+
+    out = grade_memo(report)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
 
 
 @app.command("quality-board")

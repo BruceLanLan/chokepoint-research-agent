@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.1.0 — 2026-07-12
+
+### Added
+- Watchlist quote refresh: `quotes-cache --from-watchlist`
+- Single-memo grade: `grade-memo`, `/grade/{name}`
+
+
 ## 5.0.0 — 2026-07-12
 
 Professional research workstation maturity cut (v4.8–v5.0).

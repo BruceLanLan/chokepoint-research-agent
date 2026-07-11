@@ -94,3 +94,24 @@ def test_batch_review_and_weekly(ws):
     pack = run_weekly_ops(save=True, enqueue_watchlist=0)
     assert "Workspace health" in pack["markdown"] or "health" in pack["markdown"].lower()
     assert pack.get("saved_path")
+
+
+def test_grade_memo_and_watchlist_refresh(ws):
+    from src.config import get_settings
+    from src.ops.coverage_refresh import refresh_watchlist_quotes
+    from src.ops.memo_grade import grade_memo
+    from src.ops.quote_cache import refresh_symbols
+    from src.ops.watchlist import add_item
+
+    p = Path(get_settings().reports_dir) / "g.md"
+    p.write_text(MD, encoding="utf-8")
+    g = grade_memo("g.md")
+    assert g["grade"] in set("ABCDF")
+    assert g["score"] >= 50
+    add_item(symbol="AAA", name="A")
+    # inject via refresh_symbols path used by coverage_refresh
+    out = refresh_symbols(["AAA"], fetch_fn=lambda s: {"symbol": s, "price": 9})
+    assert out["refreshed"] == 1
+    # watchlist refresh uses network/stub — must not crash
+    wr = refresh_watchlist_quotes(limit=5)
+    assert "refreshed" in wr

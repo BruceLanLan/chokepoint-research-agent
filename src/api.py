@@ -1226,12 +1226,30 @@ def api_quotes_cache_refresh(
     _check_access(x_api_key)
     from src.ops.quote_cache import refresh_symbols
 
+    if body.get("from_watchlist"):
+        from src.ops.coverage_refresh import refresh_watchlist_quotes
+
+        return refresh_watchlist_quotes(limit=int(body.get("limit") or 50))
     symbols = body.get("symbols") or []
     if isinstance(symbols, str):
         symbols = [s.strip() for s in symbols.split(",") if s.strip()]
     if not symbols:
-        raise HTTPException(400, "symbols required")
+        raise HTTPException(400, "symbols or from_watchlist required")
     return refresh_symbols(list(symbols))
+
+
+@app.get("/grade/{name}")
+def api_grade_memo(
+    name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.memo_grade import grade_memo
+
+    out = grade_memo(name)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
 
 
 @app.post("/watchlist/bulk")

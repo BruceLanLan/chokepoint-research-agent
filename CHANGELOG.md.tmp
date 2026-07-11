@@ -1,0 +1,8 @@
+# Changelog
+
+## 5.1.0 — 2026-07-12
+
+### Added
+- Watchlist quote refresh: `quotes-cache --from-watchlist`
+- Single-memo professional grade: `grade-memo`, `/grade/{name}`
+

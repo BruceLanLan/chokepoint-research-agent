@@ -67,7 +67,8 @@
 | **v4.7.0** | Local marketplace, live queue safety, quotes caps | **Shipped** |
 | **v4.8–v4.9** | Quote cache, workspace health, runbook, batch review | **Shipped** |
 | **v5.0.0** | Professional workstation maturity cut | **Shipped** |
-| v5.1 | Heavier realtime MD, optional remote plugin install | Future |
+| **v5.1.0** | Memo grade + watchlist quote refresh | **Shipped** |
+| v5.2 | Heavier realtime MD, optional remote plugins | Future |
 
 ---
 
