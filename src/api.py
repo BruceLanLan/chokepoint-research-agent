@@ -574,6 +574,37 @@ def auth_plugins(x_api_key: str | None = Header(default=None, alias="X-API-Key")
     return {"plugins": [p.name for p in build_auth_chain()]}
 
 
+@app.get("/skills")
+def api_skills(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.skills.loader import list_skill_packs
+
+    return {"items": list_skill_packs()}
+
+
+@app.get("/metrics")
+def api_metrics(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.pipeline.postprocess import metrics_summary
+
+    return metrics_summary()
+
+
+@app.post("/pipeline/postprocess")
+def api_postprocess(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    """Post-process markdown without LLM (charts + quality)."""
+    _check_access(x_api_key)
+    from src.pipeline.postprocess import postprocess_memo
+
+    md = body.get("markdown") or ""
+    title = body.get("title") or "memo"
+    mode = body.get("mode") or "full"
+    return postprocess_memo(title, md, mode=mode, embed_charts=True)
+
+
 @app.get("/charts/scorecard")
 def chart_scorecard(
     name: str,

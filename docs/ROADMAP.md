@@ -54,7 +54,9 @@
 | **v2.3** | Local TF-IDF memo search | **Shipped** |
 | **v2.4** | HKEX provider + quote SSE stream | **Shipped** |
 | **v2.5.0** | Polish, bilingual docs, tests | **Shipped** |
-| v3.0 | Realtime websockets, OIDC polish, plugin marketplace | Future |
+| **v2.6–v2.9** | Cache, postprocess, skills, mock-eval/CI | **Shipped** |
+| **v3.0.0** | Plugin SDK docs + maturity cut | **Shipped** |
+| v3.1 | Realtime websockets, plugin marketplace | Future |
 
 ---
 

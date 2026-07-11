@@ -25,6 +25,8 @@
 | [VERSIONS_1.1_to_1.20.md](./VERSIONS_1.1_to_1.20.md) | v1.1–v1.20 二十版本火车 |
 | [RELEASE_NOTES_2.0.md](./RELEASE_NOTES_2.0.md) | v2.0 定时任务 / PDF / A股公告 |
 | [RELEASE_NOTES_2.5.md](./RELEASE_NOTES_2.5.md) | v2.1–v2.5 路线图收官 |
+| [RELEASE_NOTES_3.0.md](./RELEASE_NOTES_3.0.md) | v2.6–v3.0 优化与插件 |
+| [PLUGIN_SDK.md](./PLUGIN_SDK.md) | 插件 SDK |
 
 ## 其他中文相关
 

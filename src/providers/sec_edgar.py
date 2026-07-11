@@ -31,10 +31,11 @@ class SecEdgarProvider:
         # Company tickers JSON is large but public; prefer ticker search first
         url = "https://www.sec.gov/files/company_tickers.json"
         try:
-            with httpx.Client(timeout=self.timeout, headers=self._headers) as client:
-                r = client.get(url)
-                r.raise_for_status()
-                data = r.json() or {}
+            from src.cache.http_cache import cached_get_json
+
+            data = cached_get_json(
+                url, headers=self._headers, ttl_seconds=86400, timeout=self.timeout
+            ) or {}
         except Exception as exc:  # noqa: BLE001
             return [{"error": f"SEC tickers fetch failed: {exc}"}]
 

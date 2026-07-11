@@ -1,0 +1,11 @@
+name: "电力 / 数据中心能源"
+description: "AI 电力、变压器、液冷、储能"
+tags: ["power", "datacenter", "cooling"]
+system_suffix: |
+  垂直领域：AI 数据中心电力与热管理。
+  优先检查：并网/变压器交期、配电架构、液冷 CDU、园区级冷源、备用电源。
+  将 Capex 叙事落到可交付物理设备与交期。
+focus_questions:
+  - 变压器/开关设备交期是否卡园区？
+  - 液冷渗透率与关键阀件/冷板供给？
+  - 电力成本与 PUE 对经济性影响？

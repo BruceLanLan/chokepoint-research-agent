@@ -59,6 +59,8 @@ def research(
     var: Optional[list[str]] = typer.Option(
         None, "--var", help="template var key=value (repeatable)"
     ),
+    skill: Optional[str] = typer.Option(None, "--skill", help="domain skill pack id"),
+    min_quality: int = typer.Option(0, "--min-quality", help="postprocess quality gate"),
 ):
     """Run multi-agent research (or render --template first)."""
     vars_list = list(var) if var else []
@@ -72,6 +74,8 @@ def research(
         export_all=export_all,
         template=template,
         var=vars_list,
+        skill=skill,
+        min_quality=min_quality,
     )
 
 
@@ -86,6 +90,8 @@ def _run_research(
     export_all: bool = False,
     template: Optional[str] = None,
     var: Optional[list[str]] = None,
+    skill: Optional[str] = None,
+    min_quality: int = 0,
 ) -> None:
     _boot_env()
     from src.config import get_settings
@@ -148,7 +154,7 @@ def _run_research(
     from src.schemas.scorecard import extract_scorecard_table, validate_report_structure
 
     settings.reports_dir.mkdir(parents=True, exist_ok=True)
-    agent = build_investment_agent(settings, mode=mode)  # type: ignore[arg-type]
+    agent = build_investment_agent(settings, mode=mode, skill=skill)  # type: ignore[arg-type]
     payload = {"messages": [{"role": "user", "content": question_for_agent}]}
 
     if stream:
@@ -158,16 +164,30 @@ def _run_research(
             result = agent.invoke(payload)
         final_text = extract_final_text(result)
 
-    quality = validate_report_structure(final_text)
-    card = extract_scorecard_table(final_text)
+    from src.pipeline.postprocess import postprocess_memo
+
+    pp = postprocess_memo(
+        question[:40], final_text, mode=mode, embed_charts=True, min_quality=min_quality
+    )
+    final_text = pp["markdown"]
+    quality = pp["quality"]
+    card_nodes = pp["scorecard_nodes"]
     console.print(Panel(Markdown(final_text), title="Research memo", border_style="green"))
     console.print(
-        f"[dim]quality={quality['score']} nodes={len(card.nodes)} urls={quality['url_count']}[/dim]"
+        f"[dim]quality={quality['score']} nodes={card_nodes} "
+        f"gate_ok={pp['gate_ok']} urls={quality['url_count']}[/dim]"
     )
+    if min_quality and not pp["gate_ok"]:
+        console.print(f"[yellow]Quality gate failed (min={min_quality})[/yellow]")
 
     from src.tools.resilience import get_cost_tracker
 
     cost = get_cost_tracker().summary()
+    if settings.max_tokens_budget and get_cost_tracker().over_budget(settings.max_tokens_budget):
+        console.print(
+            f"[yellow]Token budget exceeded "
+            f"(est={cost.get('total_tokens_est')} max={settings.max_tokens_budget})[/yellow]"
+        )
     console.print(f"[dim]cost_est={cost}[/dim]")
 
     if save and final_text:
@@ -181,7 +201,10 @@ def _run_research(
             from src.tools.export import export_report_bundle
 
             paths = export_report_bundle(
-                title=question[:40], markdown_body=final_text, mode=mode, extra={"cost": cost}
+                title=question[:40],
+                markdown_body=final_text,
+                mode=mode,
+                extra={"cost": cost, "postprocess": {"charts": pp.get("charts")}},
             )
             console.print(f"[green]Export: {paths}[/green]")
 
@@ -773,11 +796,51 @@ def chart(
         raise typer.Exit(2)
 
 
+@app.command()
+def skills():
+    """List domain skill packs."""
+    from src.skills.loader import list_skill_packs
+
+    for s in list_skill_packs():
+        console.print(f"[cyan]{s['id']}[/cyan]  {s['name']}\n  {s['description']}")
+
+
+@app.command("mock-eval")
+def mock_eval_cmd():
+    """Run offline mock research pipeline (no LLM)."""
+    from src.eval.mock_pipeline import run_mock_pipeline
+
+    r = run_mock_pipeline()
+    console.print(r)
+    if not r.get("ok"):
+        raise typer.Exit(1)
+
+
+@app.command()
+def metrics():
+    """Show postprocess metrics.jsonl summary."""
+    _boot_env()
+    from src.pipeline.postprocess import metrics_summary
+
+    console.print(metrics_summary())
+
+
+@app.command("clear-cache")
+def clear_cache_cmd():
+    """Clear HTTP disk cache (SEC tickers etc.)."""
+    _boot_env()
+    from src.cache.http_cache import clear_http_cache
+
+    n = clear_http_cache()
+    console.print(f"cleared {n} cache files")
+
+
 @app.command("version")
 def show_version():
     from src import __version__
+    from src.prompts.version import PROMPT_PACK_VERSION
 
-    console.print(f"chokepoint-research-agent {__version__}")
+    console.print(f"chokepoint-research-agent {__version__} (prompts {PROMPT_PACK_VERSION})")
 
 
 @app.callback(invoke_without_command=True)

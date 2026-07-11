@@ -90,6 +90,13 @@ python main.py pdf --file reports/xxx.md --title "投研备忘录"
 python main.py search-memos "卡脖子 Scorecard"
 python main.py chart scorecard --report xxx.md
 python main.py chart price --symbol 0700.HK --period 3mo
+
+# v3.0 技能包 / 后处理 / 离线评测
+python main.py skills
+python main.py research "CPO" --skill semiconductor --min-quality 50
+python main.py mock-eval
+python main.py metrics
+python main.py clear-cache
 ```
 
 ## 评测与版本

@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.0.0 — 2026-07-12
+
+Optimization wave to v3.0.
+
+### Added
+- HTTP disk cache for public data (SEC tickers)
+- Memo post-process pipeline (charts, citations metrics, quality gate)
+- Domain skill packs (semiconductor / robotics / energy_power)
+- Offline `mock-eval` + CI step
+- Plugin SDK docs + example provider
+- CLI: `skills`, `metrics`, `clear-cache`, `mock-eval`; research `--skill` / `--min-quality`
+
+### Changed
+- Research path auto post-processes memos before save/export
+- Roadmap marks v2.6–v3.0 shipped
+
 ## 2.5.0 — 2026-07-12
 
 Roadmap completion train (v2.1–v2.5).

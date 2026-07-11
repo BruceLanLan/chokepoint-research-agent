@@ -30,8 +30,17 @@ jobs:
 
       - name: Smoke check
         run: python scripts/smoke_check.py
+        env:
+          PYTHONPATH: .
 
       - name: Unit tests
         run: pytest -q
+        env:
+          PYTHONPATH: .
+
+      - name: Offline mock pipeline + golden eval
+        run: |
+          python -c "from src.eval.mock_pipeline import run_mock_pipeline; r=run_mock_pipeline(); assert r['ok'], r"
+          python main.py eval
         env:
           PYTHONPATH: .

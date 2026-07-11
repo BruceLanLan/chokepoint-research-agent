@@ -1,0 +1,12 @@
+name: "半导体 / 先进封装"
+description: "AI GPU 供应链、先进封装、HBM、光互联"
+tags: ["semiconductor", "HBM", "CPO", "packaging"]
+system_suffix: |
+  垂直领域：半导体与先进封装。
+  优先检查：制程/封装产能、HBM 供给、光进铜退、设备与材料卡点、出口管制。
+  对市占率与产能数字必须标注来源时间；区分设计公司 vs 代工 vs 设备 vs 材料。
+focus_questions:
+  - 先进封装（CoWoS 等）是否为当前瓶颈？
+  - HBM 供需与供应商集中度？
+  - CPO/可插拔光模块路径依赖？
+  - 出口管制影响哪些物理节点？

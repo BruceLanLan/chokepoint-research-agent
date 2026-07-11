@@ -55,6 +55,7 @@ def _mode_suffix(mode: Mode, bilingual: bool = False) -> str:
 def build_investment_agent(
     settings: Settings | None = None,
     mode: Mode | None = None,
+    skill: str | None = None,
 ):
     """Create the lead investment agent with specialist sub-agents.
 
@@ -65,7 +66,7 @@ def build_investment_agent(
     mode = mode or settings.research_mode
 
     try:
-        return _build_deep_agent(settings, mode=mode)
+        return _build_deep_agent(settings, mode=mode, skill=skill)
     except Exception as exc:  # noqa: BLE001
         print(f"[chokepoint-agent] deepagents unavailable ({exc}); using fallback orchestrator")
         from src.agents.fallback_orchestrator import build_fallback_agent
@@ -122,18 +123,22 @@ def _subagent_specs(max_s: int, mode: Mode) -> list[dict[str, Any]]:
     return [chokepoint, fundamental, news, macro, risk]
 
 
-def _build_deep_agent(settings: Settings, mode: Mode = "full"):
+def _build_deep_agent(settings: Settings, mode: Mode = "full", skill: str | None = None):
     from deepagents import create_deep_agent
 
     from src.agents.model import build_model
+    from src.skills.loader import skill_prompt_suffix
 
     model = build_model(settings)
     max_s = settings.max_searches_per_subagent
     max_c = settings.max_concurrent_subagents
 
     lead_prompt = _fmt(LEAD_ANALYST_PROMPT, max_concurrent=max_c) + _mode_suffix(
-        mode, bilingual=settings.bilingual_memo
+        mode, bilingual=settings.bilingual_memo or settings.report_language == "bilingual"
     )
+    if settings.report_language == "en":
+        lead_prompt += "\n# Language\nWrite the final memo primarily in English.\n"
+    lead_prompt += skill_prompt_suffix(skill)
     subagents = _subagent_specs(max_s, mode)
 
     return create_deep_agent(

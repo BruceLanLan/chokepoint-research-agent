@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**Mature research agent (v2.5.0)** powered by **Chokepoint Theory** — multi-agent research, SEC + multi-source A-share/HK news, async jobs, **scheduling**, **PDF**, **auth plugins**, **charts**, **memo search**. Not investment advice.
+**Mature research agent (v3.0.0)** powered by **Chokepoint Theory** — multi-agent research, filings, scheduling, PDF, auth, charts, memo search, **skill packs**, **post-process pipeline**, **plugin SDK**. Not investment advice.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
@@ -217,7 +217,14 @@ python main.py chart price --symbol NVDA --period 6mo
 # Auth: set API_ACCESS_KEY or API_BEARER_TOKEN or OIDC_* in .env
 ```
 
-Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v2.5 notes:** [`docs/RELEASE_NOTES_2.5.md`](docs/RELEASE_NOTES_2.5.md)
+```bash
+python main.py skills
+python main.py research "CPO 卡点" --skill semiconductor --mode chokepoint_fast --min-quality 50
+python main.py mock-eval
+python main.py metrics
+```
+
+Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v3.0 notes:** [`docs/RELEASE_NOTES_3.0.md`](docs/RELEASE_NOTES_3.0.md) · Plugins: [`docs/PLUGIN_SDK.md`](docs/PLUGIN_SDK.md)
 
 ---
 
