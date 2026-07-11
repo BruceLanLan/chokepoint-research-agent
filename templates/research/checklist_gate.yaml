@@ -1,0 +1,17 @@
+name: "发布前清单 / Pre-publish checklist"
+description: "结构门禁：结论、卡点、风险、kill criteria、来源"
+mode: risk_only
+bilingual: false
+question_template: |
+  请对以下草稿做「发布前清单」审查，逐项 YES/NO + 缺失项：
+  [ ] 一页纸结论是否清晰
+  [ ] 是否回答「谁是物理开关」
+  [ ] Scorecard 或等价排序是否存在
+  [ ] 事实与推断是否分开
+  [ ] kill criteria 是否可操作
+  [ ] 是否有 ≥2 个可点击来源
+  [ ] 是否出现荐股/收益承诺话术（应禁止）
+  草稿：
+  {{draft}}
+  仅供研究学习，不构成投资建议。
+notes: "变量：draft"

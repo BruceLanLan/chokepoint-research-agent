@@ -1,0 +1,8 @@
+{
+  "id": "peer_review_structure",
+  "question": "Peer review a chokepoint memo",
+  "min_quality": 45,
+  "require_scorecard": false,
+  "require_urls": 1,
+  "fixture_report": "## 1. 研究结论\n复审结论：需补充供给集中度证据后再定调。\n\n## 主要问题\n1. 路径依赖讨论不足\n2. 估值段缺少来源\n\n## 风险 / Kill criteria\nKill criteria: 主要客户公开推迟 CPO 导入超过 18 个月\n\n## 来源\nhttps://example.com/peer-review\n\n补充正文以满足长度门槛：独立第二意见应聚焦可证伪条件与数据缺口，而不是重复多头叙事。供应链 chokepoint 评分需要更多公开数据交叉验证。研究用途不构成投资建议。继续填充分析段落以保证结构评分稳定通过。"
+}

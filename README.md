@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**Mature research agent (v1.0.0-rc1)** powered by **Chokepoint Theory** — multi-agent synthesis, SEC filings, async jobs, coverage ops. Not mega-cap narrative chat.
+**Mature research agent (v1.20.0)** powered by **Chokepoint Theory** — multi-agent synthesis, SEC filings, async jobs, coverage ops, backup/diff/peer-review. Not mega-cap narrative chat.
 
 > *In this system, who is the silent, irreplaceable physical switch?*  
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
@@ -191,7 +191,7 @@ make server
 | Analytics | `analytics` | `/analytics` |
 | Providers | `providers` | `/providers` |
 
-Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · Release: [`docs/RELEASE_NOTES_1.0.md`](docs/RELEASE_NOTES_1.0.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
+Roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md) · **v1.1–v1.20 train:** [`docs/VERSIONS_1.1_to_1.20.md`](docs/VERSIONS_1.1_to_1.20.md) · EdgeOne: [`docs/edgeone.md`](docs/edgeone.md)
 
 ---
 

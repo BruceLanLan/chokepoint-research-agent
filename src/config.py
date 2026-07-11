@@ -47,6 +47,15 @@ class Settings(BaseSettings):
     export_html_json: bool = True
     bilingual_memo: bool = False
     max_tool_retries: int = Field(default=3, ge=1, le=6)
+    # Soft cost budget (estimated tokens); 0 = disabled
+    max_tokens_budget: int = Field(default=0, ge=0)
+    # Optional webhook for async job completion
+    webhook_url: str | None = None
+    # API rate limit
+    api_rate_limit: int = Field(default=120, ge=10, le=10000)
+    api_rate_window_seconds: int = Field(default=60, ge=10, le=3600)
+    # Report default language preference for prompts
+    report_language: Literal["zh", "en", "bilingual"] = "zh"
 
     def resolved_api_key(self) -> str:
         if self.model_provider == "anthropic":

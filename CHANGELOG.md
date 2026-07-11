@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.20.0 — 2026-07-11
+
+Twenty-version maturity train (v1.1–v1.20). See `docs/VERSIONS_1.1_to_1.20.md`.
+
+### Highlights
+- Report diff, watchlist CSV, thesis export, backup/restore
+- API rate limit + request id / version headers
+- Peer-review CLI, checklist template, token budget, webhooks
+- CN announcements provider, expanded golden evals
+- Bilingual docs for the full train
+
 ## 1.0.0-rc1 — 2026-07-11
 
 Mature research-agent RC.

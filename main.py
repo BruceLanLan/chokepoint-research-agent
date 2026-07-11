@@ -382,6 +382,23 @@ def watch_research(
     _run_research(question=research_question_for(item), mode=mode, save=True)
 
 
+@watch_app.command("export-csv")
+def watch_export_csv(path: str = typer.Option("watchlist.csv", "--path")):
+    _boot_env()
+    from src.ops.io_csv import export_watchlist_csv
+
+    export_watchlist_csv(path)
+    console.print(f"[green]exported {path}[/green]")
+
+
+@watch_app.command("import-csv")
+def watch_import_csv(path: str = typer.Argument(...)):
+    _boot_env()
+    from src.ops.io_csv import import_watchlist_csv
+
+    console.print(import_watchlist_csv(path))
+
+
 # ── thesis ────────────────────────────────────────────────────────────────
 
 
@@ -484,12 +501,86 @@ def server(
 
 
 @app.command()
-def analytics():
+def analytics(as_json: bool = typer.Option(False, "--json", help="machine-readable")):
     """Print workspace analytics (reports / watchlist / theses)."""
     _boot_env()
     from src.ops.analytics import workspace_analytics
 
-    console.print_json(json.dumps(workspace_analytics(), ensure_ascii=False))
+    data = workspace_analytics()
+    if as_json:
+        print(json.dumps(data, ensure_ascii=False))
+    else:
+        console.print_json(json.dumps(data, ensure_ascii=False))
+
+
+@app.command("diff-reports")
+def diff_reports_cmd(
+    a: str = typer.Argument(..., help="report filename A"),
+    b: str = typer.Argument(..., help="report filename B"),
+):
+    """Unified diff two saved memos."""
+    _boot_env()
+    from src.ops.report_diff import diff_reports
+
+    d = diff_reports(a, b)
+    if d.get("error"):
+        console.print(f"[red]{d['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(f"similarity ratio={d['ratio']}")
+    for line in d.get("udiff") or []:
+        console.print(line)
+
+
+@app.command()
+def backup(dest: str = typer.Option("", "--dest", help="output directory")):
+    """Zip backup of data/ (watchlist, theses, jobs, sessions)."""
+    _boot_env()
+    from pathlib import Path
+
+    from src.ops.backup import create_backup
+
+    out = create_backup(Path(dest) if dest else None)
+    console.print(out)
+
+
+@app.command()
+def restore(zip_path: str = typer.Argument(..., help="backup zip path")):
+    """Restore data/ from backup zip."""
+    _boot_env()
+    from src.ops.backup import restore_backup
+
+    console.print(restore_backup(zip_path))
+
+
+@app.command("export-theses")
+def export_theses_cmd(path: str = typer.Option("", "--path")):
+    """Export thesis registry to markdown."""
+    _boot_env()
+    from src.ops.thesis_export import export_theses_markdown
+
+    p = export_theses_markdown(path or None)
+    console.print(f"[green]{p}[/green]")
+
+
+@app.command("peer-review")
+def peer_review_cmd(
+    text: str = typer.Option("", "--text", help="inline text"),
+    file: str = typer.Option("", "--file", help="path to memo md"),
+    mode: str = typer.Option("risk_only", "--mode"),
+):
+    """Second-pass devil's advocate on a memo or thesis text."""
+    _boot_env()
+    from pathlib import Path
+
+    from src.ops.peer_review import peer_review_question
+
+    body = text
+    if file:
+        body = Path(file).read_text(encoding="utf-8")
+    if not body.strip():
+        console.print("[red]provide --text or --file[/red]")
+        raise typer.Exit(1)
+    _run_research(question=peer_review_question(body), mode=mode, save=True)
 
 
 @app.command("providers")

@@ -1,0 +1,8 @@
+{
+  "id": "sec_memo_structure",
+  "question": "US co with SEC filings in memo",
+  "min_quality": 50,
+  "require_scorecard": false,
+  "require_urls": 1,
+  "fixture_report": "## 1. 研究结论\n观望。需结合 10-K 风险因素。\n\n## 供应链 / chokepoint\n先进封装产能是潜在开关。\n\n## 风险与证伪条件\nKill criteria: 公司 10-K 显示主要客户集中度下降且无替代叙事\n\n## 来源\n[1] SEC filing: https://www.sec.gov/Archives/edgar/data/0000320193/000032019324000123/aapl-20240928.htm\n\n正文补充：监管文件引用应带 URL；数字必须可追溯。仅供研究学习，不构成投资建议。继续填充分析段落以通过结构长度检查。"
+}

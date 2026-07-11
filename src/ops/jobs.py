@@ -94,6 +94,12 @@ def submit_research_job(
             result = run_fn(question, mode)
             _update(job_id, status="completed", result=result)
             log.info("job %s completed", job_id)
+            try:
+                from src.ops.webhooks import notify_job_complete
+
+                notify_job_complete(get_job(job_id) or {"id": job_id, "status": "completed"})
+            except Exception:  # noqa: BLE001
+                pass
         except Exception as exc:  # noqa: BLE001
             log.exception("job %s failed", job_id)
             _update(
@@ -102,6 +108,12 @@ def submit_research_job(
                 error=str(exc),
                 traceback=traceback.format_exc()[-2000:],
             )
+            try:
+                from src.ops.webhooks import notify_job_complete
+
+                notify_job_complete(get_job(job_id) or {"id": job_id, "status": "failed"})
+            except Exception:  # noqa: BLE001
+                pass
 
     _executor.submit(_work)
     return job

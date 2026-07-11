@@ -49,6 +49,11 @@ class CostTracker:
             "note": "Estimates only — not vendor billing.",
         }
 
+    def over_budget(self, max_tokens: int) -> bool:
+        if not max_tokens or max_tokens <= 0:
+            return False
+        return (self.prompt_tokens_est + self.completion_tokens_est) >= max_tokens
+
 
 _GLOBAL_COST = CostTracker()
 

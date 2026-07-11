@@ -5,10 +5,11 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Release](https://img.shields.io/github/v/release/BruceLanLan/chokepoint-research-agent)](https://github.com/BruceLanLan/chokepoint-research-agent/releases)
 
-**English → [README.md](README.md)** · **当前版本 v1.0.0-rc1**
+**English → [README.md](README.md)** · **当前版本 v1.20.0**
 
-**成熟投研 Agent**：Chokepoint 多专家研究 + 覆盖/论点运营 + SEC 文件 + 异步任务 + 工作台统计。  
-**研究用途，非投资建议。**
+**成熟投研 Agent**：Chokepoint 多专家研究 + 覆盖/论点运营 + SEC + 异步任务 + 备份/diff/复审 + 统计。  
+**研究用途，非投资建议。**  
+版本火车：[docs/zh/VERSIONS_1.1_to_1.20.md](docs/zh/VERSIONS_1.1_to_1.20.md)
 
 > 在这个系统里，谁是那个沉默的、不可替代的物理开关？
 

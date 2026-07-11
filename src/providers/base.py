@@ -61,9 +61,11 @@ def get_registry() -> ProviderRegistry:
     if _REGISTRY is None:
         _REGISTRY = ProviderRegistry()
         # lazy default registrations
+        from src.providers.cn_announcements import CnAnnouncementProvider
         from src.providers.sec_edgar import SecEdgarProvider
         from src.providers.yahoo_market import YahooMarketProvider
 
         _REGISTRY.register_filings(SecEdgarProvider())
+        _REGISTRY.register_filings(CnAnnouncementProvider())
         _REGISTRY.register_market(YahooMarketProvider())
     return _REGISTRY

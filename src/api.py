@@ -49,6 +49,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# rate limit + request id (order: last added runs first)
+from src.api_middleware import RequestIdMiddleware, SimpleRateLimitMiddleware  # noqa: E402
+from src.config import get_settings as _gs  # noqa: E402
+
+_s0 = _gs()
+app.add_middleware(
+    SimpleRateLimitMiddleware,
+    max_requests=_s0.api_rate_limit,
+    window_seconds=_s0.api_rate_window_seconds,
+)
+app.add_middleware(RequestIdMiddleware)
 if STATIC_DIR.is_dir():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
