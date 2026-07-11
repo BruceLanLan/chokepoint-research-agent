@@ -1270,6 +1270,73 @@ def quality_board_cmd(limit: int = typer.Option(30, "--limit")):
     console.print(quality_leaderboard(limit=limit))
 
 
+@app.command("digest")
+def digest_cmd(
+    save: bool = typer.Option(True, "--save/--no-save"),
+):
+    """Offline workspace digest (no LLM)."""
+    _boot_env()
+    from src.ops.digest import build_workspace_digest
+
+    out = build_workspace_digest(save=save)
+    console.print(out.get("markdown"))
+    if out.get("saved_path"):
+        console.print(f"[green]Saved: {out['saved_path']}[/green]")
+
+
+@app.command("compare-maps")
+def compare_maps_cmd(
+    a: str = typer.Argument(..., help="Map id A"),
+    b: str = typer.Argument(..., help="Map id B"),
+):
+    """Compare two knowledge maps (label overlap)."""
+    from src.ops.map_compare import compare_maps
+
+    out = compare_maps(a, b)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
+
+
+@app.command("hypothesis")
+def hypothesis_cmd(
+    add: Optional[str] = typer.Option(None, "--add", help="Hypothesis statement"),
+    system: str = typer.Option("", "--system"),
+    list_all: bool = typer.Option(False, "--list"),
+    promote: Optional[str] = typer.Option(None, "--promote", help="Hypothesis id → thesis"),
+    status: Optional[str] = typer.Option(None, "--status", help="Filter list by status"),
+):
+    """Research hypotheses scratchpad (pre-thesis)."""
+    _boot_env()
+    from src.ops.hypotheses import (
+        add_hypothesis,
+        list_hypotheses,
+        promote_to_thesis,
+    )
+
+    if add:
+        console.print(add_hypothesis(add, system=system))
+        return
+    if promote:
+        console.print(promote_to_thesis(promote))
+        return
+    console.print(list_hypotheses(status=status) if list_all or status or True else [])
+
+
+@app.command("enrich-report")
+def enrich_report_cmd(report: str = typer.Argument(...)):
+    """Rewrite frontmatter with quality + auto tags."""
+    _boot_env()
+    from src.ops.report_frontmatter import enrich_report_frontmatter
+
+    out = enrich_report_frontmatter(report)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
+
+
 @app.command("version")
 def show_version():
     from src import __version__

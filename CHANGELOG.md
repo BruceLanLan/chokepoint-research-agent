@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.5.0 — 2026-07-12
+
+### Added
+- Offline **workspace digest** (`digest`, `/digest`)
+- **Knowledge map compare** (`compare-maps`, `/maps/compare`)
+- **Hypotheses** scratchpad → promote to thesis (`hypothesis`, `/hypotheses`)
+- **Report frontmatter enrich** with quality + tags (`enrich-report`, `/reports/{name}/enrich`)
+- UI Ops: workspace digest button
+
 ## 4.4.0 — 2026-07-12
 
 ### Added

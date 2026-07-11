@@ -62,7 +62,8 @@
 | **v4.2.0** | Knowledge maps, cost dashboard, brief process health | **Shipped** |
 | **v4.3.0** | FTS memo index + research queue | **Shipped** |
 | **v4.4.0** | Queue worker, export pack, auto-tag, thesis health, catalog | **Shipped** |
-| v4.5 | Remote plugin marketplace, heavier realtime MD | Future |
+| **v4.5.0** | Workspace digest, map compare, hypotheses, enrich frontmatter | **Shipped** |
+| v4.6 | Remote plugin marketplace, heavier realtime MD | Future |
 
 ---
 

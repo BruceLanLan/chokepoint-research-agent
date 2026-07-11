@@ -188,6 +188,7 @@
         <button class="btn sec" id="o-thealth">Thesis health</button>
         <button class="btn sec" id="o-pcat">Plugin catalog</button>
       </div>
+      <button class="btn sec" id="o-digest">Workspace digest</button>
       <button class="btn" id="o-snap">Workspace snapshot (zip)</button>
       <div style="margin-top:10px"><img id="o-covimg" alt="coverage" style="max-width:100%;background:#0a0e17;border-radius:8px;display:none"/></div>
       <pre id="o-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto;margin-top:12px"></pre>
@@ -386,6 +387,8 @@ $("o-qrun").onclick=async()=>{ showOps(await jpost("/queue/run",{n:1, live:false
 $("o-thealth").onclick=async()=>{ showOps(await jget("/thesis-health")); };
 $("o-pcat").onclick=async()=>{ showOps(await jget("/plugin-catalog")); };
 $("o-snap").onclick=async()=>{ showOps(await jpost("/snapshot",{})); };
+// digest button if present later
+if($("o-digest")) $("o-digest").onclick=async()=>{ showOps(await jget("/digest")); };
 
 // initial loads
 loadWatch().catch(()=>{}); loadTheses().catch(()=>{}); loadReports().catch(()=>{}); loadTpl().catch(()=>{});

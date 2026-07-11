@@ -923,6 +923,22 @@ def api_maps(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
     return {"items": list_maps()}
 
 
+@app.get("/maps/compare")
+def api_compare_maps(
+    a: str,
+    b: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    """Static path must be registered before /maps/{map_id}."""
+    _check_access(x_api_key)
+    from src.ops.map_compare import compare_maps
+
+    out = compare_maps(a, b)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
 @app.get("/maps/{map_id}")
 def api_map_detail(
     map_id: str,
@@ -1126,6 +1142,66 @@ def api_quality_board(
     from src.ops.quality_board import quality_leaderboard
 
     return quality_leaderboard(limit=limit)
+
+
+@app.get("/digest")
+def api_digest(
+    save: bool = False,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.digest import build_workspace_digest
+
+    return build_workspace_digest(save=save)
+
+
+@app.get("/hypotheses")
+def api_hypotheses(
+    status: str | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.hypotheses import list_hypotheses
+
+    return {"items": list_hypotheses(status=status)}
+
+
+@app.post("/hypotheses")
+def api_hypothesis_write(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.hypotheses import add_hypothesis, promote_to_thesis
+
+    if body.get("promote"):
+        out = promote_to_thesis(body["promote"])
+        if out.get("error"):
+            raise HTTPException(404, out["error"])
+        return out
+    statement = body.get("statement") or ""
+    if not statement:
+        raise HTTPException(400, "statement or promote required")
+    return add_hypothesis(
+        statement,
+        system=body.get("system") or "",
+        evidence_needed=body.get("evidence_needed"),
+        related_thesis_id=body.get("related_thesis_id"),
+    )
+
+
+@app.post("/reports/{name}/enrich")
+def api_enrich_report(
+    name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.report_frontmatter import enrich_report_frontmatter
+
+    out = enrich_report_frontmatter(name)
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
 
 
 @app.websocket("/ws/quotes")
