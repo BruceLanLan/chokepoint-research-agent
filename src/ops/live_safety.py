@@ -84,3 +84,42 @@ def assert_live_allowed(*, flag: bool = False) -> dict[str, Any]:
         "Re-run with --i-accept-live-costs or set CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1. "
         "Prefer: python main.py queue --run N  (mock, free)."
     )
+
+
+def live_tests_enabled(
+    *,
+    env_var: str = "CHOKEPOINT_RUN_LIVE_TESTS",
+) -> bool:
+    """True only when operator explicitly opted into live integration tests."""
+    val = (os.environ.get(env_var) or "").strip().lower()
+    return val in {"1", "true", "yes", "on"}
+
+
+def browser_tests_enabled(
+    *,
+    env_var: str = "CHOKEPOINT_UI_BROWSER",
+) -> bool:
+    """True when optional Playwright UI browser smoke is requested."""
+    val = (os.environ.get(env_var) or "").strip().lower()
+    return val in {"1", "true", "yes", "on"}
+
+
+def live_gate_status() -> dict[str, Any]:
+    """Snapshot of live / browser gates for doctor, health, and docs."""
+    return {
+        "live_costs_accepted": live_costs_accepted(flag=False),
+        "live_tests_enabled": live_tests_enabled(),
+        "browser_tests_enabled": browser_tests_enabled(),
+        "env": {
+            "CHOKEPOINT_I_ACCEPT_LIVE_COSTS": "set to 1 to allow live queue/research burns",
+            "CHOKEPOINT_RUN_LIVE_TESTS": "set to 1 to run live integration tests (also needs cost accept + keys)",
+            "CHOKEPOINT_UI_BROWSER": "set to 1 to run optional Playwright UI smoke",
+        },
+        "prefer_offline": [
+            "python main.py research --mock -V cpo_optics",
+            "python main.py demo-journey -V cpo_optics",
+            "python main.py queue --run 1",
+            "pytest -q",
+        ],
+        "disclaimer": "research_only_not_investment_advice",
+    }

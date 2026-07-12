@@ -78,7 +78,8 @@
 | **v8.1.0** | Vertical packs wired into research/desk/suite/UI (use deep, not broad) | **Shipped** |
 | **v8.2.0** | 20-round review: mock research, demo-journey, template/UI fixes | **Shipped** |
 | **v8.3.0** | vertical_id frontmatter; doctor config/ops scores; catalog depth | **Shipped** |
-| v8.x | Live-gated integration suite; optional Playwright | Future |
+| **v8.4.0** | Live env gates + UI smoke (TestClient / optional Playwright) | **Shipped** |
+| v8.x | Optional full live memo integration; coverage-driven verticals only | Future |
 
 ---
 

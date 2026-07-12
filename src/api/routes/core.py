@@ -97,9 +97,18 @@ def register(app: FastAPI) -> None:
     @app.get("/health")
     def health():
         d = run_doctor()
+        from src.ops.live_safety import live_gate_status
+
+        cfg = d.get("config") or {}
+        ops = d.get("ops") or {}
         return {
-            "status": "ok" if d["ok"] else "degraded",
+            "status": "ok" if d.get("ok") else "degraded",
             "version": __version__,
+            "live_ready": d.get("live_ready"),
+            "ops_ok": d.get("ops_ok"),
+            "config": {"score": cfg.get("score"), "grade": cfg.get("grade")},
+            "ops": {"score": ops.get("score"), "grade": ops.get("grade")},
+            "gates": live_gate_status(),
             "doctor": d,
             "disclaimer": "research/education only — not investment advice",
         }

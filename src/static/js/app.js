@@ -113,14 +113,27 @@
     try {
       const h = await api("/health");
       if (pill) {
-        pill.textContent = h.status === "ok" ? `OK · v${h.version || "?"}` : "DEGRADED";
-        pill.classList.toggle("bad", h.status !== "ok");
-        pill.classList.add("ok");
+        const cfg = (h.config && h.config.grade) || "?";
+        const ops = (h.ops && h.ops.grade) || "?";
+        const live = h.live_ready ? "live" : "ops";
+        if (h.status === "ok") {
+          pill.textContent = `OK · ${live} · cfg ${cfg}/ops ${ops} · v${h.version || "?"}`;
+          pill.classList.remove("bad");
+          pill.classList.add("ok");
+        } else {
+          pill.textContent = `DEGRADED · cfg ${cfg}/ops ${ops}`;
+          pill.classList.add("bad");
+          pill.classList.remove("ok");
+        }
+        pill.title = h.live_ready
+          ? "Live research ready (keys present)"
+          : "Ops healthy offline — use mock research or set API keys for live";
       }
     } catch (e) {
       if (pill) {
         pill.textContent = "OFFLINE";
         pill.classList.add("bad");
+        pill.classList.remove("ok");
       }
     }
   }

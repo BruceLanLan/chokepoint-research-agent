@@ -1,5 +1,22 @@
 # Changelog
 
+## 8.4.0 — 2026-07-12
+
+### Added
+- Live gates: `live_tests_enabled`, `browser_tests_enabled`, `live_gate_status()`
+- Opt-in **live** tests (`@pytest.mark.live`) + `scripts/live_smoke.py` (fail-closed)
+- Offline **UI smoke** `scripts/ui_smoke.py` (TestClient); optional Playwright via `.[ui]` + `CHOKEPOINT_UI_BROWSER=1`
+- `GET /health` surfaces config/ops grades, `live_ready`, `gates`
+- Docs: `docs/LIVE_AND_UI_SMOKE.md`
+- Makefile: `ui-smoke`, `live-smoke`; CI runs ui-smoke + excludes live/browser markers
+
+### Changed
+- Health pill shows cfg/ops grades and live vs ops mode
+
+### Tests
+- 153 passed, 2 skipped (opt-in live/browser)
+
+
 ## 8.3.0 — 2026-07-12
 
 ### Added

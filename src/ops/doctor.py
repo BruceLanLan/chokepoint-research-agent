@@ -212,6 +212,13 @@ def run_doctor() -> dict[str, Any]:
     errors = sum(1 for c in checks if not c["ok"] and c["level"] == "error")
     warns = sum(1 for c in checks if not c["ok"] and c["level"] == "warn")
 
+    try:
+        from src.ops.live_safety import live_gate_status
+
+        gates = live_gate_status()
+    except Exception:  # noqa: BLE001
+        gates = {}
+
     return {
         "ok": errors == 0,  # soft: tavily is warn so often True without Tavily
         "live_ready": live_ready,
@@ -220,10 +227,12 @@ def run_doctor() -> dict[str, Any]:
         "warnings": warns,
         "config": config,
         "ops": ops,
+        "gates": gates,
         "checks": checks,
         "hint": (
             "Use doctor --ops-only for process surface; "
-            "research --mock without keys; set MODEL + TAVILY for live research."
+            "research --mock without keys; set MODEL + TAVILY for live research. "
+            "Live tests: CHOKEPOINT_RUN_LIVE_TESTS=1 + CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1."
         ),
         "disclaimer": "research_only_not_investment_advice",
     }

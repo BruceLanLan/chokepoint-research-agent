@@ -33,8 +33,13 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: UI smoke (offline TestClient)
+        run: python scripts/ui_smoke.py
+        env:
+          PYTHONPATH: .
+
       - name: Unit tests
-        run: pytest -q
+        run: pytest -q -m "not live and not browser"
         env:
           PYTHONPATH: .
 

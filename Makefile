@@ -1,22 +1,28 @@
-.PHONY: help install check test smoke server clean eval
+.PHONY: help install check test smoke ui-smoke live-smoke server clean eval
 
 help:
 	@echo "Targets:"
-	@echo "  make install  - create venv + install deps"
-	@echo "  make check    - smoke + unit tests (no live API required)"
-	@echo "  make smoke    - structure smoke check"
-	@echo "  make test     - pytest"
-	@echo "  make eval     - golden structure eval harness"
-	@echo "  make server   - run FastAPI on :8000"
-	@echo "  make clean    - remove caches"
+	@echo "  make install     - create venv + install deps"
+	@echo "  make check       - smoke + ui-smoke + unit tests + eval (offline)"
+	@echo "  make smoke       - structure smoke check"
+	@echo "  make ui-smoke    - workstation UI smoke (TestClient; no LLM)"
+	@echo "  make test        - pytest (offline; live/browser markers skip)"
+	@echo "  make eval        - golden structure eval harness"
+	@echo "  make live-smoke  - REFUSES unless live env gates set"
+	@echo "  make server      - run FastAPI on :8000"
+	@echo "  make clean       - remove caches"
 
 install:
 	python3.11 -m venv .venv || python3 -m venv .venv
 	. .venv/bin/activate && pip install -U pip && pip install -r requirements.txt && pip install -e ".[dev]"
 	@echo "Copy .env.example → .env and fill keys"
+	@echo "Optional UI browser: pip install -e '.[ui]' && playwright install chromium"
 
 smoke:
 	python scripts/smoke_check.py
+
+ui-smoke:
+	python scripts/ui_smoke.py
 
 test:
 	pytest -q
@@ -24,7 +30,10 @@ test:
 eval:
 	python main.py eval
 
-check: smoke test eval
+check: smoke ui-smoke test eval
+
+live-smoke:
+	python scripts/live_smoke.py
 
 server:
 	python main.py --server

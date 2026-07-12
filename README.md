@@ -11,7 +11,7 @@
 
 | | |
 |---|---|
-| **Version** | **8.3.0** |
+| **Version** | **8.4.0** |
 | **Language** | Python ≥ 3.11 |
 | **License** | MIT |
 | **中文文档** | [README.zh-CN.md](README.zh-CN.md) · [docs/zh/](docs/zh/README.md) |
@@ -326,6 +326,8 @@ TAVILY_API_KEY=tvly-...
 | `MAX_TOKENS_BUDGET` | Soft token budget |
 | `WEBHOOK_URL` | Async job completion webhook |
 | `CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1` | Allow live LLM queue runs |
+| `CHOKEPOINT_RUN_LIVE_TESTS=1` | Opt-in live integration tests / `live_smoke` |
+| `CHOKEPOINT_UI_BROWSER=1` | Opt-in Playwright UI smoke |
 
 Sanitized dump (no secret values): `python main.py config-show`
 
@@ -523,6 +525,7 @@ chokepoint-research-agent/
 | [docs/REMOTE_PLUGIN_DESIGN.md](docs/REMOTE_PLUGIN_DESIGN.md) | Future remote plugins (design only) |
 | [docs/VERSIONS_5.2_to_5.51.md](docs/VERSIONS_5.2_to_5.51.md) | 50-module train |
 | [docs/AUTONOMOUS_SETUP.md](docs/AUTONOMOUS_SETUP.md) | Unattended agent runs |
+| [docs/LIVE_AND_UI_SMOKE.md](docs/LIVE_AND_UI_SMOKE.md) | Live gates & UI smoke (offline-first) |
 | [docs/zh/README.md](docs/zh/README.md) | Chinese docs hub |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [DISCLAIMER.md](DISCLAIMER.md) · [SECURITY.md](SECURITY.md) | Legal / security |
@@ -532,7 +535,10 @@ chokepoint-research-agent/
 ## 15. Development & testing
 
 ```bash
-.venv/bin/python -m pytest tests/ -q
+make check                              # smoke + ui-smoke + pytest + eval
+.venv/bin/python -m pytest tests/ -q -m "not live and not browser"
+python scripts/ui_smoke.py              # workstation UI offline
+# Live (refuses without env): CHOKEPOINT_RUN_LIVE_TESTS=1 CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1 make live-smoke
 python main.py mock-eval
 python main.py eval
 python main.py pro-suite --text "system chokepoint kill https://example.com"

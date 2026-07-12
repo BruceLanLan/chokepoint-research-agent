@@ -15,9 +15,16 @@
 
 ## Next up (edit as you go)
 
-- [ ] Optional: Playwright browser smoke (optional dep)
-- [ ] Live-gated integration tests behind explicit env
+- [ ] Optional: full live research memo test behind triple gate (still avoid by default)
 - [ ] Keep offline tests green; weekly ritual desk + demo-journey + doctor scores
+
+---
+
+## 2026-07-12 — v8.4.0 live gates + UI smoke
+
+- **Shipped:** live/browser env gates, live_smoke fail-closed, ui_smoke TestClient + optional Playwright, health dual grades, CI offline-only
+- **Tests:** 153 passed / 2 skipped opt-in
+- **Blocked:** none
 
 ---
 

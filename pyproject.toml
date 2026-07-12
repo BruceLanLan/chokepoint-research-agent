@@ -1,6 +1,6 @@
 [project]
 name = "chokepoint-research-agent"
-version = "8.3.0"
+version = "8.4.0"
 description = "Multi-agent investment research agent powered by Chokepoint Theory (bottom-up supply-chain reverse engineering)"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -55,6 +55,10 @@ dev = [
   "pytest>=8.0",
   "ruff>=0.6.0",
 ]
+ui = [
+  "playwright>=1.40.0",
+  "httpx>=0.27.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/BruceLanLan/chokepoint-research-agent"
@@ -77,6 +81,10 @@ include = ["src*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+  "live: opt-in live integration (CHOKEPOINT_RUN_LIVE_TESTS=1 + cost accept)",
+  "browser: opt-in Playwright UI smoke (CHOKEPOINT_UI_BROWSER=1)",
+]
 
 [tool.ruff]
 line-length = 100
