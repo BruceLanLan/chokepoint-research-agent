@@ -1,5 +1,78 @@
 # Changelog
 
+## 10.0.0 — 2026-07-12
+
+**Milestone: Chokepoint Research Workstation 1.0**
+
+Consolidates the v8.7–v9.5 train into a stable major surface for coverage ops.
+
+### Highlights
+- Golden path offline ritual (`golden-path` CLI + `POST /golden-path`)
+- Vertical coverage dashboard + weekly-ops integration
+- Compare pack export + thesis review linking
+- Queue enqueue by vertical scaffold
+- `/capabilities` product snapshot; UI golden path / coverage / compare export; Alt+tab hotkeys
+- 167 offline tests green
+
+See `docs/RELEASE_NOTES_10.0.md`.
+
+
+## 9.5.0 — 2026-07-12
+
+### Added
+- Desk: Golden path + Vertical coverage buttons
+- Reports: export compare pack from UI
+- Keyboard: Alt+D/R/W/T/P/O tab jumps
+
+
+## 9.4.0 — 2026-07-12
+
+### Added
+- `GET /capabilities` and richer `GET /about` via `workstation_capabilities()`
+
+
+## 9.3.0 — 2026-07-12
+
+### Added
+- Desk embeds `vertical_coverage` brief + next actions for pairs/compare
+
+
+## 9.2.0 — 2026-07-12
+
+### Added
+- `weekly-ops` markdown section: vertical coverage rows + actions
+
+
+## 9.1.0 — 2026-07-12
+
+### Added
+- `enqueue_vertical` + API `POST /queue` with `vertical` / `vertical_id`
+
+
+## 9.0.0 — 2026-07-12
+
+### Added
+- `golden-path` CLI + service: doctor → desk → coverage → demo ×2 → compare export
+
+
+## 8.9.0 — 2026-07-12
+
+### Added
+- `vertical_coverage` dashboard (`vertical-coverage` CLI, `GET /verticals/coverage`)
+
+
+## 8.8.0 — 2026-07-12
+
+### Added
+- `link_compare_to_thesis` / `append_review_note`; CLI `--thesis-id` on compare-vertical
+
+
+## 8.7.0 — 2026-07-12
+
+### Added
+- Compare pack export (`compare_export`, `POST /reports/compare/export`, CLI `--export`)
+
+
 ## 8.6.0 — 2026-07-12
 
 ### Added

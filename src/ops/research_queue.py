@@ -46,6 +46,7 @@ def enqueue(
     *,
     mode: str = "chokepoint_fast",
     skill: str | None = None,
+    vertical: str | None = None,
     priority: int = 50,
     source: str = "manual",
 ) -> dict[str, Any]:
@@ -55,6 +56,7 @@ def enqueue(
         "question": question.strip(),
         "mode": mode,
         "skill": skill,
+        "vertical_id": vertical,
         "priority": int(priority),
         "status": "queued",
         "source": source,
@@ -66,6 +68,29 @@ def enqueue(
     data.setdefault("items", []).append(item)
     _save(data)
     return item
+
+
+def enqueue_vertical(
+    vertical_id: str,
+    *,
+    system: str = "",
+    context: str = "",
+    priority: int = 30,
+) -> dict[str, Any]:
+    """Enqueue a scaffolded research question for a deep vertical pack."""
+    from src.ops.pro.verticals import scaffold_research_question
+
+    sc = scaffold_research_question(vertical_id, system=system, context=context)
+    if sc.get("error"):
+        raise KeyError(sc["error"])
+    return enqueue(
+        sc["question"],
+        mode=sc.get("mode") or "chokepoint_fast",
+        skill=sc.get("suggested_skill"),
+        vertical=vertical_id,
+        priority=priority,
+        source=f"vertical:{vertical_id}",
+    )
 
 
 def enqueue_from_watchlist(limit: int = 10) -> list[dict[str, Any]]:

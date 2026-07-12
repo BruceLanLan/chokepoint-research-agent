@@ -15,8 +15,17 @@
 
 ## Next up (edit as you go)
 
-- [ ] Optional: full live research memo pytest behind RUN_LIVE + cost accept + keys
-- [ ] Keep offline tests green; weekly ritual desk + demo-journey + compare-vertical
+- [ ] 10.x: optional live memo pytest (triple gate); Playwright when needed
+- [ ] Coverage-driven 6th vertical only if watchlist demands
+- [ ] Keep offline tests green; weekly: golden-path + compare-vertical
+
+---
+
+## 2026-07-12 — v10.0.0 workstation milestone
+
+- **Shipped train:** 8.7 compare export · 8.8 thesis link · 8.9 coverage · 9.0 golden-path · 9.1–9.5 queue/weekly/desk/capabilities/UI · 10.0 cut
+- **Tests:** 167 passed / 2 skipped
+- **Blocked:** none
 
 ---
 

@@ -239,6 +239,27 @@
         toast(e.message);
       }
     });
+    $("#desk-golden")?.addEventListener("click", async () => {
+      try {
+        toast("Golden path running…");
+        const r = await api("/golden-path", {
+          method: "POST",
+          body: JSON.stringify({ vertical: "cpo_optics", save: true, compare_seed: true }),
+        });
+        setOut($("#desk-out"), r);
+        toast("Golden path complete");
+        loadDesk();
+      } catch (e) {
+        toast(e.message);
+      }
+    });
+    $("#desk-vcov")?.addEventListener("click", async () => {
+      try {
+        setOut($("#desk-out"), await api("/verticals/coverage"));
+      } catch (e) {
+        toast(e.message);
+      }
+    });
   }
 
   /* ── Research ─────────────────────────────────────────────── */
@@ -802,6 +823,27 @@
     });
     $("#r-cmp-run")?.addEventListener("click", () => runReportCompare("pair"));
     $("#r-cmp-latest")?.addEventListener("click", () => runReportCompare("latest"));
+    $("#r-cmp-export")?.addEventListener("click", async () => {
+      try {
+        const a = ($("#r-cmp-a")?.value || "").trim();
+        const b = ($("#r-cmp-b")?.value || "").trim();
+        const vid = ($("#r-vertical")?.value || "").trim();
+        const body = { export: true, udiff: true };
+        if (a && b) {
+          body.a = a;
+          body.b = b;
+        } else if (vid) {
+          body.vertical_id = vid;
+        } else {
+          return toast("Pick A/B or a vertical filter");
+        }
+        const data = await api("/reports/compare", { method: "POST", body: JSON.stringify(body) });
+        setOut($("#r-out"), data.export || data);
+        toast("Compare pack exported");
+      } catch (e) {
+        toast(e.message);
+      }
+    });
   }
 
   /* ── Templates ────────────────────────────────────────────── */
@@ -1125,9 +1167,33 @@
     setInterval(pingHealth, 60000);
   }
 
+  function initHotkeys() {
+    document.addEventListener("keydown", (e) => {
+      if (e.target && ["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
+      if (!e.altKey) return;
+      const map = {
+        d: "desk",
+        r: "research",
+        w: "watch",
+        t: "thesis",
+        p: "reports",
+        o: "ops",
+      };
+      const tab = map[e.key.toLowerCase()];
+      if (tab) {
+        e.preventDefault();
+        switchTab(tab);
+      }
+    });
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
+    document.addEventListener("DOMContentLoaded", () => {
+      boot();
+      initHotkeys();
+    });
   } else {
     boot();
+    initHotkeys();
   }
 })();

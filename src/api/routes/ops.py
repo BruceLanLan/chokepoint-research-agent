@@ -252,13 +252,23 @@ def register(app: FastAPI) -> None:
             return {"items": enqueue_from_watchlist(limit=int(body.get("limit") or 10))}
         if body.get("from_map"):
             return enqueue_from_map(body["from_map"])
+        if body.get("vertical") or body.get("vertical_id"):
+            from src.ops.research_queue import enqueue_vertical
+
+            return enqueue_vertical(
+                str(body.get("vertical") or body.get("vertical_id")),
+                system=str(body.get("system") or ""),
+                context=str(body.get("context") or ""),
+                priority=int(body.get("priority") or 30),
+            )
         q = body.get("question") or ""
         if not q:
-            raise HTTPException(400, "question or from_watchlist/from_map required")
+            raise HTTPException(400, "question or from_watchlist/from_map/vertical required")
         return enqueue(
             q,
             mode=body.get("mode") or "chokepoint_fast",
             skill=body.get("skill"),
+            vertical=body.get("vertical") or body.get("vertical_id"),
             priority=int(body.get("priority") or 50),
         )
 

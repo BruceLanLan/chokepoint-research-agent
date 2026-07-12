@@ -47,6 +47,26 @@ def run_weekly_ops(
     if enqueued:
         md.append(f"- enqueued from watchlist: {len(enqueued)}\n")
 
+    vertical_cov = None
+    try:
+        from src.ops.vertical_coverage import vertical_coverage_dashboard
+
+        vertical_cov = vertical_coverage_dashboard()
+        md.append("\n## Vertical coverage\n\n")
+        md.append(
+            f"- packs with memos: {vertical_cov.get('with_memos')}/"
+            f"{vertical_cov.get('packs')}  pairs: {vertical_cov.get('with_pairs')}\n"
+        )
+        for row in (vertical_cov.get("rows") or [])[:8]:
+            md.append(
+                f"- `{row.get('vertical_id')}` memos={row.get('memo_count')} "
+                f"avg_q={row.get('avg_quality')}\n"
+            )
+        for a in (vertical_cov.get("next_actions") or [])[:4]:
+            md.append(f"- action: {a}\n")
+    except Exception:  # noqa: BLE001
+        vertical_cov = None
+
     body = "".join(md)
     path = None
     if save:
@@ -64,6 +84,12 @@ def run_weekly_ops(
             "gate_pass_rate": review.get("gate_pass_rate"),
         },
         "enqueued": len(enqueued),
+        "vertical_coverage": {
+            "with_memos": (vertical_cov or {}).get("with_memos"),
+            "with_pairs": (vertical_cov or {}).get("with_pairs"),
+        }
+        if vertical_cov
+        else None,
         "saved_path": path,
         "markdown": body,
         "disclaimer": "research_only_not_investment_advice",

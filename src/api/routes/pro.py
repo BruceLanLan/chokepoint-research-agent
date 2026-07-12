@@ -53,6 +53,28 @@ from src.api.deps import (
 
 def register(app: FastAPI) -> None:
     """Register pro routes."""
+    @app.get("/verticals/coverage")
+    def api_vertical_coverage(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+        _check_access(x_api_key)
+        from src.ops.vertical_coverage import vertical_coverage_dashboard
+
+        return vertical_coverage_dashboard()
+
+    @app.post("/golden-path")
+    def api_golden_path(
+        body: dict | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.golden_path import run_golden_path
+
+        body = body or {}
+        return run_golden_path(
+            vertical=str(body.get("vertical") or "cpo_optics"),
+            save_demo=bool(body.get("save", True)),
+            include_compare_seed=bool(body.get("compare_seed", True)),
+        )
+
     @app.get("/pro/verticals")
     def api_pro_verticals(
         full: bool = True,

@@ -462,6 +462,36 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(2)
         console.print(compare_memos(names))
 
+    @app.command("golden-path")
+    def golden_path_cmd(
+        vertical: str = typer.Option("cpo_optics", "--vertical", "-V"),
+        no_save: bool = typer.Option(False, "--no-save"),
+        no_compare: bool = typer.Option(False, "--no-compare-seed"),
+    ):
+        """Offline golden path: doctor → desk → coverage → demo → compare pack."""
+        _boot_env()
+        from src.ops.golden_path import run_golden_path
+
+        out = run_golden_path(
+            vertical=vertical,
+            save_demo=not no_save,
+            include_compare_seed=not no_compare,
+        )
+        console.print(out.get("summary"))
+        for s in out.get("steps") or []:
+            console.print(f"[cyan]{s.get('step')}[/cyan]  { {k: v for k, v in s.items() if k != 'step'} }")
+        for n in out.get("next") or []:
+            console.print(f"[dim]→ {n}[/dim]")
+        console.print("[green]golden-path complete (offline)[/green]")
+
+    @app.command("vertical-coverage")
+    def vertical_coverage_cmd():
+        """Dashboard: memo counts / quality / pairs per deep vertical."""
+        _boot_env()
+        from src.ops.vertical_coverage import vertical_coverage_dashboard
+
+        console.print(vertical_coverage_dashboard())
+
     @app.command("compare-vertical")
     def compare_vertical_cmd(
         vertical_id: Optional[str] = typer.Argument(
@@ -472,6 +502,10 @@ def register(app: typer.Typer) -> None:
         no_udiff: bool = typer.Option(False, "--no-udiff", help="Skip unified diff lines"),
         list_only: bool = typer.Option(
             False, "--list", help="Only list memos for vertical_id"
+        ),
+        export: bool = typer.Option(False, "--export", help="Write compare pack md+json"),
+        thesis_id: Optional[str] = typer.Option(
+            None, "--thesis-id", help="Attach compare summary to thesis reviews"
         ),
     ):
         """Compare two memos in a vertical pack (or latest two)."""
@@ -516,6 +550,19 @@ def register(app: typer.Typer) -> None:
             for line in (out.get("udiff") or [])[:80]:
                 console.print(line)
         console.print(f"[dim]{out.get('a', {}).get('name')}  vs  {out.get('b', {}).get('name')}[/dim]")
+        if export:
+            from src.ops.compare_export import export_compare_pack
+
+            pack = export_compare_pack(result=out, include_udiff=not no_udiff)
+            console.print(f"[green]export[/green] {pack.get('md_path')}")
+        if thesis_id:
+            from src.ops.theses import link_compare_to_thesis
+
+            linked = link_compare_to_thesis(thesis_id, out)
+            if linked.get("error"):
+                console.print(f"[red]{linked['error']}[/red]")
+            else:
+                console.print(f"[green]thesis review[/green] {thesis_id}")
 
 
 

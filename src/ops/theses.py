@@ -90,6 +90,67 @@ def set_status(thesis_id: str, status: Status, note: str = "") -> dict[str, Any]
     return None
 
 
+def append_review_note(
+    thesis_id: str,
+    note: str,
+    *,
+    kind: str = "note",
+    meta: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
+    """Append a process review note without forcing status change."""
+    data = _load()
+    for t in data.get("items") or []:
+        if t.get("id") == thesis_id:
+            entry = {
+                "at": datetime.now().isoformat(timespec="seconds"),
+                "status": t.get("status") or "active",
+                "kind": kind,
+                "note": (note or "").strip(),
+            }
+            if meta:
+                entry["meta"] = meta
+            t.setdefault("reviews", []).append(entry)
+            t["updated_at"] = datetime.now().isoformat(timespec="seconds")
+            _save(data)
+            return t
+    return None
+
+
+def link_compare_to_thesis(
+    thesis_id: str,
+    compare_result: dict[str, Any],
+) -> dict[str, Any]:
+    """Store a compact compare summary on the thesis review trail."""
+    if compare_result.get("error"):
+        return {"error": compare_result["error"]}
+    a = (compare_result.get("a") or {}).get("name")
+    b = (compare_result.get("b") or {}).get("name")
+    ratio = compare_result.get("similarity_ratio")
+    delta = compare_result.get("quality_delta_b_minus_a")
+    note = (
+        f"Memo compare A={a} B={b} ratio={ratio} Δq={delta} "
+        f"vertical={compare_result.get('vertical_id')}"
+    )
+    acts = compare_result.get("next_actions") or []
+    if acts:
+        note += " | next: " + "; ".join(str(x) for x in acts[:3])
+    t = append_review_note(
+        thesis_id,
+        note,
+        kind="compare",
+        meta={
+            "a": a,
+            "b": b,
+            "similarity_ratio": ratio,
+            "quality_delta_b_minus_a": delta,
+            "vertical_id": compare_result.get("vertical_id"),
+        },
+    )
+    if not t:
+        return {"error": f"thesis not found: {thesis_id}"}
+    return {"thesis_id": thesis_id, "review_note": note, "thesis": t}
+
+
 def get_thesis(thesis_id: str) -> dict[str, Any] | None:
     for t in list_theses():
         if t.get("id") == thesis_id:

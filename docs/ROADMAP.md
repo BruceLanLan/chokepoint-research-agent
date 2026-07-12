@@ -81,7 +81,9 @@
 | **v8.4.0** | Live env gates + UI smoke (TestClient / optional Playwright) | **Shipped** |
 | **v8.5.0** | Catalog vertical/skill filters + live research cost gate | **Shipped** |
 | **v8.6.0** | Same-vertical memo compare (API/CLI/UI) | **Shipped** |
-| v8.x | Optional full live memo pytest; coverage-driven verticals only | Future |
+| **v8.7–v9.5** | Compare export · thesis link · coverage · golden-path · queue vertical · weekly · capabilities · UI | **Shipped** |
+| **v10.0.0** | Workstation 1.0 milestone cut | **Shipped** |
+| v10.x | Live memo pytest; optional 6th vertical on demand | Future |
 
 ---
 

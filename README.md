@@ -11,7 +11,7 @@
 
 | | |
 |---|---|
-| **Version** | **8.6.0** |
+| **Version** | **10.0.0** |
 | **Language** | Python ≥ 3.11 |
 | **License** | MIT |
 | **中文文档** | [README.zh-CN.md](README.zh-CN.md) · [docs/zh/](docs/zh/README.md) |
@@ -274,7 +274,8 @@ docker compose up --build
 ### Make targets
 
 ```bash
-make check     # smoke + unit tests + eval
+make check
+python main.py golden-path -V cpo_optics     # smoke + unit tests + eval
 make server
 ```
 
@@ -535,7 +536,8 @@ chokepoint-research-agent/
 ## 15. Development & testing
 
 ```bash
-make check                              # smoke + ui-smoke + pytest + eval
+make check
+python main.py golden-path -V cpo_optics                              # smoke + ui-smoke + pytest + eval
 .venv/bin/python -m pytest tests/ -q -m "not live and not browser"
 python scripts/ui_smoke.py              # workstation UI offline
 # Live (refuses without env): CHOKEPOINT_RUN_LIVE_TESTS=1 CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1 make live-smoke

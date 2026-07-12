@@ -1,3 +1,3 @@
 """Chokepoint Research Agent package."""
 
-__version__ = "8.6.0"
+__version__ = "10.0.0"

@@ -62,10 +62,26 @@ def research_desk_status() -> dict[str, Any]:
             "verticals": _verticals_catalog(),
         },
         "verticals": _verticals_catalog(),
+        "vertical_coverage": _vertical_coverage_brief(),
         "next_actions": _next_actions(health, pro, kills, queue),
         "disclaimer": "research_only_not_investment_advice",
         "note": "Research desk status — process hygiene, not P&L or advice.",
     }
+
+
+def _vertical_coverage_brief() -> dict[str, Any]:
+    try:
+        from src.ops.vertical_coverage import vertical_coverage_dashboard
+
+        d = vertical_coverage_dashboard()
+        return {
+            "packs": d.get("packs"),
+            "with_memos": d.get("with_memos"),
+            "with_pairs": d.get("with_pairs"),
+            "next_actions": (d.get("next_actions") or [])[:3],
+        }
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 def _verticals_catalog() -> dict[str, Any]:
@@ -92,6 +108,16 @@ def _next_actions(health, pro, kills, queue) -> list[str]:
         acts.append(
             f"Deep vertical: research --vertical {sample}  or  pro-suite --vertical {sample}"
         )
+    try:
+        from src.ops.vertical_coverage import vertical_coverage_dashboard
+
+        vc = vertical_coverage_dashboard()
+        if int(vc.get("with_pairs") or 0) < 1 and verts.get("ids"):
+            acts.append(f"Build compare pair: golden-path -V {verts['ids'][0]}")
+        elif int(vc.get("with_pairs") or 0) >= 1 and verts.get("ids"):
+            acts.append(f"compare-vertical {verts['ids'][0]}  (or export compare pack)")
+    except Exception:  # noqa: BLE001
+        pass
     if not acts:
         acts.append("Run weekly-ops + pro-suite on latest memo")
         if verts.get("ids"):

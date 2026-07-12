@@ -138,6 +138,35 @@ def register(app: FastAPI) -> None:
             if "not found" in err or "need at least 2" in err:
                 code = 404
             raise HTTPException(code, out)
+        # Optional: export pack and/or attach to thesis
+        if body.get("export"):
+            from src.ops.compare_export import export_compare_pack
+
+            pack = export_compare_pack(result=out, include_udiff=bool(body.get("udiff", True)))
+            out["export"] = pack
+        if body.get("thesis_id"):
+            from src.ops.theses import link_compare_to_thesis
+
+            out["thesis_link"] = link_compare_to_thesis(str(body["thesis_id"]), out)
+        return out
+
+    @app.post("/reports/compare/export")
+    def reports_compare_export(
+        body: dict | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.compare_export import export_compare_pack
+
+        body = body or {}
+        out = export_compare_pack(
+            vertical_id=body.get("vertical_id"),
+            name_a=body.get("a") or body.get("name_a"),
+            name_b=body.get("b") or body.get("name_b"),
+            include_udiff=bool(body.get("udiff", True)),
+        )
+        if out.get("error"):
+            raise HTTPException(404 if "need" in str(out["error"]) else 400, out)
         return out
 
     @app.get("/reports/by-vertical/{vertical_id}")
