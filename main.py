@@ -1425,6 +1425,98 @@ def pro_suite_cmd(
     console.print(run_full_suite(text=text, symbol=symbol))
 
 
+@app.command("pro-dashboard")
+def pro_dashboard_cmd():
+    """Aggregate activity across all pro modules."""
+    _boot_env()
+    from src.ops.pro_dashboard import pro_dashboard
+
+    console.print(pro_dashboard())
+
+
+@app.command("memo-pro")
+def memo_pro_cmd(
+    report: str = typer.Argument(..., help="Saved memo filename"),
+    persist: bool = typer.Option(False, "--persist", help="Write notes into modules that pass gate"),
+    symbol: str = typer.Option("", "--symbol"),
+    modules: str = typer.Option("", "--modules", help="Comma subset; empty=full suite"),
+):
+    """Analyze a saved memo through pro modules / suite."""
+    _boot_env()
+    from src.ops.memo_pro_bridge import analyze_memo_with_pro
+
+    mods = [m.strip() for m in modules.split(",") if m.strip()] or None
+    out = analyze_memo_with_pro(report, modules=mods, persist=persist, symbol=symbol)
+    if out.get("error"):
+        console.print(f"[red]{out['error']}[/red]")
+        raise typer.Exit(1)
+    console.print(out)
+
+
+@app.command("pro-export")
+def pro_export_cmd():
+    """Zip all pro-module summaries + local data/pro stores."""
+    _boot_env()
+    from src.ops.pro_pack_export import export_pro_pack
+
+    console.print(export_pro_pack())
+
+
+@app.command("desk")
+def desk_cmd(md: bool = typer.Option(False, "--md")):
+    """Unified research desk status (health + pro + queue + catalog)."""
+    _boot_env()
+    from src.ops.research_desk import research_desk_markdown, research_desk_status
+
+    console.print(research_desk_markdown() if md else research_desk_status())
+
+
+@app.command("glossary")
+def glossary_cmd(
+    q: Optional[str] = typer.Argument(None, help="Search query or exact term"),
+    get: Optional[str] = typer.Option(None, "--get", help="Fetch exact term markdown"),
+):
+    """Search educational glossary under knowledge/glossary/."""
+    from src.ops.glossary_search import get_term, list_glossary_terms, search_glossary
+
+    if get:
+        console.print(get_term(get))
+        return
+    if not q:
+        terms = list_glossary_terms()
+        console.print({"count": len(terms), "sample": terms[:30]})
+        return
+    # if exact term file exists, prefer get
+    exact = get_term(q)
+    if not exact.get("error") and q.replace(" ", "_") == exact.get("term"):
+        console.print(exact)
+        return
+    console.print(search_glossary(q))
+
+
+@app.command("quote-chart")
+def quote_chart_cmd(
+    symbol: str = typer.Argument(...),
+    out: Optional[str] = typer.Option(None, "--out", help="Write SVG path"),
+):
+    """SVG from local quote_cache history (research utility)."""
+    _boot_env()
+    from pathlib import Path
+
+    from src.charts.quote_history import quote_history_svg
+    from src.config import get_settings
+
+    svg = quote_history_svg(symbol)
+    if out:
+        path = Path(out)
+    else:
+        d = Path(get_settings().reports_dir) / "charts"
+        d.mkdir(parents=True, exist_ok=True)
+        path = d / f"quote_hist_{symbol.replace('.', '_')}.svg"
+    path.write_text(svg, encoding="utf-8")
+    console.print(f"[green]{path}[/green]")
+
+
 @app.command("playbook")
 def playbook_cmd(
     name: Optional[str] = typer.Argument(None, help="Playbook id; omit to list"),

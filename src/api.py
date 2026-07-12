@@ -1292,6 +1292,125 @@ def api_pro_suite(
     )
 
 
+@app.get("/pro/dashboard")
+def api_pro_dashboard(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.pro_dashboard import pro_dashboard
+
+    return pro_dashboard()
+
+
+@app.post("/memo-pro")
+def api_memo_pro(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.memo_pro_bridge import analyze_memo_with_pro
+
+    name = body.get("report") or ""
+    mods = body.get("modules")
+    out = analyze_memo_with_pro(
+        name,
+        modules=mods,
+        persist=bool(body.get("persist")),
+        symbol=body.get("symbol") or "",
+    )
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.post("/pro/export")
+def api_pro_export(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.pro_pack_export import export_pro_pack
+
+    return export_pro_pack()
+
+
+@app.get("/desk")
+def api_desk(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.research_desk import research_desk_status
+
+    return research_desk_status()
+
+
+@app.get("/glossary")
+def api_glossary(
+    q: str | None = None,
+    term: str | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.glossary_search import get_term, list_glossary_terms, search_glossary
+
+    if term:
+        out = get_term(term)
+        if out.get("error"):
+            raise HTTPException(404, out["error"])
+        return out
+    if q:
+        return search_glossary(q)
+    terms = list_glossary_terms()
+    return {"count": len(terms), "terms": terms[:100]}
+
+
+@app.get("/charts/quote-history")
+def api_quote_history_chart(
+    symbol: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from fastapi.responses import Response
+
+    from src.charts.quote_history import quote_history_svg
+
+    return Response(content=quote_history_svg(symbol), media_type="image/svg+xml")
+
+
+@app.get("/questionnaires")
+def api_questionnaires(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.questionnaires.registry import list_questionnaires
+
+    return {"items": list_questionnaires()}
+
+
+@app.get("/questionnaires/{name}")
+def api_questionnaire(
+    name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.questionnaires.registry import get_questionnaire
+
+    try:
+        return get_questionnaire(name)
+    except ModuleNotFoundError as exc:
+        raise HTTPException(404, str(name)) from exc
+
+
+@app.get("/rubrics")
+def api_rubrics(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.rubrics.registry import list_rubrics
+
+    return {"items": list_rubrics()}
+
+
+@app.post("/rubrics/score")
+def api_rubrics_score(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.rubrics.registry import score_all
+
+    return score_all(body.get("text") or "")
+
+
 @app.get("/playbooks")
 def api_playbooks(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
     _check_access(x_api_key)

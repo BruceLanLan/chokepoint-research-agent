@@ -209,6 +209,14 @@
         <button class="btn sec" id="o-runbook">Runbook</button>
       </div>
       <div class="row">
+        <button class="btn sec" id="o-desk">Research desk</button>
+        <button class="btn sec" id="o-pdash">Pro dashboard</button>
+      </div>
+      <div class="row">
+        <input id="o-gloss" placeholder="glossary search e.g. CPO / HBM" />
+        <button class="btn sec" id="o-gloss-go">Glossary</button>
+      </div>
+      <div class="row">
         <input id="o-check-name" placeholder="report name for checklist…" />
         <button class="btn sec" id="o-check">Checklist</button>
       </div>
@@ -420,6 +428,12 @@ $("o-mkt").onclick=async()=>{ showOps(await jget("/marketplace")); };
 $("o-qcap").onclick=async()=>{ showOps(await jget("/quotes/capabilities")); };
 $("o-health").onclick=async()=>{ showOps(await jget("/workspace-health")); };
 $("o-runbook").onclick=async()=>{ showOps(await jget("/runbook?system=AI+CPO")); };
+$("o-desk").onclick=async()=>{ showOps(await jget("/desk")); };
+$("o-pdash").onclick=async()=>{ showOps(await jget("/pro/dashboard")); };
+$("o-gloss-go").onclick=async()=>{
+  const q=$("o-gloss").value.trim();
+  showOps(await jget("/glossary"+(q?"?q="+encodeURIComponent(q):"")));
+};
 $("o-check").onclick=async()=>{
   const name=$("o-check-name").value.trim(); if(!name){ alert("report name required"); return; }
   showOps(await jget("/checklist/"+encodeURIComponent(name)));

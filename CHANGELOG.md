@@ -1,5 +1,19 @@
 # Changelog
 
+## 6.1.0 — 2026-07-12
+
+### Added
+- **Research desk** unified status (`desk`, `/desk`)
+- **Pro dashboard** across 50 modules (`pro-dashboard`, `/pro/dashboard`)
+- **Memo → pro bridge** (`memo-pro`, `/memo-pro`)
+- **Pro pack export** zip (`pro-export`, `/pro/export`)
+- **Glossary search** (`glossary`, `/glossary`)
+- **Quote history SVG** (`quote-chart`, `/charts/quote-history`)
+- API: questionnaires + rubrics list/score
+- UI Ops: desk, pro dashboard, glossary
+- Tests: `test_v61_desk.py`
+
+
 ## 6.0.0 — 2026-07-12
 
 **50-version maturity train complete** (v5.2.0–v5.51.0 modules + v6.0.0 cut).

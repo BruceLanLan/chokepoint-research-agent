@@ -15,13 +15,19 @@
 
 ## Next up (edit as you go)
 
-- [ ] v5.1 candidates (post-maturity):
-  - Multi-symbol SSE multiplex / history charts from quote_cache
-  - Optional remote plugin install design (signed URL only)
-  - Notion MCP wire-up only if user asks
-  - Deeper bilingual UI labels / EN-first mode polish
+- [ ] v6.2+: multi-symbol SSE charts polish; remote plugin design doc; EN UI pass
 - [ ] Keep offline tests green; avoid live research unless requested
-- [ ] Overnight: prefer weekly-ops + mock queue + ship only when meaningful
+- [ ] Use `desk` + `weekly-ops` as weekly hygiene ritual
+
+---
+
+## 2026-07-12 — v6.1.0
+
+- **Shipped:** desk, pro-dashboard, memo-pro, pro-export, glossary, quote-history SVG, questionnaires/rubrics API, UI
+- **Tests:** 111 passed
+- **Tag / Release:** yes
+- **Next up:** v6.2 items above
+- **Blocked:** none
 
 ---
 

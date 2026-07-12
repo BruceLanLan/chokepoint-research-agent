@@ -70,7 +70,8 @@
 | **v5.1.0** | Memo grade + watchlist quote refresh | **Shipped** |
 | **v5.2–v5.51** | 50 pro research-ops modules | **Shipped** |
 | **v6.0.0** | Train cut + playbooks + metrics battery | **Shipped** |
-| v6.1 | Heavier realtime MD, optional remote plugins | Future |
+| **v6.1.0** | Research desk, pro dashboard, memo-pro, glossary | **Shipped** |
+| v6.2 | Heavier realtime MD, optional remote plugins | Future |
 
 ---
 

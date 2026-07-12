@@ -53,6 +53,8 @@ jobs:
           python -c "from src.ops.workspace_health import workspace_health_score; h=workspace_health_score(); assert 0<=h['score']<=100"
           python -c "from src.ops.pro import PRO_MODULE_IDS; assert len(PRO_MODULE_IDS)==50"
           python -c "from src.ops.pro.suite import run_full_suite; s=run_full_suite(text='system chokepoint kill https://x.com'); assert s['modules']==50"
+          python -c "from src.ops.research_desk import research_desk_status; d=research_desk_status(); assert d['pro_ops']['modules']==50"
+          python -c "from src.ops.glossary_search import list_glossary_terms; assert len(list_glossary_terms())>50"
         env:
           PYTHONPATH: .
           REPORTS_DIR: ${{ runner.temp }}/reports
