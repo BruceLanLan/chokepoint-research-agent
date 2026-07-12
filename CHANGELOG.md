@@ -1,5 +1,23 @@
 # Changelog
 
+## 6.0.0 — 2026-07-12
+
+**50-version maturity train complete** (v5.2.0–v5.51.0 modules + v6.0.0 cut).
+
+### Added
+- 50 professional research-ops modules under `src/ops/pro/` (event calendar → platform risk)
+- CLI: `pro`, `pro-suite`, `playbook`, `metrics-run`
+- API: `/pro/modules`, `/pro/{id}`, `/pro/suite`, `/playbooks`
+- 20 research playbooks under `src/playbooks/`
+- Analysis engines: scorecard_engine, 150 text metrics
+- 10 extra knowledge maps, 8 skill packs, 5 templates, 20 eval fixtures
+- Docs: `docs/VERSIONS_5.2_to_5.51.md`, `docs/pro-modules/*`, essays
+- Tests: pro train (50 modules) + analysis/playbooks
+
+### Scale
+- Codebase expanded toward ~2–3× prior LOC with workstation depth
+
+
 ## 5.1.0 — 2026-07-12
 
 ### Added

@@ -1381,6 +1381,78 @@ def grade_memo_cmd(report: str = typer.Argument(...)):
     console.print(out)
 
 
+@app.command("pro")
+def pro_cmd(
+    module: Optional[str] = typer.Argument(None, help="Module id (omit to list)"),
+    action: str = typer.Option("summarize", "--action", "-a"),
+    title: str = typer.Option("", "--title"),
+    text: str = typer.Option("", "--text", help="Body / text for analyze or add"),
+    symbol: str = typer.Option("", "--symbol"),
+    limit: int = typer.Option(50, "--limit"),
+):
+    """Professional maturity-train modules (v5.2–v5.51). Research ops only."""
+    _boot_env()
+    from src.ops.pro.registry import invoke_module, list_modules
+
+    if not module:
+        for m in list_modules():
+            console.print(f"[cyan]{m['id']}[/cyan]  {m['version_theme']}  {m['title']}")
+        console.print(f"[dim]{len(list_modules())} modules — research only, not advice[/dim]")
+        return
+    kwargs: dict = {"action": action, "limit": limit}
+    if title:
+        kwargs["title"] = title
+    if text:
+        kwargs["text"] = text
+        kwargs["body"] = text
+    if symbol:
+        kwargs["symbol"] = symbol
+    console.print(invoke_module(module, **kwargs))
+
+
+@app.command("pro-suite")
+def pro_suite_cmd(
+    text: str = typer.Option(
+        "System boundary defined with chokepoint nodes, kill criteria, and https://example.com source",
+        "--text",
+    ),
+    symbol: str = typer.Option("", "--symbol"),
+):
+    """Run analyze across all 50 pro modules (offline suite)."""
+    _boot_env()
+    from src.ops.pro.suite import run_full_suite
+
+    console.print(run_full_suite(text=text, symbol=symbol))
+
+
+@app.command("playbook")
+def playbook_cmd(
+    name: Optional[str] = typer.Argument(None, help="Playbook id; omit to list"),
+):
+    """Research process playbooks (IPO, cyclical, SaaS, hardware, …)."""
+    from src.playbooks.registry import get_playbook, list_playbooks
+
+    if not name:
+        for p in list_playbooks():
+            console.print(f"[cyan]{p}[/cyan]")
+        return
+    try:
+        console.print(get_playbook(name))
+    except ModuleNotFoundError:
+        console.print(f"[red]unknown playbook: {name}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command("metrics-run")
+def metrics_run_cmd(
+    text: str = typer.Option(..., "--text", help="Text to score with metric battery"),
+):
+    """Run offline text metric battery (80 heuristics)."""
+    from src.analysis.text_metrics import run_all_metrics
+
+    console.print(run_all_metrics(text))
+
+
 @app.command("quality-board")
 def quality_board_cmd(limit: int = typer.Option(30, "--limit")):
     """Structure-quality leaderboard for recent memos."""

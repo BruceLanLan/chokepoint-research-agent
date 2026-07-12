@@ -68,7 +68,9 @@
 | **v4.8–v4.9** | Quote cache, workspace health, runbook, batch review | **Shipped** |
 | **v5.0.0** | Professional workstation maturity cut | **Shipped** |
 | **v5.1.0** | Memo grade + watchlist quote refresh | **Shipped** |
-| v5.2 | Heavier realtime MD, optional remote plugins | Future |
+| **v5.2–v5.51** | 50 pro research-ops modules | **Shipped** |
+| **v6.0.0** | Train cut + playbooks + metrics battery | **Shipped** |
+| v6.1 | Heavier realtime MD, optional remote plugins | Future |
 
 ---
 

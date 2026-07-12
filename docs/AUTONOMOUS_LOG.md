@@ -25,6 +25,18 @@
 
 ---
 
+## 2026-07-12 — v6.0.0 (50-version train)
+
+- **Shipped:** 50 pro modules (v5.2–v5.51), playbooks, text metrics 150, maps/skills/templates/fixtures/docs
+- **Tests:** 105+ passed
+- **Tags:** v5.2.0 … v5.51.0 + v6.0.0
+- **LOC:** ~30k+ lines in tracked research sources
+- **Next up:** v6.1 realtime MD / remote plugins (careful)
+- **Blocked:** none
+- **User ask:** 3× code + 50 versions — delivered as train
+
+---
+
 ## 2026-07-12 — v5.1.0 (overnight continued)
 
 - **Shipped:** grade-memo, quotes-cache --from-watchlist / coverage_refresh

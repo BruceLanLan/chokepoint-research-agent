@@ -1252,6 +1252,68 @@ def api_grade_memo(
     return out
 
 
+@app.get("/pro/modules")
+def api_pro_modules(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.pro.registry import list_modules
+
+    return {"count": len(list_modules()), "items": list_modules()}
+
+
+@app.post("/pro/{module_id}")
+def api_pro_invoke(
+    module_id: str,
+    body: dict | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.pro.registry import invoke_module
+
+    body = body or {}
+    out = invoke_module(module_id, **body)
+    if out.get("error") and out.get("known"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.post("/pro/suite")
+def api_pro_suite(
+    body: dict | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.pro.suite import run_full_suite
+
+    body = body or {}
+    return run_full_suite(
+        text=body.get("text") or "",
+        symbol=body.get("symbol") or "",
+        title=body.get("title") or "suite",
+    )
+
+
+@app.get("/playbooks")
+def api_playbooks(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.playbooks.registry import list_playbooks
+
+    return {"items": list_playbooks()}
+
+
+@app.get("/playbooks/{name}")
+def api_playbook(
+    name: str,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.playbooks.registry import get_playbook
+
+    try:
+        return get_playbook(name)
+    except ModuleNotFoundError as exc:
+        raise HTTPException(404, f"unknown playbook: {name}") from exc
+
+
 @app.post("/watchlist/bulk")
 def api_watch_bulk(
     body: dict,

@@ -1,0 +1,19 @@
+# Educational map — not a buy list
+system: "Power semiconductors for AI racks"
+physical_origin: "Research sketch for chokepoint mapping"
+layers:
+  - name: "Demand / system"
+    examples: ["Hyperscalers", "OEMs"]
+    notes: "Top-down narrative — verify bottom-up"
+  - name: "Critical nodes"
+    candidates:
+      - node: "Node A (hypothesis)"
+        why: "Low substitutability hypothesis — verify"
+      - node: "Node B (hypothesis)"
+        why: "Concentration hypothesis — verify"
+risks:
+  - "Timeline slips"
+  - "Multi-sourcing breaks concentration"
+kill_criteria_examples:
+  - "Credible multi-source qualification"
+  - "Demand path abandoned by key customers"

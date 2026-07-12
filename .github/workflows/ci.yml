@@ -51,6 +51,8 @@ jobs:
           python -c "from src.ops.marketplace import marketplace_index; i=marketplace_index(); assert i['counts']['listings']>0, i"
           python -c "from src.ops.live_safety import estimate_queue_live_cost, live_costs_accepted; e=estimate_queue_live_cost(1); assert 'est_total_tokens' in e; assert live_costs_accepted(flag=False) is False"
           python -c "from src.ops.workspace_health import workspace_health_score; h=workspace_health_score(); assert 0<=h['score']<=100"
+          python -c "from src.ops.pro import PRO_MODULE_IDS; assert len(PRO_MODULE_IDS)==50"
+          python -c "from src.ops.pro.suite import run_full_suite; s=run_full_suite(text='system chokepoint kill https://x.com'); assert s['modules']==50"
         env:
           PYTHONPATH: .
           REPORTS_DIR: ${{ runner.temp }}/reports

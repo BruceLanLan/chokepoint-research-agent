@@ -1,0 +1,12 @@
+id: software_infra
+name: "Software Infra"
+description: "Enterprise software infrastructure platforms"
+tags: ["software_infra", "research"]
+system_suffix: |
+  垂直领域：Enterprise software infrastructure platforms。
+  仅做供应链/卡点研究框架；数字带来源时间；禁止给出买卖建议。
+focus_questions:
+  - 哪个物理或流程节点最难替代？
+  - 集中度假设是否可被多源瓦解？
+  - 政策/出口管制如何改写供给地图？
+  - kill criteria 是什么？

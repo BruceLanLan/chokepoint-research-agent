@@ -1,0 +1,9 @@
+name: "Customer concentration memo"
+description: "Research template — not investment advice"
+mode: full
+question_template: |
+  以卡点理论研究「{{system}}」。
+  背景：{{context}}
+  要求：输出研究结论、scorecard、风险与 kill criteria、来源。
+  仅供研究学习，不构成投资建议。
+notes: "Educational research template"
