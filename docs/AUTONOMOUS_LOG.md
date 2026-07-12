@@ -15,9 +15,18 @@
 
 ## Next up (edit as you go)
 
-- [ ] v6.2+: multi-symbol SSE charts polish; remote plugin design doc; EN UI pass
+- [ ] **v6.4 consolidation** (see `docs/REVIEW_AND_PLAN_6.3.md`): CLI groups, golden evals, glossary cull, providers.md
+- [ ] **v6.5–v7.0**: golden-path productization + pro engine YAML refactor
 - [ ] Keep offline tests green; avoid live research unless requested
-- [ ] Use `desk` + `weekly-ops` as weekly hygiene ritual
+- [ ] Weekly ritual: `desk` + `weekly-ops` (not more generated modules)
+
+---
+
+## 2026-07-12 — review & plan
+
+- **Artifact:** `docs/REVIEW_AND_PLAN_6.3.md`
+- **Verdict:** workstation skeleton strong; next priority **consolidate/deepen**, not expand surface
+- **Tests at review:** 113 green
 
 ---
 
