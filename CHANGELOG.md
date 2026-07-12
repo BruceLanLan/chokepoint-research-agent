@@ -1,5 +1,20 @@
 # Changelog
 
+## 8.5.0 — 2026-07-12
+
+### Added
+- Catalog **filter** by `vertical_id` / `skill` / `mode` / free text + **facets** API
+- UI Reports tab: vertical/skill/mode dropdowns + count
+- Live research **cost gate** for non-mock paths (`i_accept_live_costs` / env / CLI flag)
+- API returns **402** when live research is blocked; UI checkbox “I accept live costs”
+
+### Changed
+- `assert_live_research_allowed()` for memo/stream (separate from queue live gate)
+
+### Tests
+- 158 passed (`test_v85_catalog_live_gate.py`)
+
+
 ## 8.4.0 — 2026-07-12
 
 ### Added

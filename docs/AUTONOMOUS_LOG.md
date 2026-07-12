@@ -15,8 +15,16 @@
 
 ## Next up (edit as you go)
 
-- [ ] Optional: full live research memo test behind triple gate (still avoid by default)
+- [ ] Optional: full live research memo pytest behind RUN_LIVE + cost accept + keys
 - [ ] Keep offline tests green; weekly ritual desk + demo-journey + doctor scores
+
+---
+
+## 2026-07-12 — v8.5.0 catalog filters + live research gate
+
+- **Shipped:** reports filter/facets; UI filters; live research 402 gate; accept-live checkbox
+- **Tests:** 158 passed / 2 skipped
+- **Blocked:** none
 
 ---
 

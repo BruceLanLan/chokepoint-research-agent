@@ -11,7 +11,7 @@
 
 | | |
 |---|---|
-| **Version** | **8.4.0** |
+| **Version** | **8.5.0** |
 | **Language** | Python ≥ 3.11 |
 | **License** | MIT |
 | **中文文档** | [README.zh-CN.md](README.zh-CN.md) · [docs/zh/](docs/zh/README.md) |

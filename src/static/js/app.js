@@ -314,6 +314,11 @@
     const bilingual = !!$("#bilingual")?.checked;
     const useStream = !!$("#stream")?.checked;
     const mock = !!$("#mock")?.checked;
+    const acceptLive = !!$("#accept-live")?.checked;
+    if (!mock && !acceptLive) {
+      toast("Live research requires “I accept live costs”, or enable Mock offline");
+      return;
+    }
     const status = $("#status");
     const live = $("#live");
     const out = $("#out");
@@ -331,6 +336,7 @@
       export: true,
       session_id,
       mock,
+      i_accept_live_costs: acceptLive,
     };
     if (skill) body.skill = skill;
     if (vertical) body.vertical = vertical;
@@ -617,24 +623,63 @@
   }
 
   /* ── Reports ──────────────────────────────────────────────── */
+  function fillReportFacets(facets) {
+    const fill = (sel, rows, key) => {
+      const el = $(sel);
+      if (!el) return;
+      const cur = el.value;
+      const opts = ['<option value="">—</option>'].concat(
+        (rows || []).map(
+          (r) =>
+            `<option value="${escapeAttr(r.id)}">${escapeHtml(r.id)} (${r.count})</option>`
+        )
+      );
+      el.innerHTML = opts.join("");
+      if (cur) el.value = cur;
+    };
+    if (!facets) return;
+    fill("#r-vertical", facets.verticals);
+    fill("#r-skill", facets.skills);
+    fill("#r-mode", facets.modes);
+  }
+
   async function loadReports() {
     try {
       const q = ($("#r-q")?.value || "").trim();
-      const path = q ? `/reports?q=${encodeURIComponent(q)}` : "/reports";
-      const data = await api(path);
+      const vertical_id = ($("#r-vertical")?.value || "").trim();
+      const skill = ($("#r-skill")?.value || "").trim();
+      const mode = ($("#r-mode")?.value || "").trim();
+      const params = new URLSearchParams();
+      params.set("limit", "50");
+      if (q) params.set("q", q);
+      if (vertical_id) params.set("vertical_id", vertical_id);
+      if (skill) params.set("skill", skill);
+      if (mode) params.set("mode", mode);
+      const data = await api("/reports?" + params.toString());
+      fillReportFacets(data.facets);
       const items = data.reports || data.items || data || [];
       const body = $("#r-body");
+      const countEl = $("#r-count");
+      if (countEl) {
+        countEl.textContent = Array.isArray(items)
+          ? `${items.length} report(s)` +
+            (vertical_id || skill || mode || q ? " (filtered)" : "")
+          : "";
+      }
       if (!body) return;
       body.innerHTML = (Array.isArray(items) ? items : [])
         .map((r) => {
           const name = r.name || r.filename || r.path || "";
-          const mode = r.mode || "";
+          const modeV = r.mode || "";
           const qscore = r.quality_score != null ? r.quality_score : r.quality?.score ?? "—";
           const mod = r.modified || r.mtime || r.updated_at || "";
           const vert = r.vertical_id || "";
+          const sk = r.skill || "";
           return `<tr>
             <td class="mono">${escapeHtml(shortPath(name))}</td>
-            <td>${escapeHtml(mode)}${vert ? ` <span class="tag">${escapeHtml(vert)}</span>` : ""}</td>
+            <td>${escapeHtml(modeV)}${vert ? ` <span class="tag">${escapeHtml(vert)}</span>` : ""}${
+              sk ? ` <span class="tag">${escapeHtml(sk)}</span>` : ""
+            }</td>
             <td>${escapeHtml(String(qscore))}</td>
             <td class="tiny">${escapeHtml(String(mod).slice(0, 19))}</td>
             <td class="row-actions">
@@ -685,6 +730,9 @@
     $("#r-refresh")?.addEventListener("click", loadReports);
     $("#r-q")?.addEventListener("keydown", (e) => {
       if (e.key === "Enter") loadReports();
+    });
+    ["#r-vertical", "#r-skill", "#r-mode"].forEach((sel) => {
+      $(sel)?.addEventListener("change", loadReports);
     });
   }
 

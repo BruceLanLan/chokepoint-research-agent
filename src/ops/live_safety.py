@@ -123,3 +123,54 @@ def live_gate_status() -> dict[str, Any]:
         ],
         "disclaimer": "research_only_not_investment_advice",
     }
+
+
+def assert_live_research_allowed(
+    *,
+    flag: bool = False,
+    require_model_key: bool = True,
+) -> dict[str, Any]:
+    """Gate non-mock research / stream paths.
+
+    Requires explicit cost acceptance (flag or env) and optionally a model API key.
+    Does **not** require CHOKEPOINT_RUN_LIVE_TESTS (that is for pytest only).
+    """
+    estimate = {
+        "note": (
+            "Live research calls your model provider and may call web search. "
+            "Heuristic only — not a bill. Research only — not investment advice."
+        ),
+        "prefer_mock": "POST /research {mock:true} or CLI research --mock",
+    }
+    if not live_costs_accepted(flag=flag):
+        raise ValueError(
+            "Live research blocked. Re-run with --i-accept-live-costs / "
+            "body i_accept_live_costs=true / env CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1, "
+            "or use mock:true / --mock for offline memos."
+        )
+    model_ok = True
+    model_detail = "ok"
+    if require_model_key:
+        try:
+            from src.config import get_settings
+
+            settings = get_settings()
+            problems = settings.validate_runtime(require_tavily=False)
+            model_problems = [p for p in problems if "API_KEY" in p and "TAVILY" not in p]
+            if model_problems:
+                model_ok = False
+                model_detail = "; ".join(model_problems)
+        except Exception as exc:  # noqa: BLE001
+            model_ok = False
+            model_detail = str(exc)
+    if not model_ok:
+        raise ValueError(
+            f"Live research blocked — model key missing/invalid: {model_detail}. "
+            "Configure .env or use research --mock."
+        )
+    return {
+        "ok": True,
+        "estimate": estimate,
+        "model": model_detail,
+        "disclaimer": "research_only_not_investment_advice",
+    }

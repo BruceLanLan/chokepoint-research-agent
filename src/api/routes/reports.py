@@ -57,12 +57,39 @@ def register(app: FastAPI) -> None:
     def reports(
         limit: int = 20,
         q: str = "",
+        vertical_id: str = "",
+        skill: str = "",
+        mode: str = "",
         x_api_key: str | None = Header(default=None, alias="X-API-Key"),
     ):
         _check_access(x_api_key)
-        if q:
-            return {"items": search_catalog(q, limit=limit)}
-        return {"items": build_catalog(limit=limit)}
+        from src.ops.catalog import catalog_facets, filter_catalog
+
+        items = filter_catalog(
+            q=q,
+            vertical_id=vertical_id,
+            skill=skill,
+            mode=mode,
+            limit=limit,
+        )
+        return {
+            "items": items,
+            "count": len(items),
+            "filters": {
+                "q": q or None,
+                "vertical_id": vertical_id or None,
+                "skill": skill or None,
+                "mode": mode or None,
+            },
+            "facets": catalog_facets(),
+        }
+
+    @app.get("/reports/facets")
+    def reports_facets(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+        _check_access(x_api_key)
+        from src.ops.catalog import catalog_facets
+
+        return catalog_facets()
 
 
 

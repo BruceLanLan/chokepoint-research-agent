@@ -36,6 +36,7 @@ def run_research(
     skill: Optional[str] = None,
     vertical: Optional[str] = None,
     mock: bool = False,
+    i_accept_live_costs: bool = False,
     min_quality: int = 0,
     thesis_id: Optional[str] = None,
     pro_suite: bool = False,
@@ -99,6 +100,14 @@ def run_research(
         raise typer.Exit(2)
 
     if not mock:
+        try:
+            from src.ops.live_safety import assert_live_research_allowed
+
+            assert_live_research_allowed(flag=i_accept_live_costs)
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/red]")
+            console.print("[dim]Tip: research --mock -V cpo_optics[/dim]")
+            raise typer.Exit(2) from exc
         problems = settings.validate_runtime(require_tavily=True)
         if problems:
             for p in problems:
@@ -273,6 +282,11 @@ def register(app: typer.Typer) -> None:
             None, "--vertical", "-V", help="deep vertical pack (cpo_optics, hbm_packaging, …)"
         ),
         mock: bool = typer.Option(False, "--mock", help="offline mock memo — no LLM"),
+        i_accept_live_costs: bool = typer.Option(
+            False,
+            "--i-accept-live-costs",
+            help="required for non-mock live research (or env CHOKEPOINT_I_ACCEPT_LIVE_COSTS=1)",
+        ),
         min_quality: int = typer.Option(0, "--min-quality", help="postprocess quality gate"),
         thesis_id: Optional[str] = typer.Option(None, "--thesis-id", help="link saved memo to thesis"),
         pro_suite: bool = typer.Option(False, "--pro-suite", help="run pro suite on saved memo"),
@@ -298,6 +312,7 @@ def register(app: typer.Typer) -> None:
             skill=skill,
             vertical=vertical,
             mock=mock,
+            i_accept_live_costs=i_accept_live_costs,
             min_quality=min_quality,
             thesis_id=thesis_id,
             pro_suite=pro_suite,

@@ -22,7 +22,7 @@ def _parse_frontmatter(text: str) -> dict[str, str]:
         if ":" not in line:
             continue
         k, v = line.split(":", 1)
-        meta[k.strip()] = v.strip()
+        meta[k.strip()] = v.strip().strip('"').strip("'")
     return meta
 
 
@@ -64,16 +64,72 @@ def build_catalog(limit: int = 100) -> list[dict[str, Any]]:
 
 
 def search_catalog(query: str, limit: int = 50) -> list[dict[str, Any]]:
-    q = (query or "").strip().lower()
-    items = build_catalog(limit=200)
-    if not q:
-        return items[:limit]
-    hit = []
+    return filter_catalog(q=query, limit=limit)
+
+
+def filter_catalog(
+    *,
+    q: str = "",
+    vertical_id: str = "",
+    skill: str = "",
+    mode: str = "",
+    limit: int = 50,
+    scan_limit: int = 300,
+) -> list[dict[str, Any]]:
+    """Filter catalog by free text and/or frontmatter fields."""
+    items = build_catalog(limit=scan_limit)
+    qn = (q or "").strip().lower()
+    vid = (vertical_id or "").strip().lower()
+    sk = (skill or "").strip().lower()
+    md = (mode or "").strip().lower()
+    hit: list[dict[str, Any]] = []
     for it in items:
-        blob = (
-            f"{it.get('title')} {it.get('name')} {it.get('preview')} {it.get('mode')} "
-            f"{it.get('skill')} {it.get('vertical_id')} {it.get('thesis_id')}"
-        ).lower()
-        if q in blob:
-            hit.append(it)
-    return hit[:limit]
+        if vid and (it.get("vertical_id") or "").lower() != vid:
+            continue
+        if sk and (it.get("skill") or "").lower() != sk:
+            continue
+        if md and (it.get("mode") or "").lower() != md:
+            continue
+        if qn:
+            blob = (
+                f"{it.get('title')} {it.get('name')} {it.get('preview')} {it.get('mode')} "
+                f"{it.get('skill')} {it.get('vertical_id')} {it.get('thesis_id')}"
+            ).lower()
+            if qn not in blob:
+                continue
+        hit.append(it)
+    return hit[: max(1, min(int(limit or 50), 200))]
+
+
+def catalog_facets(*, scan_limit: int = 300) -> dict[str, Any]:
+    """Distinct vertical_id / skill / mode values for UI filters."""
+    items = build_catalog(limit=scan_limit)
+    verticals: dict[str, int] = {}
+    skills: dict[str, int] = {}
+    modes: dict[str, int] = {}
+    for it in items:
+        v = (it.get("vertical_id") or "").strip()
+        s = (it.get("skill") or "").strip()
+        m = (it.get("mode") or "").strip()
+        if v:
+            verticals[v] = verticals.get(v, 0) + 1
+        if s:
+            skills[s] = skills.get(s, 0) + 1
+        if m:
+            modes[m] = modes.get(m, 0) + 1
+    return {
+        "verticals": sorted(
+            [{"id": k, "count": c} for k, c in verticals.items()],
+            key=lambda x: (-x["count"], x["id"]),
+        ),
+        "skills": sorted(
+            [{"id": k, "count": c} for k, c in skills.items()],
+            key=lambda x: (-x["count"], x["id"]),
+        ),
+        "modes": sorted(
+            [{"id": k, "count": c} for k, c in modes.items()],
+            key=lambda x: (-x["count"], x["id"]),
+        ),
+        "total_scanned": len(items),
+        "disclaimer": "research_only_not_investment_advice",
+    }

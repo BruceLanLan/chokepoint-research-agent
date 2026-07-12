@@ -155,6 +155,13 @@ def register(app: FastAPI) -> None:
                     session_id=req.session_id,
                     cost=cost,
                 )
+            # Live path — triple gate: not mock + cost accept + model key
+            try:
+                from src.ops.live_safety import assert_live_research_allowed
+
+                assert_live_research_allowed(flag=bool(req.i_accept_live_costs))
+            except ValueError as exc:
+                raise HTTPException(status_code=402, detail=str(exc)) from exc
             agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
             result = agent.invoke({"messages": [{"role": "user", "content": q}]})
             report = extract_final_text(result)
@@ -288,6 +295,16 @@ def register(app: FastAPI) -> None:
                         ),
                     }
                     yield {"event": "done", "data": "[DONE]"}
+                    return
+                try:
+                    from src.ops.live_safety import assert_live_research_allowed
+
+                    assert_live_research_allowed(flag=bool(req.i_accept_live_costs))
+                except ValueError as exc:
+                    yield {
+                        "event": "error",
+                        "data": json.dumps({"error": str(exc), "code": 402}, ensure_ascii=False),
+                    }
                     return
                 agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
                 final_text = ""

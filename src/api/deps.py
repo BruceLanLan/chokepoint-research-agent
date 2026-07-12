@@ -78,6 +78,7 @@ class ResearchRequest(BaseModel):
     min_quality: int = 0
     pro_suite: bool = False
     mock: bool = False  # offline mock memo — no LLM
+    i_accept_live_costs: bool = False  # required for non-mock research
 
 
 class ResearchResponse(BaseModel):

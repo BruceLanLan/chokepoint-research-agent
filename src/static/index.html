@@ -127,6 +127,7 @@
             <div class="checkline"><input type="checkbox" id="stream" checked /><span data-i18n="sse">SSE stream</span></div>
             <div class="checkline"><input type="checkbox" id="bilingual" /><span data-i18n="bilingual">Bilingual memo</span></div>
             <div class="checkline"><input type="checkbox" id="mock" checked /><span data-i18n="mockOffline">Mock offline (no LLM)</span></div>
+            <div class="checkline"><input type="checkbox" id="accept-live" /><span data-i18n="acceptLive">I accept live costs</span></div>
           </div>
           <div class="row">
             <div class="checkline"><input type="checkbox" id="pro-suite" /><span data-i18n="proSuite">Run pro-suite after save</span></div>
@@ -211,6 +212,21 @@
             <input id="r-q" data-i18n-placeholder="searchPh" placeholder="Search reports…" />
             <button class="btn sec" id="r-refresh" data-i18n="searchRefresh">Search / Refresh</button>
           </div>
+          <div class="row-3" style="margin-top:10px">
+            <div>
+              <label data-i18n="filterVertical">Vertical</label>
+              <select id="r-vertical"><option value="">—</option></select>
+            </div>
+            <div>
+              <label data-i18n="filterSkill">Skill</label>
+              <select id="r-skill"><option value="">—</option></select>
+            </div>
+            <div>
+              <label data-i18n="filterMode">Mode</label>
+              <select id="r-mode"><option value="">—</option></select>
+            </div>
+          </div>
+          <div class="tiny muted" id="r-count" style="margin-top:8px"></div>
           <table style="margin-top:12px"><thead><tr>
             <th data-i18n="name">Name</th><th data-i18n="mode">Mode</th><th>Q</th>
             <th data-i18n="modified">Modified</th><th data-i18n="actions">Actions</th>
