@@ -1,5 +1,19 @@
 # Changelog
 
+## 10.0.1 — 2026-07-12
+
+**文档封版（暂时冻结功能面）**
+
+### Added
+- 中文优先主 README（截图 `docs/images/`）
+- 英文主页迁至 `README.en.md`；`README.zh-CN.md` 改为入口页
+- `docs/FREEZE.md` / `docs/zh/FREEZE.md` 封版范围与黄金路径验收
+- `scripts/capture_readme_screenshots.py` 可重生成界面截图
+
+### Changed
+- 文档索引指向中文主页；产品版本 **10.0.1**
+
+
 ## 10.0.0 — 2026-07-12
 
 **Milestone: Chokepoint Research Workstation 1.0**

@@ -1,6 +1,6 @@
 [project]
 name = "chokepoint-research-agent"
-version = "10.0.0"
+version = "10.0.1"
 description = "Multi-agent investment research agent powered by Chokepoint Theory (bottom-up supply-chain reverse engineering)"
 readme = "README.md"
 requires-python = ">=3.11"

@@ -4,8 +4,9 @@
 
 ## 从这里开始
 
-- **项目主页（中文）**：[../../README.zh-CN.md](../../README.zh-CN.md)  
-- **项目主页（英文）**：[../../README.md](../../README.md)  
+- **项目主页（中文优先，含截图）**：[../../README.md](../../README.md)  
+- **英文主页**：[../../README.en.md](../../README.en.md)  
+- **封版说明**：[../FREEZE.md](../FREEZE.md) · [FREEZE.md](./FREEZE.md)  
 - **免责声明**：[../../DISCLAIMER.md](../../DISCLAIMER.md)
 
 ## 本目录

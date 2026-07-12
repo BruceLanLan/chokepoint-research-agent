@@ -15,9 +15,17 @@
 
 ## Next up (edit as you go)
 
-- [ ] 10.x: optional live memo pytest (triple gate); Playwright when needed
-- [ ] Coverage-driven 6th vertical only if watchlist demands
-- [ ] Keep offline tests green; weekly: golden-path + compare-vertical
+- [ ] **FROZEN** at 10.0.1 unless FREEZE.md unfreeze criteria
+- [ ] 10.x only: security / CI / docs errata / user-driven P0
+- [ ] Optional later: live memo pytest; 6th vertical on real coverage need
+
+---
+
+## 2026-07-12 — v10.0.1 docs freeze (Chinese README + screenshots)
+
+- **Shipped:** Chinese-first README with UI screenshots; EN → README.en.md; FREEZE.md
+- **Tests:** offline suite green
+- **Blocked:** none (intentionally feature-frozen)
 
 ---
 
