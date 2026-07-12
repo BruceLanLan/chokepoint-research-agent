@@ -1453,6 +1453,42 @@ def metrics_run_cmd(
     console.print(run_all_metrics(text))
 
 
+
+
+@app.command("questionnaire")
+def questionnaire_cmd(name: Optional[str] = typer.Argument(None)):
+    """List/run structured research questionnaires."""
+    from src.questionnaires.registry import get_questionnaire, list_questionnaires
+    if not name:
+        for q in list_questionnaires():
+            console.print(f"[cyan]{q}[/cyan]")
+        return
+    try:
+        console.print(get_questionnaire(name))
+    except ModuleNotFoundError:
+        raise typer.Exit(1)
+
+
+@app.command("rubric")
+def rubric_cmd(
+    name: Optional[str] = typer.Argument(None),
+    text: str = typer.Option("", "--text"),
+    all_rubrics: bool = typer.Option(False, "--all"),
+):
+    """Process quality rubrics (not investment scores)."""
+    from src.rubrics.registry import list_rubrics, score_all
+    import importlib
+    if all_rubrics or (not name and text):
+        console.print(score_all(text or "system kill criteria https://x.com"))
+        return
+    if not name:
+        for r in list_rubrics():
+            console.print(f"[cyan]{r}[/cyan]")
+        return
+    mod = importlib.import_module(f"src.rubrics.{name}")
+    console.print(mod.score(text))
+
+
 @app.command("quality-board")
 def quality_board_cmd(limit: int = typer.Option(30, "--limit")):
     """Structure-quality leaderboard for recent memos."""
