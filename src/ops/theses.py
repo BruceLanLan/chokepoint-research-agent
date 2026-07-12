@@ -62,6 +62,11 @@ def add_thesis(
         "updated_at": datetime.now().isoformat(timespec="seconds"),
         "reviews": [],
     }
+    if not item["kill_criteria"]:
+        item["process_warning"] = (
+            "No kill criteria — thesis will show as high process risk in kill-monitor. "
+            "Add falsifiers before relying on this notebook entry."
+        )
     data.setdefault("items", []).append(item)
     _save(data)
     return item

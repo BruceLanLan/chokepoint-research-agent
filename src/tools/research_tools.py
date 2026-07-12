@@ -20,9 +20,7 @@ def _tavily_client():
 
     settings = get_settings()
     if not settings.tavily_api_key:
-        raise RuntimeError(
-            "TAVILY_API_KEY 未配置。请到 https://tavily.com 申请免费 Key 并写入 .env"
-        )
+        return None
     return TavilyClient(api_key=settings.tavily_api_key)
 
 
@@ -73,6 +71,12 @@ def web_search(
         Formatted search hits with title, url, snippet.
     """
     client = _tavily_client()
+    if client is None:
+        return (
+            "Search unavailable: TAVILY_API_KEY not configured. "
+            "Continue with filings tools, knowledge maps, and explicit offline evidence. "
+            "Get a key at https://tavily.com — research only, not investment advice."
+        )
     try:
         max_results = max(1, min(int(max_results or 5), 8))
     except (TypeError, ValueError):

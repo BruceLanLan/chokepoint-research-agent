@@ -99,6 +99,48 @@ def register(app: FastAPI) -> None:
             if req.bilingual:
                 object.__setattr__(settings, "bilingual_memo", True)
             q, mode = _resolve_question(req)
+            if not (q or "").strip():
+                raise HTTPException(
+                    422,
+                    "question required (or set vertical/template_id to scaffold)",
+                )
+            # Offline mock path — no LLM (UI checkbox / API mock:true)
+            if req.mock:
+                from src.eval.mock_pipeline import MOCK_MEMO, run_mock_pipeline
+
+                report = MOCK_MEMO
+                if req.vertical:
+                    report = (
+                        f"# Mock vertical: {req.vertical}\n\n"
+                        f"Question: {q[:500]}\n\n"
+                        + MOCK_MEMO
+                    )
+                quality = validate_report_structure(report)
+                card = extract_scorecard_table(report)
+                cost = {"mock": True, "total_tokens_est": 0}
+                saved = None
+                exports = None
+                title = (req.question or q or "mock")[:40]
+                if req.save_report:
+                    saved = save_report_file(
+                        title=title, markdown_body=report, mode=mode, quality=quality
+                    )
+                if req.export:
+                    exports = export_report_bundle(
+                        title=title, markdown_body=report, mode=mode, extra={"cost": cost}
+                    )
+                mock_meta = run_mock_pipeline()
+                return ResearchResponse(
+                    question=req.question or q,
+                    report=report,
+                    mode=mode,
+                    saved_path=saved,
+                    exports=exports,
+                    quality={**quality, "mock": True, "mock_pipeline": mock_meta},
+                    scorecard_nodes=len(card.nodes),
+                    session_id=req.session_id,
+                    cost=cost,
+                )
             agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
             result = agent.invoke({"messages": [{"role": "user", "content": q}]})
             report = extract_final_text(result)
@@ -107,24 +149,25 @@ def register(app: FastAPI) -> None:
             cost = get_cost_tracker().summary()
             saved = None
             exports = None
+            title = (req.question or q or "research")[:40]
             if req.save_report:
                 saved = save_report_file(
-                    title=req.question[:40], markdown_body=report, mode=mode, quality=quality
+                    title=title, markdown_body=report, mode=mode, quality=quality
                 )
             if req.export:
                 exports = export_report_bundle(
-                    title=req.question[:40], markdown_body=report, mode=mode, extra={"cost": cost}
+                    title=title, markdown_body=report, mode=mode, extra={"cost": cost}
                 )
             if req.session_id:
                 append_turn(
                     req.session_id,
-                    question=req.question,
+                    question=req.question or q,
                     report=report,
                     mode=mode,
-                    meta={"quality": quality, "cost": cost},
+                    meta={"quality": quality, "cost": cost, "vertical": req.vertical},
                 )
             return ResearchResponse(
-                question=req.question,
+                question=req.question or q,
                 report=report,
                 mode=mode,
                 saved_path=saved,
@@ -138,7 +181,15 @@ def register(app: FastAPI) -> None:
             raise
         except Exception as exc:  # noqa: BLE001
             log.exception("research failed")
-            raise HTTPException(500, str(exc)) from exc
+            msg = str(exc)
+            # Friendlier client errors for common misconfig
+            if "API_KEY" in msg or "TAVILY" in msg or "api_key" in msg.lower():
+                raise HTTPException(
+                    503,
+                    f"Research dependency missing: {msg}. "
+                    "Tip: use mock:true for offline demo, or configure keys in .env.",
+                ) from exc
+            raise HTTPException(500, msg) from exc
 
 
 
@@ -152,19 +203,64 @@ def register(app: FastAPI) -> None:
             try:
                 reset_cost_tracker()
                 q, mode = _resolve_question(req)
-                agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
+                if not (q or "").strip():
+                    yield {
+                        "event": "error",
+                        "data": json.dumps(
+                            {"error": "question required (or set vertical/template)"},
+                            ensure_ascii=False,
+                        ),
+                    }
+                    return
                 yield {
                     "event": "start",
                     "data": json.dumps(
                         {
-                            "question": req.question,
+                            "question": req.question or q[:200],
                             "mode": mode,
                             "skill": req.skill,
                             "vertical": req.vertical,
+                            "mock": req.mock,
                         },
                         ensure_ascii=False,
                     ),
                 }
+                if req.mock:
+                    from src.eval.mock_pipeline import MOCK_MEMO
+
+                    report = MOCK_MEMO
+                    if req.vertical:
+                        report = f"# Mock vertical: {req.vertical}\n\n{MOCK_MEMO}"
+                    quality = validate_report_structure(report)
+                    cost = {"mock": True, "total_tokens_est": 0}
+                    path = None
+                    exports = None
+                    title = (req.question or q or "mock")[:40]
+                    if req.save_report:
+                        path = save_report_file(
+                            title=title, markdown_body=report, mode=mode, quality=quality
+                        )
+                    if req.export:
+                        exports = export_report_bundle(
+                            title=title, markdown_body=report, mode=mode, extra={"cost": cost}
+                        )
+                    yield {
+                        "event": "final",
+                        "data": json.dumps(
+                            {
+                                "report": report,
+                                "saved_path": path,
+                                "exports": exports,
+                                "quality": quality,
+                                "cost": cost,
+                                "mock": True,
+                            },
+                            ensure_ascii=False,
+                        ),
+                    }
+                    yield {"event": "done", "data": "[DONE]"}
+                    return
+                agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
                 final_text = ""
                 for event in agent.stream(
                     {"messages": [{"role": "user", "content": q}]}, stream_mode="updates"
@@ -332,6 +428,7 @@ def register(app: FastAPI) -> None:
             skill=body.get("skill"),
             template_id=body.get("template_id") or "chokepoint_map",
             mode=body.get("mode"),
+            vertical=body.get("vertical"),
         )
 
 

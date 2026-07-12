@@ -1,6 +1,8 @@
 """Application factory."""
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -11,6 +13,14 @@ from src.api.deps import STATIC_DIR, clear_settings_cache, get_settings, log, se
 from src.config import get_settings as _gs
 
 
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    clear_settings_cache()
+    setup_logging(get_settings().log_level)
+    log.info("API v%s starting", __version__)
+    yield
+
+
 def create_app() -> FastAPI:
     app = FastAPI(
         title="Chokepoint Research Agent",
@@ -19,6 +29,7 @@ def create_app() -> FastAPI:
             "Research/education only — not investment advice."
         ),
         version=__version__,
+        lifespan=_lifespan,
     )
     app.add_middleware(
         CORSMiddleware,
@@ -40,11 +51,5 @@ def create_app() -> FastAPI:
 
     for mod in (core, research, coverage, reports, pro, knowledge, ops):
         mod.register(app)
-
-    @app.on_event("startup")
-    def _startup():
-        clear_settings_cache()
-        setup_logging(get_settings().log_level)
-        log.info("API v%s starting", __version__)
 
     return app

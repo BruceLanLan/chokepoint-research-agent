@@ -1,5 +1,28 @@
 # Changelog
 
+## 8.2.0 — 2026-07-12
+
+20-round review / user-sim / fix / iterate hardening.
+
+### Fixed
+- Template render accepts `{"vars":{…}}` (UI no longer 422)
+- `web_search` soft-fails without Tavily instead of crashing the agent
+- Research API 503 guidance for missing keys; empty question 422 with scaffold hint
+- FastAPI lifespan (remove on_event deprecation)
+
+### Added
+- Offline **`mock` research** (API `mock:true`, CLI `--mock`, UI default checked)
+- **`demo-journey`** CLI + `POST /demo-journey` golden path without LLM
+- `doctor --ops-only` ignores missing model/search keys
+- Plan auto-suggests deep vertical from topic text
+- Thesis `process_warning` when kill criteria missing
+- UI: watch delete, thesis status buttons, desk demo + clickable actions, dynamic verticals
+- `docs/ITERATION_20_ROUNDS.md`, `tests/test_v82_journeys.py`
+
+### Tests
+- 142 offline tests green
+
+
 ## 8.1.0 — 2026-07-12
 
 **Use deep verticals, don't broaden industry catalog.**

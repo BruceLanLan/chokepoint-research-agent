@@ -432,6 +432,21 @@ def register(app: FastAPI) -> None:
 
         return research_desk_status()
 
+    @app.post("/demo-journey")
+    def api_demo_journey(
+        body: dict | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        """Offline golden-path demo for new users (no LLM)."""
+        _check_access(x_api_key)
+        from src.ops.demo_journey import run_demo_journey
+
+        body = body or {}
+        return run_demo_journey(
+            vertical=str(body.get("vertical") or "cpo_optics"),
+            save=bool(body.get("save", True)),
+        )
+
 
 
     @app.get("/charts/quote-history")

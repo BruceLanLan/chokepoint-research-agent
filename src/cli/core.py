@@ -25,7 +25,11 @@ from src.cli.research import run_research as _run_research
 
 def register(app: typer.Typer) -> None:
     @app.command()
-    def doctor():
+    def doctor(
+        ops_only: bool = typer.Option(
+            False, "--ops-only", help="Ignore missing model/search keys (ops surface only)"
+        ),
+    ):
         """Health-check environment, deps, and config."""
         _boot_env()
         from src.ops.doctor import run_doctor
@@ -37,8 +41,11 @@ def register(app: typer.Typer) -> None:
         table.add_column("Check")
         table.add_column("OK")
         table.add_column("Detail")
+        key_checks = {"model_api_key", "tavily_api_key", "model_provider"}
         for c in result["checks"]:
             mark = "[green]yes[/green]" if c["ok"] else f"[red]{c['level']}[/red]"
+            if ops_only and c["name"] in key_checks and not c["ok"]:
+                mark = "[yellow]skip[/yellow]"
             table.add_row(c["name"], mark, str(c["detail"])[:80])
         console.print(table)
         console.print(
@@ -47,11 +54,27 @@ def register(app: typer.Typer) -> None:
         if mig.get("actions"):
             console.print(f"[dim]migrate: {mig['actions']}[/dim]")
         console.print(
-            "[dim]Golden path: about → desk → research → checklist → weekly-ops · "
-            "groups: ops / progrp / export / watch / thesis / schedule[/dim]"
+            "[dim]Golden path: about → desk → research --mock -V cpo_optics → "
+            "checklist → weekly-ops · demo-journey[/dim]"
         )
+        if ops_only:
+            console.print("[dim]--ops-only: missing API keys do not fail the command[/dim]")
+            return
         if not result["ok"]:
             raise typer.Exit(1)
+
+    @app.command("demo-journey")
+    def demo_journey_cmd(
+        vertical: str = typer.Option("cpo_optics", "--vertical", "-V"),
+        save: bool = typer.Option(True, "--save/--no-save"),
+    ):
+        """Offline end-to-end demo: desk → plan → mock memo → vertical suite."""
+        _boot_env()
+        from src.ops.demo_journey import run_demo_journey
+
+        out = run_demo_journey(vertical=vertical, save=save)
+        console.print(out)
+        console.print("[green]demo-journey complete (offline)[/green]")
 
 
 

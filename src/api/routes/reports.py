@@ -89,12 +89,24 @@ def register(app: FastAPI) -> None:
     @app.post("/templates/{template_id}/render")
     def template_render(
         template_id: str,
-        variables: dict[str, str] | None = None,
+        body: dict | None = None,
         x_api_key: str | None = Header(default=None, alias="X-API-Key"),
     ):
+        """Render a research template.
+
+        Accepts either ``{"vars": {...}}``, ``{"variables": {...}}``, or a flat
+        string map of template variables (UI-friendly).
+        """
         _check_access(x_api_key)
+        body = body or {}
+        variables: dict[str, str] = {}
+        raw = body.get("vars") if "vars" in body else body.get("variables")
+        if raw is None and body and all(isinstance(v, (str, int, float)) for v in body.values()):
+            raw = body
+        if isinstance(raw, dict):
+            variables = {str(k): str(v) for k, v in raw.items()}
         try:
-            return render_template(template_id, variables or {})
+            return render_template(template_id, variables)
         except KeyError as exc:
             raise HTTPException(404, str(exc)) from exc
 

@@ -35,6 +35,7 @@ def run_research(
     var: Optional[list[str]] = None,
     skill: Optional[str] = None,
     vertical: Optional[str] = None,
+    mock: bool = False,
     min_quality: int = 0,
     thesis_id: Optional[str] = None,
     pro_suite: bool = False,
@@ -86,20 +87,26 @@ def run_research(
         console.print(f"[cyan]template={template} mode={mode}[/cyan]")
 
     if not question:
-        question = typer.prompt("请输入研究问题")
+        if mock and vertical:
+            pass  # scaffold already ran above when vertical set
+        elif mock:
+            question = "Offline mock chokepoint memo"
+        else:
+            question = typer.prompt("请输入研究问题")
 
     if mode not in VALID_MODES:
         console.print(f"[red]Unknown mode: {mode}[/red]")
         raise typer.Exit(2)
 
-    problems = settings.validate_runtime(require_tavily=True)
-    if problems:
-        for p in problems:
-            console.print(f"[yellow]! {p}[/yellow]")
-        if any("API_KEY" in p and "TAVILY" not in p for p in problems):
-            raise typer.Exit(1)
+    if not mock:
+        problems = settings.validate_runtime(require_tavily=True)
+        if problems:
+            for p in problems:
+                console.print(f"[yellow]! {p}[/yellow]")
+            if any("API_KEY" in p and "TAVILY" not in p for p in problems):
+                raise typer.Exit(1)
 
-    question_for_agent = question
+    question_for_agent = question or ""
     if session:
         from src.memory.sessions import session_context_block
 
@@ -110,7 +117,8 @@ def run_research(
     console.print(
         Panel.fit(
             f"[bold cyan]Chokepoint Research Agent[/bold cyan]\n"
-            f"Q: {question[:200]}\nmode={mode}\n"
+            f"Q: {(question or '')[:200]}\nmode={mode}"
+            f"{' mock=True' if mock else ''}\n"
             f"[dim]Research only — not investment advice[/dim]",
             border_style="cyan",
         )
@@ -120,17 +128,26 @@ def run_research(
     from src.schemas.scorecard import extract_scorecard_table, validate_report_structure
 
     settings.reports_dir.mkdir(parents=True, exist_ok=True)
-    agent = build_investment_agent(
-        settings, mode=mode, skill=skill, vertical=vertical
-    )  # type: ignore[arg-type]
-    payload = {"messages": [{"role": "user", "content": question_for_agent}]}
 
-    if stream:
-        final_text = _stream_agent(agent, payload)
+    if mock:
+        from src.eval.mock_pipeline import MOCK_MEMO
+
+        final_text = MOCK_MEMO
+        if vertical:
+            final_text = f"# Mock vertical: {vertical}\n\nQuestion: {question}\n\n" + MOCK_MEMO
+        console.print("[dim]mock offline — no LLM[/dim]")
     else:
-        with console.status("[bold green]Researching…"):
-            result = agent.invoke(payload)
-        final_text = extract_final_text(result)
+        agent = build_investment_agent(
+            settings, mode=mode, skill=skill, vertical=vertical
+        )  # type: ignore[arg-type]
+        payload = {"messages": [{"role": "user", "content": question_for_agent}]}
+
+        if stream:
+            final_text = _stream_agent(agent, payload)
+        else:
+            with console.status("[bold green]Researching…"):
+                result = agent.invoke(payload)
+            final_text = extract_final_text(result)
 
     from src.pipeline.postprocess import postprocess_memo
 
@@ -244,6 +261,7 @@ def register(app: typer.Typer) -> None:
         vertical: Optional[str] = typer.Option(
             None, "--vertical", "-V", help="deep vertical pack (cpo_optics, hbm_packaging, …)"
         ),
+        mock: bool = typer.Option(False, "--mock", help="offline mock memo — no LLM"),
         min_quality: int = typer.Option(0, "--min-quality", help="postprocess quality gate"),
         thesis_id: Optional[str] = typer.Option(None, "--thesis-id", help="link saved memo to thesis"),
         pro_suite: bool = typer.Option(False, "--pro-suite", help="run pro suite on saved memo"),
@@ -252,7 +270,8 @@ def register(app: typer.Typer) -> None:
     ):
         """Run multi-agent research (or render --template first).
 
-        Deep vertical example: research --vertical cpo_optics
+        Deep vertical: research --vertical cpo_optics
+        Offline demo: research --mock --vertical cpo_optics
         """
         vars_list = list(var) if var else []
         _run_research(
@@ -267,6 +286,7 @@ def register(app: typer.Typer) -> None:
             var=vars_list,
             skill=skill,
             vertical=vertical,
+            mock=mock,
             min_quality=min_quality,
             thesis_id=thesis_id,
             pro_suite=pro_suite,

@@ -65,7 +65,7 @@ def get_agent(mode: str = "full", skill: str | None = None, vertical: str | None
 
 
 class ResearchRequest(BaseModel):
-    question: str = Field(..., min_length=2)
+    question: str = Field("", min_length=0)
     save_report: bool = True
     mode: Mode = "full"
     session_id: Optional[str] = None
@@ -77,6 +77,7 @@ class ResearchRequest(BaseModel):
     vertical: Optional[str] = None
     min_quality: int = 0
     pro_suite: bool = False
+    mock: bool = False  # offline mock memo — no LLM
 
 
 class ResearchResponse(BaseModel):

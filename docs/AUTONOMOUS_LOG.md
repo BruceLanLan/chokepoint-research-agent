@@ -15,9 +15,19 @@
 
 ## Next up (edit as you go)
 
-- [ ] Optional: further domain depth on remaining 45 pro YAML specs (only when coverage demands)
-- [ ] Live-gated integration tests behind explicit env (keep default offline)
-- [ ] Keep offline tests green; weekly ritual desk + weekly-ops + vertical suite
+- [ ] Optional: frontmatter `vertical_id` on mock/live save
+- [ ] Optional: Playwright smoke for static UI
+- [ ] Live-gated integration tests behind explicit env
+- [ ] Keep offline tests green; weekly ritual desk + demo-journey
+
+---
+
+## 2026-07-12 — v8.2.0 twenty-round review loop
+
+- **Shipped:** template vars fix, tavily soft-fail, mock research, demo-journey, doctor --ops-only, plan vertical suggest, thesis warning, UI journey UX, iteration log
+- **Tests:** 142 passed
+- **Artifact:** docs/ITERATION_20_ROUNDS.md
+- **Blocked:** none
 
 ---
 

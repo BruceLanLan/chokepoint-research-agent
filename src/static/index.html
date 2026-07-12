@@ -67,6 +67,7 @@
             <div class="actions" style="margin:0">
               <button class="btn sm" id="desk-refresh" data-i18n="refresh">Refresh</button>
               <button class="btn sm sec" id="desk-weekly" data-i18n="weeklyOps">Weekly ops</button>
+              <button class="btn sm sec" id="desk-demo" data-i18n="demoJourney">Demo journey</button>
               <button class="btn sm ghost" id="desk-about" data-i18n="about">About</button>
             </div>
           </div>
@@ -125,6 +126,7 @@
           <div class="row">
             <div class="checkline"><input type="checkbox" id="stream" checked /><span data-i18n="sse">SSE stream</span></div>
             <div class="checkline"><input type="checkbox" id="bilingual" /><span data-i18n="bilingual">Bilingual memo</span></div>
+            <div class="checkline"><input type="checkbox" id="mock" checked /><span data-i18n="mockOffline">Mock offline (no LLM)</span></div>
           </div>
           <div class="row">
             <div class="checkline"><input type="checkbox" id="pro-suite" /><span data-i18n="proSuite">Run pro-suite after save</span></div>
@@ -173,6 +175,7 @@
           <table style="margin-top:14px"><thead><tr>
             <th>ID</th><th data-i18n="symbol">Symbol</th><th data-i18n="name">Name</th>
             <th data-i18n="priority">Pri</th><th data-i18n="thesisNote">Thesis</th>
+            <th></th>
           </tr></thead><tbody id="w-body"></tbody></table>
         </div>
       </section>

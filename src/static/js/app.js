@@ -157,7 +157,29 @@
       ul.innerHTML = `<li class="muted">No actions — workspace looks healthy.</li>`;
       return;
     }
-    ul.innerHTML = list.map((a) => `<li>${escapeHtml(String(a))}</li>`).join("");
+    ul.innerHTML = list
+      .map((a) => {
+        const s = String(a);
+        const vert = (s.match(/--vertical\s+(\S+)/) || [])[1];
+        if (vert) {
+          return `<li><button type="button" class="linkish" data-go-vert="${escapeAttr(vert)}">${escapeHtml(s)}</button></li>`;
+        }
+        if (/weekly/i.test(s)) {
+          return `<li><button type="button" class="linkish" data-go-tab="analytics">${escapeHtml(s)}</button></li>`;
+        }
+        return `<li>${escapeHtml(s)}</li>`;
+      })
+      .join("");
+    ul.querySelectorAll("[data-go-vert]").forEach((b) => {
+      b.addEventListener("click", () => {
+        if ($("#vertical")) $("#vertical").value = b.dataset.goVert;
+        switchTab("research");
+        toast("Vertical set: " + b.dataset.goVert);
+      });
+    });
+    ul.querySelectorAll("[data-go-tab]").forEach((b) => {
+      b.addEventListener("click", () => switchTab(b.dataset.goTab));
+    });
   }
 
   async function loadDesk() {
@@ -186,6 +208,20 @@
     $("#desk-about")?.addEventListener("click", async () => {
       try {
         setOut($("#desk-out"), await api("/about"));
+      } catch (e) {
+        toast(e.message);
+      }
+    });
+    // Optional: run offline demo from desk if button exists later
+    $("#desk-demo")?.addEventListener("click", async () => {
+      try {
+        const r = await api("/demo-journey", {
+          method: "POST",
+          body: JSON.stringify({ vertical: "cpo_optics", save: true }),
+        });
+        setOut($("#desk-out"), r);
+        toast("Demo journey complete");
+        loadDesk();
       } catch (e) {
         toast(e.message);
       }
@@ -226,13 +262,36 @@
       }
     });
 
+    // Populate vertical dropdown from API (fallback keeps static options)
+    (async () => {
+      try {
+        const data = await api("/pro/verticals?full=false");
+        const items = data.items || [];
+        const sel = $("#vertical");
+        if (!sel || !items.length) return;
+        const cur = sel.value;
+        sel.innerHTML =
+          '<option value="">—</option>' +
+          items
+            .map(
+              (v) =>
+                `<option value="${escapeAttr(v.id)}">${escapeHtml(v.id)} — ${escapeHtml(v.title || "")}</option>`
+            )
+            .join("");
+        if (cur) sel.value = cur;
+      } catch {
+        /* keep static options */
+      }
+    })();
+
     $("#run")?.addEventListener("click", runResearch);
   }
 
   async function runResearch() {
     const question = ($("#q")?.value || "").trim();
-    if (!question) {
-      toast("Enter a research question");
+    const verticalEarly = ($("#vertical")?.value || "").trim();
+    if (!question && !verticalEarly) {
+      toast("Enter a research question or pick a vertical");
       return;
     }
     const mode = $("#mode")?.value || "full";
@@ -241,6 +300,7 @@
     const session_id = ($("#session")?.value || "").trim() || null;
     const bilingual = !!$("#bilingual")?.checked;
     const useStream = !!$("#stream")?.checked;
+    const mock = !!$("#mock")?.checked;
     const status = $("#status");
     const live = $("#live");
     const out = $("#out");
@@ -251,15 +311,20 @@
     if (meta) meta.innerHTML = "";
 
     const body = {
-      question,
+      question: question || (vertical ? "vertical" : ""),
       mode,
       save_report: true,
       bilingual,
       export: true,
       session_id,
+      mock,
     };
     if (skill) body.skill = skill;
     if (vertical) body.vertical = vertical;
+    if (!body.question && !vertical) {
+      toast("Enter a question or pick a vertical");
+      return;
+    }
 
     try {
       if (useStream) {
@@ -377,9 +442,21 @@
           <td>${escapeHtml(it.name || "")}</td>
           <td><span class="tag">${escapeHtml(it.priority || "")}</span></td>
           <td>${escapeHtml(it.thesis || "")}</td>
+          <td><button class="btn sm ghost" data-del="${escapeAttr(it.id || "")}">×</button></td>
         </tr>`
         )
         .join("");
+      body.querySelectorAll("button[data-del]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            await api("/watchlist/" + encodeURIComponent(btn.dataset.del), { method: "DELETE" });
+            toast("Removed");
+            loadWatch();
+          } catch (e) {
+            toast(e.message);
+          }
+        });
+      });
     } catch (e) {
       toast(e.message);
     }
@@ -446,6 +523,10 @@
       box.innerHTML = items
         .map((t) => {
           const kills = (t.kill_criteria || []).join("; ");
+          const warn =
+            !(t.kill_criteria || []).length
+              ? `<div class="warn-banner" style="margin-top:8px">⚠ No kill criteria — process risk</div>`
+              : "";
           return `<div class="list-card">
             <div class="list-card-head">
               <strong>${escapeHtml(t.title || t.id || "")}</strong>
@@ -455,9 +536,29 @@
             <p>${escapeHtml(t.statement || "")}</p>
             <div class="tiny">System: ${escapeHtml(t.system || "—")}</div>
             <div class="tiny">Kills: ${escapeHtml(kills || "—")}</div>
+            ${warn}
+            <div class="row-actions" style="margin-top:8px">
+              <button class="btn sm ghost" data-status="watching" data-id="${escapeAttr(t.id || "")}">Watching</button>
+              <button class="btn sm ghost" data-status="invalidated" data-id="${escapeAttr(t.id || "")}">Invalidate</button>
+              <button class="btn sm ghost" data-status="archived" data-id="${escapeAttr(t.id || "")}">Archive</button>
+            </div>
           </div>`;
         })
         .join("");
+      box.querySelectorAll("button[data-status]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          try {
+            await api("/theses/" + encodeURIComponent(btn.dataset.id) + "/status", {
+              method: "POST",
+              body: JSON.stringify({ status: btn.dataset.status, note: "ui" }),
+            });
+            toast("Status → " + btn.dataset.status);
+            loadTheses();
+          } catch (e) {
+            toast(e.message);
+          }
+        });
+      });
     } catch (e) {
       toast(e.message);
     }
