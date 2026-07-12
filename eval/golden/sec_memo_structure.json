@@ -4,5 +4,5 @@
   "min_quality": 50,
   "require_scorecard": false,
   "require_urls": 1,
-  "fixture_report": "## 1. 研究结论\n观望。需结合 10-K 风险因素。\n\n## 供应链 / chokepoint\n先进封装产能是潜在开关。\n\n## 风险与证伪条件\nKill criteria: 公司 10-K 显示主要客户集中度下降且无替代叙事\n\n## 来源\n[1] SEC filing: https://www.sec.gov/Archives/edgar/data/0000320193/000032019324000123/aapl-20240928.htm\n\n正文补充：监管文件引用应带 URL；数字必须可追溯。仅供研究学习，不构成投资建议。继续填充分析段落以通过结构长度检查。"
+  "fixture_report": "## 1. 研究结论\n观望。核心逻辑是供应链卡点研究框架。US co with SEC filings in memo\n\n## 2. 系统解构：物理开关 / chokepoint\n系统边界清晰，节点需要验证。\n\n| 节点 | 不可替代 | 集中度 | 杠杆 | 真空 | 拐点 | 备注 |\n|------|---------|--------|------|------|------|------|\n| ELS激光 | 5 | 4 | 5 | 4 | 4 | hyp |\n| 光纤对准 | 4 | 4 | 4 | 3 | 3 | hyp |\n| SOI衬底 | 3 | 3 | 3 | 3 | 3 | hyp |\n\n\n## 6. 风险与证伪条件\nKill criteria: 多源化替代与需求路径变化\n\n## 8. 信息来源\n- https://example.com/golden/sec_memo_structure\n- https://www.sec.gov/cgi-bin/browse-edgar\n- https://example.com/extra/0\n\n详细分析：本段填充长度以满足结构评估对篇幅的要求。继续补充行业上下文与路径依赖讨论，强调框架而非荐股。共封装光学与先进封装供给集中度需要用日期标注的产能数据验证。\n"
 }

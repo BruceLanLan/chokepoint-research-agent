@@ -1,0 +1,15 @@
+id: hbm_packaging
+title: HBM / Advanced packaging
+modules:
+- capacity_tracker
+- supplier_map
+- tech_roadmap
+- customer_map
+- moat_score
+keywords:
+- HBM
+- CoWoS
+- OSAT
+- substrate
+- TSV
+disclaimer: research_only_not_investment_advice

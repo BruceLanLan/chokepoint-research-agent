@@ -1,0 +1,43 @@
+id: risk_matrix
+title: Risk Matrix
+version_theme: v5.8.0
+description: risk matrix
+keywords:
+- risk
+- kill
+- concentration
+- policy
+- liquidity
+- export
+- customer
+- chokepoint
+- capacity
+- evidence
+- risk matrix
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- Top 3 risks by severity?
+- Which are process vs market?
+- Kill criteria per risk?
+fields:
+- severity
+- likelihood
+- mitigation

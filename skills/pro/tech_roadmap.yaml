@@ -1,0 +1,45 @@
+id: tech_roadmap
+title: Tech Roadmap
+version_theme: v5.19.0
+description: tech roadmap
+keywords:
+- roadmap
+- node
+- generation
+- HBM
+- CPO
+- process
+- timeline
+- chokepoint
+- capacity
+- concentration
+- kill
+- evidence
+- tech roadmap
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- Next milestone date?
+- Dependency chain?
+- Slip kill criteria?
+fields:
+- milestone
+- target_date
+- dependencies

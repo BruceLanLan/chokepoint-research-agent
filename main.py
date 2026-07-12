@@ -22,13 +22,20 @@ app = typer.Typer(
     add_completion=False,
     help=(
         "Chokepoint Research Agent — professional research workstation "
-        "(Chokepoint Theory). Not investment advice."
+        "(Chokepoint Theory). Not investment advice.\n\n"
+        "Golden path: doctor → about → desk → research → checklist → weekly-ops"
     ),
 )
 watch_app = typer.Typer(help="Coverage book / watchlist")
 thesis_app = typer.Typer(help="Thesis registry")
+ops_app = typer.Typer(help="Research ops hygiene (desk, digest, health, weekly)")
+pro_app = typer.Typer(help="Professional modules (50-module train + suite)")
+export_app = typer.Typer(help="Export / backup / snapshot")
 app.add_typer(watch_app, name="watch")
 app.add_typer(thesis_app, name="thesis")
+app.add_typer(ops_app, name="ops")
+app.add_typer(pro_app, name="progrp")
+app.add_typer(export_app, name="export")
 
 console = Console()
 VALID_MODES = {"full", "chokepoint_fast", "risk_only", "compare"}
@@ -61,6 +68,10 @@ def research(
     ),
     skill: Optional[str] = typer.Option(None, "--skill", help="domain skill pack id"),
     min_quality: int = typer.Option(0, "--min-quality", help="postprocess quality gate"),
+    thesis_id: Optional[str] = typer.Option(None, "--thesis-id", help="link saved memo to thesis"),
+    pro_suite: bool = typer.Option(False, "--pro-suite", help="run pro suite on saved memo"),
+    pro_persist: bool = typer.Option(False, "--pro-persist", help="persist pro notes when suite passes"),
+    no_auto_tag: bool = typer.Option(False, "--no-auto-tag"),
 ):
     """Run multi-agent research (or render --template first)."""
     vars_list = list(var) if var else []
@@ -76,6 +87,10 @@ def research(
         var=vars_list,
         skill=skill,
         min_quality=min_quality,
+        thesis_id=thesis_id,
+        pro_suite=pro_suite,
+        pro_persist=pro_persist,
+        auto_tag=not no_auto_tag,
     )
 
 
@@ -92,6 +107,10 @@ def _run_research(
     var: Optional[list[str]] = None,
     skill: Optional[str] = None,
     min_quality: int = 0,
+    thesis_id: Optional[str] = None,
+    pro_suite: bool = False,
+    pro_persist: bool = False,
+    auto_tag: bool = True,
 ) -> None:
     _boot_env()
     from src.config import get_settings
@@ -191,28 +210,28 @@ def _run_research(
     console.print(f"[dim]cost_est={cost}[/dim]")
 
     if save and final_text:
-        from src.tools.reports import save_report_file
+        from src.pipeline.save_pipeline import save_research_memo
 
-        path = save_report_file(
-            title=question[:40], markdown_body=final_text, mode=mode, quality=quality
+        saved = save_research_memo(
+            question[:40],
+            final_text,
+            mode=mode,
+            skill=skill,
+            thesis_id=thesis_id,
+            min_quality=min_quality,
+            auto_tag=auto_tag,
+            pro_suite=pro_suite,
+            pro_persist=pro_persist,
+            extra_meta={"cost_tokens_est": cost.get("total_tokens_est")},
+            quality=quality,
+            skip_postprocess=True,
         )
+        path = saved["path"]
         console.print(f"[green]Saved: {path}[/green]")
-        try:
-            from src.ops.audit import log_event
-            from src.ops.evidence import extract_and_store
-
-            extract_and_store(final_text, report_name=Path(path).name, title=question[:40])
-            log_event(
-                "research_saved",
-                detail={
-                    "path": str(path),
-                    "mode": mode,
-                    "quality": quality.get("score"),
-                    "skill": skill,
-                },
-            )
-        except Exception:  # noqa: BLE001
-            pass
+        if saved.get("tags"):
+            console.print(f"[dim]tags={saved.get('tags')}[/dim]")
+        if thesis_id:
+            console.print(f"[dim]thesis_link={saved.get('thesis_link')}[/dim]")
         if export_all or settings.export_html_json:
             from src.tools.export import export_report_bundle
 
@@ -257,12 +276,98 @@ def _stream_agent(agent, payload: dict) -> str:
 # ── doctor / catalog / templates / brief ───────────────────────────────────
 
 
+@ops_app.command("desk")
+def ops_desk(md: bool = typer.Option(False, "--md")):
+    """Alias: research desk status."""
+    desk_cmd(md=md)
+
+
+@ops_app.command("digest")
+def ops_digest(save: bool = typer.Option(True, "--save/--no-save")):
+    digest_cmd(save=save)
+
+
+@ops_app.command("health")
+def ops_health():
+    workspace_health_cmd()
+
+
+@ops_app.command("weekly")
+def ops_weekly(
+    save: bool = typer.Option(True, "--save/--no-save"),
+    enqueue: int = typer.Option(0, "--enqueue"),
+):
+    weekly_ops_cmd(save=save, enqueue=enqueue)
+
+
+@ops_app.command("migrate")
+def ops_migrate():
+    """Run data store schema migration / backup."""
+    _boot_env()
+    from src.ops.store_migrate import migrate_data_stores
+
+    console.print(migrate_data_stores())
+
+
+@pro_app.command("list")
+def progrp_list():
+    pro_cmd(module=None)
+
+
+@pro_app.command("suite")
+def progrp_suite(
+    text: str = typer.Option(
+        "System boundary defined with chokepoint nodes, kill criteria, and https://example.com source",
+        "--text",
+    ),
+    symbol: str = typer.Option("", "--symbol"),
+):
+    pro_suite_cmd(text=text, symbol=symbol)
+
+
+@pro_app.command("dashboard")
+def progrp_dashboard():
+    pro_dashboard_cmd()
+
+
+@pro_app.command("verticals")
+def progrp_verticals():
+    """List deep vertical packs under skills/pro_verticals/."""
+    from pathlib import Path
+    import yaml
+
+    d = ROOT / "skills" / "pro_verticals"
+    if not d.is_dir():
+        console.print("[]")
+        return
+    for p in sorted(d.glob("*.yaml")):
+        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        console.print(f"[cyan]{p.stem}[/cyan]  {data.get('title')}  modules={data.get('modules')}")
+
+
+@export_app.command("pack")
+def exportgrp_pack(report: str = typer.Argument(...)):
+    export_pack_cmd(report)
+
+
+@export_app.command("snapshot")
+def exportgrp_snapshot():
+    snapshot_cmd()
+
+
+@export_app.command("pro")
+def exportgrp_pro():
+    pro_export_cmd()
+
+
 @app.command()
 def doctor():
     """Health-check environment, deps, and config."""
     _boot_env()
     from src.ops.doctor import run_doctor
+    from src.ops.store_migrate import migrate_data_stores
 
+    mig = migrate_data_stores()
     result = run_doctor()
     table = Table(title="Doctor")
     table.add_column("Check")
@@ -274,6 +379,12 @@ def doctor():
     console.print(table)
     console.print(
         f"ok={result['ok']} errors={result['errors']} warnings={result['warnings']}"
+    )
+    if mig.get("actions"):
+        console.print(f"[dim]migrate: {mig['actions']}[/dim]")
+    console.print(
+        "[dim]Golden path: about → desk → research → checklist → weekly-ops · "
+        "groups: ops / progrp / export / watch / thesis / schedule[/dim]"
     )
     if not result["ok"]:
         raise typer.Exit(1)
@@ -701,17 +812,26 @@ def schedule_install(
     hour: int = typer.Option(9, "--hour"),
     minute: int = typer.Option(0, "--minute"),
     limit: int = typer.Option(3, "--limit"),
+    kind: str = typer.Option(
+        "watchlist_brief",
+        "--kind",
+        help="watchlist_brief | weekly_ops | queue_mock",
+    ),
+    enqueue: int = typer.Option(0, "--enqueue", help="for weekly_ops: enqueue watchlist n"),
 ):
-    """Install daily watchlist brief (launchd on macOS; prints cron line always)."""
+    """Install scheduled job (launchd on macOS; prints cron line always)."""
     _boot_env()
     from src.ops.scheduler import install_schedule, load_schedule, save_schedule
 
     cfg = load_schedule()
     cfg["limit"] = limit
+    cfg["kind"] = kind
+    cfg["enqueue"] = enqueue
     save_schedule(cfg)
     result = install_schedule(hour=hour, minute=minute)
     console.print(result)
     console.print(f"[cyan]cron:[/cyan] {result.get('cron_line')}")
+    console.print(f"[dim]kind={kind} (weekly_ops / queue_mock skip live LLM by default)[/dim]")
 
 
 @schedule_app.command("uninstall")
@@ -888,12 +1008,17 @@ def evidence_cmd(
 @app.command("graph")
 def graph_cmd(
     mermaid: bool = typer.Option(False, "--mermaid", help="Emit Mermaid flowchart"),
+    links: bool = typer.Option(False, "--links", help="Include thesis↔report hard links"),
 ):
     """Thesis / chokepoint / symbol graph."""
     _boot_env()
     from src.ops.thesis_graph import build_thesis_graph, to_mermaid
 
     g = build_thesis_graph()
+    if links:
+        from src.ops.thesis_links import graph_edges
+
+        g["report_links"] = graph_edges()
     if mermaid:
         console.print(to_mermaid(g))
     else:
@@ -1011,10 +1136,22 @@ def docx_cmd(
 @app.command("plugins")
 def plugins_cmd(
     load: Optional[str] = typer.Option(None, "--load", help="Load plugin by name"),
+    install: Optional[str] = typer.Option(
+        None, "--install", help="HTTPS manifest URL (hash-pinned; needs PLUGIN_ALLOW_HOSTS)"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run"),
 ):
-    """List / load plugins under ./plugins/."""
+    """List / load plugins under ./plugins/; optional remote install."""
     from src.plugins.loader import list_plugin_files, load_all_plugins, load_plugin
 
+    if install:
+        from src.plugins.remote_install import install_from_manifest
+
+        out = install_from_manifest(install, dry_run=dry_run)
+        console.print(out)
+        if not out.get("ok"):
+            raise typer.Exit(1)
+        return
     if load:
         console.print(load_plugin(load))
         return

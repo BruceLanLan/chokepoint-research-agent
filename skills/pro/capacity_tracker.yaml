@@ -1,0 +1,44 @@
+id: capacity_tracker
+title: Capacity Tracker
+version_theme: v5.14.0
+description: capacity tracker
+keywords:
+- capacity
+- utilization
+- wafer
+- volume
+- expansion
+- capex
+- 产量
+- chokepoint
+- concentration
+- kill
+- evidence
+- capacity tracker
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- What capacity number and date?
+- Who owns the bottleneck tool?
+- Dual-source status?
+fields:
+- capacity_units
+- as_of
+- source_url

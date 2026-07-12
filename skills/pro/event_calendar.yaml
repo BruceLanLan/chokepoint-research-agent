@@ -1,0 +1,50 @@
+id: event_calendar
+title: Event Calendar
+version_theme: v5.2.0
+description: event calendar
+keywords:
+- event
+- catalyst
+- date
+- conference
+- earnings
+- launch
+- roadmap
+- chokepoint
+- capacity
+- concentration
+- kill
+- evidence
+- event calendar
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+- id: dated
+  label: Has explicit date
+  patterns:
+  - 20\d{2}
+  - q[1-4]
+focus_questions:
+- What is the dated event?
+- What evidence confirms timing?
+- What is the kill if date slips?
+fields:
+- event_date
+- event_type
+- confidence

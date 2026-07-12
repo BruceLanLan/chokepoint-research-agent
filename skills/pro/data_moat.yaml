@@ -1,0 +1,37 @@
+id: data_moat
+title: Data Moat
+version_theme: v5.50.0
+description: data moat
+keywords:
+- chokepoint
+- capacity
+- concentration
+- kill
+- evidence
+- data moat
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- What does data_moat add to the chokepoint map?
+- What primary source backs the claim?
+- What kill criteria apply?
+fields:
+- note
+- confidence

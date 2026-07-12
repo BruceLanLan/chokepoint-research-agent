@@ -205,7 +205,7 @@ def subprocess_run(cmd: list[str], check: bool = True) -> dict[str, Any]:
 
 
 def run_scheduled_job_once() -> dict[str, Any]:
-    """Execute configured scheduled job (watchlist brief by default)."""
+    """Execute configured scheduled job (watchlist brief or weekly_ops)."""
     cfg = load_schedule()
     limit = int(cfg.get("limit") or 3)
     kind = cfg.get("kind") or "watchlist_brief"
@@ -213,8 +213,21 @@ def run_scheduled_job_once() -> dict[str, Any]:
     log_dir.mkdir(parents=True, exist_ok=True)
 
     started = datetime.now().isoformat(timespec="seconds")
+    if kind == "weekly_ops":
+        from src.ops.weekly_ops import run_weekly_ops
+
+        out = run_weekly_ops(save=True, enqueue_watchlist=int(cfg.get("enqueue") or 0))
+        return {"kind": kind, "started": started, "result": out, "disclaimer": "research_only_not_investment_advice"}
+    if kind == "queue_mock":
+        from src.ops.schedule_queue import scheduled_queue_tick
+
+        return {
+            "kind": kind,
+            "started": started,
+            "result": scheduled_queue_tick(n=int(cfg.get("limit") or 1), live=False),
+        }
     if kind != "watchlist_brief":
-        return {"error": f"unsupported kind: {kind}", "started": started}
+        return {"error": f"unsupported kind: {kind}", "started": started, "supported": ["watchlist_brief", "weekly_ops", "queue_mock"]}
 
     from src.agents.research_agent import build_investment_agent, extract_final_text
     from src.ops.brief import run_brief

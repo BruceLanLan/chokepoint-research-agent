@@ -1,0 +1,14 @@
+id: power_cooling
+title: Power & cooling for AI racks
+modules:
+- capacity_tracker
+- supplier_map
+- risk_matrix
+- tech_roadmap
+keywords:
+- PDU
+- UPS
+- liquid cooling
+- SiC
+- transformer
+disclaimer: research_only_not_investment_advice

@@ -55,7 +55,8 @@
 </header>
 <div class="layout">
   <nav>
-    <button class="active" data-tab="research">Research 研究</button>
+    <button class="active" data-tab="desk">Desk 工作台</button>
+    <button data-tab="research">Research 研究</button>
     <button data-tab="watch">Watchlist 覆盖</button>
     <button data-tab="thesis">Theses 论点</button>
     <button data-tab="reports">Reports 研报</button>
@@ -67,8 +68,19 @@
     <button data-tab="doctor">Doctor 体检</button>
   </nav>
   <main>
+    <!-- DESK -->
+    <section id="tab-desk" class="card">
+      <h3 style="margin-top:0">Research Desk · 工作台总览</h3>
+      <p class="tiny">Process hygiene for Chokepoint research — not P&amp;L. 仅供研究学习，不构成投资建议。</p>
+      <div class="row">
+        <button class="btn" id="desk-refresh">Refresh desk</button>
+        <button class="btn sec" id="desk-weekly">Run weekly-ops</button>
+      </div>
+      <pre id="desk-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto"></pre>
+    </section>
+
     <!-- RESEARCH -->
-    <section id="tab-research" class="card">
+    <section id="tab-research" class="card hidden">
       <h3 style="margin-top:0">Run research</h3>
       <label>Question / 问题</label>
       <textarea id="q" placeholder="例：以 B200 集群拆解 CPO 卡点…"></textarea>
@@ -137,8 +149,8 @@
         <input id="r-q" placeholder="search…" />
         <button class="btn sec" id="r-refresh">Search / Refresh</button>
       </div>
-      <table><thead><tr><th>Name</th><th>Mode</th><th>Q</th><th>Modified</th></tr></thead><tbody id="r-body"></tbody></table>
-      <label>Preview</label><div id="r-out" style="white-space:pre-wrap;max-height:40vh;overflow:auto" class="mono"></div>
+      <table><thead><tr><th>Name</th><th>Mode</th><th>Q</th><th>Modified</th><th>Actions</th></tr></thead><tbody id="r-body"></tbody></table>
+      <label>Preview / checklist / grade</label><div id="r-out" style="white-space:pre-wrap;max-height:40vh;overflow:auto" class="mono"></div>
     </section>
 
     <!-- TEMPLATES -->
@@ -284,11 +296,23 @@ document.querySelectorAll("nav button").forEach(btn=>{
     btn.classList.add("active");
     document.querySelectorAll("main > section").forEach(s=>s.classList.add("hidden"));
     $("tab-"+btn.dataset.tab).classList.remove("hidden");
+    if(btn.dataset.tab==="desk") loadDesk();
   };
 });
 
 // health
 (async()=>{ try{ const h=await jget("/health"); $("health").textContent=`v${h.version} · ${h.status}`; }catch(e){ $("health").textContent="API offline"; }})();
+
+async function loadDesk(){
+  try{ $("desk-out").textContent=JSON.stringify(await jget("/desk"),null,2); }
+  catch(e){ $("desk-out").textContent=String(e); }
+}
+$("desk-refresh").onclick=()=>loadDesk();
+$("desk-weekly").onclick=async()=>{
+  try{ $("desk-out").textContent=JSON.stringify(await jpost("/weekly-ops",{save:true,enqueue:0}),null,2); }
+  catch(e){ $("desk-out").textContent=String(e); }
+};
+loadDesk().catch(()=>{});
 
 // research
 $("newSession").onclick=async()=>{ const j=await jpost("/sessions",{}); $("session").value=j.session_id||""; };
@@ -357,9 +381,26 @@ async function loadReports(){
   const tb=$("r-body"); if(!tb) return; tb.innerHTML="";
   (j.items||[]).forEach(it=>{
     const tr=document.createElement("tr");
-    tr.style.cursor="pointer";
-    tr.innerHTML=`<td class="mono">${it.name}</td><td>${it.mode||"-"}</td><td>${it.quality_score||"-"}</td><td>${it.modified||""}</td>`;
-    tr.onclick=async()=>{ const d=await jget("/reports/"+encodeURIComponent(it.name)); $("r-out").textContent=d.content||""; };
+    const name=it.name;
+    tr.innerHTML=`<td class="mono">${name}</td><td>${it.mode||"-"}</td><td>${it.quality_score||"-"}</td><td>${it.modified||""}</td>
+      <td>
+        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="view">view</button>
+        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="check">check</button>
+        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="grade">grade</button>
+        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="pack">pack</button>
+      </td>`;
+    tr.querySelectorAll("button").forEach(b=>{
+      b.onclick=async(ev)=>{
+        ev.stopPropagation();
+        const act=b.dataset.act;
+        try{
+          if(act==="view"){ const d=await jget("/reports/"+encodeURIComponent(name)); $("r-out").textContent=d.content||""; }
+          if(act==="check"){ $("r-out").textContent=JSON.stringify(await jget("/checklist/"+encodeURIComponent(name)),null,2); }
+          if(act==="grade"){ $("r-out").textContent=JSON.stringify(await jget("/grade/"+encodeURIComponent(name)),null,2); }
+          if(act==="pack"){ $("r-out").textContent=JSON.stringify(await jpost("/export-pack",{report:name}),null,2); }
+        }catch(e){ $("r-out").textContent=String(e); }
+      };
+    });
     tb.appendChild(tr);
   });
 }

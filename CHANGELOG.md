@@ -1,5 +1,25 @@
 # Changelog
 
+## 7.0.0 — 2026-07-12
+
+Consolidation sprint executing `docs/REVIEW_AND_PLAN_6.3.md` Phases 0–3.
+
+### Added
+- **ProEngine** + 50 YAML specs (`skills/pro/*.yaml`) + 5 vertical packs
+- Unified **save pipeline** (evidence, audit, auto-tag, thesis link, optional pro-suite)
+- Report frontmatter: skill, thesis_id, watch_ids, quality
+- CLI groups: `ops`, `progrp`, `export` (+ golden path tip in doctor)
+- Schedule kinds: `weekly_ops`, `queue_mock`
+- Hash-pinned **remote plugin install** (`plugins --install`, needs PLUGIN_ALLOW_HOSTS)
+- Thesis↔report hard links (`thesis_links`, graph --links)
+- Store schema migrate (`ops migrate` / doctor)
+- UI **Desk** tab + report actions (check/grade/pack)
+- Golden evals ≥16; glossary filler culled; `docs/PROVIDERS.md`
+
+### Changed
+- Pro modules are thin shims over YAML-backed engine (depth ↑, clone code ↓)
+
+
 ## 6.3.0 — 2026-07-12
 
 ### Added

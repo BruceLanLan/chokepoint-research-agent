@@ -1,0 +1,14 @@
+id: specialty_materials
+title: Specialty materials / chemicals
+modules:
+- supplier_map
+- policy_watch
+- capacity_tracker
+- risk_matrix
+keywords:
+- purity
+- photoresist
+- ABF
+- rare earth
+- chemical
+disclaimer: research_only_not_investment_advice

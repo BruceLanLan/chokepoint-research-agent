@@ -1,0 +1,45 @@
+id: moat_score
+title: Moat Score
+version_theme: v5.22.0
+description: moat score
+keywords:
+- moat
+- switching
+- network
+- data
+- ip
+- brand
+- scale
+- chokepoint
+- capacity
+- concentration
+- kill
+- evidence
+- moat score
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- Which moat type?
+- Evidence of switching cost?
+- What falsifies the moat?
+fields:
+- moat_type
+- score_1_5
+- evidence

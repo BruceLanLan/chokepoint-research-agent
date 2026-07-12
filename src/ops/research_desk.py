@@ -24,6 +24,14 @@ def research_desk_status() -> dict[str, Any]:
     queue = queue_summary()
     kills = kill_criteria_dashboard()
     mkt = marketplace_index()
+    providers = {}
+    try:
+        from src.ops.provider_health import probe_providers
+
+        providers = probe_providers(live=False)
+    except Exception:  # noqa: BLE001
+        providers = {"error": "unavailable"}
+
     return {
         "version": __version__,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
@@ -44,11 +52,13 @@ def research_desk_status() -> dict[str, Any]:
         },
         "queue": queue.get("by_status"),
         "kill_monitor_high_risk": kills.get("high_risk_count"),
+        "providers": providers.get("providers") or providers,
         "catalog": {
             "marketplace_listings": (mkt.get("counts") or {}).get("listings"),
             "playbooks": len(list_playbooks()),
             "questionnaires": len(list_questionnaires()),
             "rubrics": len(list_rubrics()),
+            "pro_yaml_specs": True,
         },
         "next_actions": _next_actions(health, pro, kills, queue),
         "disclaimer": "research_only_not_investment_advice",

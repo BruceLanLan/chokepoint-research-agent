@@ -23,12 +23,17 @@ def append_quote(
     *,
     source: str = "manual",
 ) -> dict[str, Any]:
+    snap = dict(snapshot or {})
+    # never present offline stubs as silent real prices
+    if snap.get("stub") or snap.get("error"):
+        snap.setdefault("display_warning", "STUB_OR_ERROR_NOT_LIVE_PRICE")
     row = {
         "at": datetime.now().isoformat(timespec="seconds"),
         "ts": time.time(),
         "symbol": str(symbol).upper().strip(),
         "source": source,
-        "snapshot": snapshot,
+        "snapshot": snap,
+        "is_stub": bool(snap.get("stub") or snap.get("error")),
     }
     with _path().open("a", encoding="utf-8") as f:
         f.write(json.dumps(row, ensure_ascii=False) + "\n")

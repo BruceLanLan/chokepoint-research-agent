@@ -1,0 +1,37 @@
+id: attach_rate
+title: Attach Rate
+version_theme: v5.47.0
+description: attach rate
+keywords:
+- chokepoint
+- capacity
+- concentration
+- kill
+- evidence
+- attach rate
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- What does attach_rate add to the chokepoint map?
+- What primary source backs the claim?
+- What kill criteria apply?
+fields:
+- note
+- confidence

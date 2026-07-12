@@ -15,10 +15,18 @@
 
 ## Next up (edit as you go)
 
-- [ ] **v6.4 consolidation** (see `docs/REVIEW_AND_PLAN_6.3.md`): CLI groups, golden evals, glossary cull, providers.md
-- [ ] **v6.5–v7.0**: golden-path productization + pro engine YAML refactor
-- [ ] Keep offline tests green; avoid live research unless requested
-- [ ] Weekly ritual: `desk` + `weekly-ops` (not more generated modules)
+- [ ] v8.0: full split of main.py / api.py into packages
+- [ ] Domain-deep pro YAML content pass (more than keywords)
+- [ ] Keep offline tests green; weekly ritual desk + weekly-ops
+
+---
+
+## 2026-07-12 — v7.0.0 consolidation sprint
+
+- **Shipped:** ProEngine+YAML, save pipeline, CLI groups, Desk UI, schedule kinds, remote plugin install, thesis links, migrate, PROVIDERS.md, golden evals 16, glossary cull
+- **Tests:** 121 passed
+- **Plan source:** docs/REVIEW_AND_PLAN_6.3.md Phases 0–3
+- **Blocked:** none
 
 ---
 

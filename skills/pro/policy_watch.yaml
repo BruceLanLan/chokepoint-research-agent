@@ -1,0 +1,45 @@
+id: policy_watch
+title: Policy Watch
+version_theme: v5.15.0
+description: policy watch
+keywords:
+- policy
+- export
+- tariff
+- entity list
+- sanction
+- subsidy
+- 监管
+- chokepoint
+- capacity
+- concentration
+- kill
+- evidence
+- policy watch
+checklist:
+- id: scope
+  label: System / scope defined
+  hint: Write system boundary
+- id: evidence
+  label: Evidence with sources
+  hint: Attach URLs / filings
+- id: kill
+  label: Kill / falsifiers
+  hint: What would invalidate?
+- id: nodes
+  label: Physical nodes listed
+  hint: Chokepoint candidates
+- id: peers
+  label: Peer / substitute map
+  hint: Who else can supply?
+- id: time
+  label: Time stamp on numbers
+  hint: When was data true?
+focus_questions:
+- Which jurisdiction?
+- Effective date?
+- Who is directly constrained?
+fields:
+- jurisdiction
+- instrument
+- effective_date

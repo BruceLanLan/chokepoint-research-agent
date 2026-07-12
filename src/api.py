@@ -150,6 +150,82 @@ def index():
     return HTMLResponse("<h1>Chokepoint Agent</h1><a href='/docs'>/docs</a>")
 
 
+@app.get("/thesis-links")
+def api_thesis_links(
+    thesis_id: str | None = None,
+    report: str | None = None,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.thesis_links import graph_edges, links_for_report, links_for_thesis
+
+    if thesis_id:
+        return {"items": links_for_thesis(thesis_id)}
+    if report:
+        return {"items": links_for_report(report)}
+    return graph_edges()
+
+
+@app.post("/thesis-links")
+def api_thesis_link_write(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.thesis_links import link_report_to_thesis
+
+    out = link_report_to_thesis(
+        body.get("thesis_id") or "",
+        body.get("report") or "",
+        rel=body.get("rel") or "supports",
+    )
+    if out.get("error"):
+        raise HTTPException(404, out["error"])
+    return out
+
+
+@app.post("/plugins/install")
+def api_plugin_install(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.plugins.remote_install import install_from_manifest
+
+    out = install_from_manifest(
+        body.get("manifest_url") or "",
+        dry_run=bool(body.get("dry_run")),
+    )
+    if not out.get("ok"):
+        raise HTTPException(400, out.get("error") or "install failed")
+    return out
+
+
+@app.get("/pro/verticals")
+def api_pro_verticals(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from pathlib import Path
+
+    import yaml
+
+    d = Path(__file__).resolve().parents[1] / "skills" / "pro_verticals"
+    items = []
+    if d.is_dir():
+        for p in sorted(d.glob("*.yaml")):
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+            data["id"] = p.stem
+            items.append(data)
+    return {"items": items}
+
+
+@app.post("/migrate")
+def api_migrate(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    _check_access(x_api_key)
+    from src.ops.store_migrate import migrate_data_stores
+
+    return migrate_data_stores()
+
+
 @app.get("/about")
 def api_about():
     """Public capability snapshot (no secrets)."""

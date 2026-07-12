@@ -1,23 +1,24 @@
-"""Registry for pro maturity-train modules."""
+"""Registry for pro maturity-train modules (YAML + ProEngine)."""
 
 from __future__ import annotations
 
-import importlib
 from typing import Any
 
 from src.ops.pro import PRO_MODULE_IDS
+from src.ops.pro.engine import ProEngine, list_spec_ids, load_spec
 
 
 def list_modules() -> list[dict[str, Any]]:
     items = []
     for mid in PRO_MODULE_IDS:
-        mod = importlib.import_module(f"src.ops.pro.{mid}")
+        spec = load_spec(mid)
         items.append(
             {
                 "id": mid,
-                "title": getattr(mod, "TITLE", mid),
-                "version_theme": getattr(mod, "VERSION_THEME", ""),
-                "description": getattr(mod, "DESCRIPTION", ""),
+                "title": spec.get("title") or mid,
+                "version_theme": spec.get("version_theme") or "",
+                "description": spec.get("description") or "",
+                "has_yaml": mid in list_spec_ids(),
                 "disclaimer": "research_only_not_investment_advice",
             }
         )
@@ -27,13 +28,7 @@ def list_modules() -> list[dict[str, Any]]:
 def invoke_module(module_id: str, **kwargs: Any) -> dict[str, Any]:
     if module_id not in PRO_MODULE_IDS:
         return {"error": f"unknown module: {module_id}", "known": list(PRO_MODULE_IDS)}
-    mod = importlib.import_module(f"src.ops.pro.{module_id}")
-    if hasattr(mod, "run"):
-        out = mod.run(**kwargs)
-    elif hasattr(mod, "analyze"):
-        out = mod.analyze(**kwargs)
-    else:
-        out = {"error": "no run/analyze"}
+    out = ProEngine(module_id).run(**kwargs)
     if isinstance(out, dict):
         out.setdefault("module", module_id)
         out.setdefault("disclaimer", "research_only_not_investment_advice")

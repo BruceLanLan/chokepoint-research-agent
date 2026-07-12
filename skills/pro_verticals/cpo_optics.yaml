@@ -1,0 +1,16 @@
+id: cpo_optics
+title: CPO / Optical interconnect
+modules:
+- tech_roadmap
+- capacity_tracker
+- supplier_map
+- risk_matrix
+- policy_watch
+keywords:
+- CPO
+- ELS
+- PIC
+- DSP
+- laser
+- silicon photonics
+disclaimer: research_only_not_investment_advice

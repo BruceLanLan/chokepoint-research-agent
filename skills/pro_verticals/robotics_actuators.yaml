@@ -1,0 +1,14 @@
+id: robotics_actuators
+title: Humanoid actuators / motion
+modules:
+- supplier_map
+- capacity_tracker
+- moat_score
+- tech_roadmap
+keywords:
+- harmonic
+- RV
+- actuator
+- reducer
+- torque
+disclaimer: research_only_not_investment_advice
