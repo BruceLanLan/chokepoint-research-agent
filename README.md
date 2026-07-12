@@ -11,7 +11,7 @@
 
 | | |
 |---|---|
-| **Version** | **7.0.0** |
+| **Version** | **8.0.0** |
 | **Language** | Python ≥ 3.11 |
 | **License** | MIT |
 | **中文文档** | [README.zh-CN.md](README.zh-CN.md) · [docs/zh/](docs/zh/README.md) |
@@ -254,7 +254,9 @@ python main.py research "Map CPO chokepoints for AI GPU racks" \
   --export
 ```
 
-### Workstation UI
+### Workstation UI (v8)
+
+Professional multi-tab shell: **Desk · Research · Coverage · Theses · Reports · Templates · Search · Knowledge · Analytics · Ops · Jobs · Doctor**, with **EN/ZH** toggle, SSE research stream, and report checklist/grade/export actions.
 
 ```bash
 python main.py --server
@@ -423,7 +425,7 @@ python main.py backup · restore · config-show
 | Research | `POST /research` · `POST /research/stream` · `POST /jobs` |
 | Ops | `/watchlist` · `/theses` · `/templates` · `/queue` · `/evidence` · `/graph` |
 | Quality | `/checklist/{name}` · `/grade/{name}` · `/batch-review` · `/workspace-health` |
-| Pro | `/pro/modules` · `/pro/{id}` · `/pro/suite` · `/pro/dashboard` · `/memo-pro` |
+| Pro | `/pro/modules` · `/pro/{id}` · `/pro/suite` · `/pro/dashboard` · `/pro/verticals` · `/memo-pro` |
 | Knowledge | `/maps` · `/glossary` · `/marketplace` · `/playbooks` · `/questionnaires` · `/rubrics` |
 | Streams | `GET /quotes/stream` · `WS /ws/quotes` · `/charts/*` |
 
@@ -482,32 +484,26 @@ These score **process quality**, not investment performance.
 
 ```text
 chokepoint-research-agent/
-├── main.py                 # Typer CLI + server entry
+├── main.py                 # Thin Typer entry → src/cli
 ├── AGENTS.md               # Durable agent/operating rules
 ├── src/
+│   ├── cli/                # CLI packages (research, ops, pro, …)
+│   ├── api/                # FastAPI factory + route packages
+│   ├── static/             # Professional UI (html/css/js/i18n)
 │   ├── agents/             # Multi-agent + fallback
 │   ├── prompts/            # Methodology prompts
 │   ├── tools/              # Search, filings, export, PDF/DOCX
 │   ├── ops/                # Watchlist, theses, queue, desk, …
 │   ├── ops/pro/            # 50 pro maturity-train modules
-│   ├── playbooks/          # Process playbooks
-│   ├── questionnaires/     # Structured Q sets
-│   ├── rubrics/            # Process scoring rubrics
-│   ├── analysis/           # Scorecard + text metrics
-│   ├── providers/          # SEC / CN / HK / market
-│   ├── plugins/            # Plugin loader
-│   ├── pipeline/           # Post-process + metrics
-│   ├── charts/             # SVG scorecard / price / coverage / quotes
-│   ├── auth/               # Auth plugins
-│   ├── api.py              # FastAPI + SSE/WS
-│   └── static/             # Workstation UI
+│   ├── playbooks/ · questionnaires/ · rubrics/
+│   ├── pipeline/ · charts/ · auth/ · providers/
+│   └── plugins/            # Plugin loader
+├── skills/pro/             # 50 pro YAML specs
+├── skills/pro_verticals/   # Deep vertical packs (CPO, HBM, …)
 ├── knowledge/              # Maps, essays, glossary
-├── skills/packs/           # Domain skill YAML
 ├── templates/research/     # Memo templates
-├── plugins/                # Drop-in third-party providers
 ├── docs/                   # Architecture, releases, workstation guides
-├── eval/                   # Golden evals + fixtures
-├── tests/                  # Offline unit tests
+├── eval/ · tests/
 ├── reports/ · data/        # Runtime outputs (gitignored content)
 └── scripts/                # Schedule / overnight autonomous helpers
 ```

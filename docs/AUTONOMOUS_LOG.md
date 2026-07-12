@@ -15,9 +15,18 @@
 
 ## Next up (edit as you go)
 
-- [ ] v8.0: full split of main.py / api.py into packages
-- [ ] Domain-deep pro YAML content pass (more than keywords)
+- [ ] Optional: further domain depth on remaining 45 pro YAML specs (beyond verticals)
+- [ ] Live-gated integration tests behind explicit env (keep default offline)
 - [ ] Keep offline tests green; weekly ritual desk + weekly-ops
+
+---
+
+## 2026-07-12 — v8.0.0 professional UI + package split
+
+- **Shipped:** Professional static UI (Desk-first SPA, EN/ZH i18n, full tab wiring); `src/api` route packages; `src/cli` Typer packages; deep vertical YAML (5 packs); path fix for `/pro/verticals`
+- **Tests:** 121 passed
+- **Plan source:** docs/REVIEW_AND_PLAN_6.3.md Phase 4 (+ UI P1)
+- **Blocked:** none
 
 ---
 

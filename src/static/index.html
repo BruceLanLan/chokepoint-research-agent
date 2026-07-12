@@ -4,486 +4,348 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Chokepoint Research Workstation</title>
-  <style>
-    :root {
-      --bg:#0a0e17; --panel:#121826; --panel2:#0f1522; --border:#243047;
-      --text:#e8eefc; --muted:#8b9bb8; --accent:#5b9dff; --ok:#3ecf8e; --warn:#f0b429; --danger:#ff6b6b;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"PingFang SC","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-    header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#121a2c,#0a0e17)}
-    h1{margin:0;font-size:1.25rem}
-    .sub{color:var(--muted);font-size:.88rem;margin-top:4px;line-height:1.4}
-    .warn{color:var(--warn);font-size:.8rem;margin-top:8px}
-    .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 88px)}
-    nav{border-right:1px solid var(--border);padding:12px;background:var(--panel2)}
-    nav button{display:block;width:100%;text-align:left;margin:4px 0;padding:10px 12px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);cursor:pointer}
-    nav button.active,nav button:hover{background:#1a2438;border-color:var(--border)}
-    main{padding:16px 18px 40px}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
-    label{display:block;color:var(--muted);font-size:.82rem;margin:8px 0 4px}
-    input,select,textarea{width:100%;background:#0c121f;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 11px;font:inherit}
-    textarea{min-height:100px;resize:vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .btn{margin-top:10px;border:0;border-radius:10px;padding:10px 12px;background:linear-gradient(180deg,#6aa8ff,#3d7fe0);color:#fff;font-weight:600;cursor:pointer}
-    .btn.sec{background:#2a3555}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
-    table{width:100%;border-collapse:collapse;font-size:.9rem}
-    th,td{border-bottom:1px solid var(--border);padding:8px 6px;text-align:left;vertical-align:top}
-    th{color:var(--muted);font-weight:600}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem}
-    #out,#live{white-space:pre-wrap;background:#0a1120;border:1px solid var(--border);border-radius:10px;padding:12px;max-height:42vh;overflow:auto;font-size:.9rem;line-height:1.5}
-    .meta{color:var(--ok);font-size:.85rem;margin-top:8px}
-    .tiny{color:var(--muted);font-size:.8rem}
-    .hidden{display:none}
-    a{color:var(--accent)}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}nav{display:flex;flex-wrap:wrap;gap:6px;border-right:0;border-bottom:1px solid var(--border)}.row{grid-template-columns:1fr}}
-  </style>
+  <link rel="stylesheet" href="/static/css/app.css" />
 </head>
 <body>
-<header>
-  <div>
-    <h1>Chokepoint Research Workstation</h1>
-    <div class="sub">专业投研工作台 · Coverage · Thesis · Templates · Reports<br/>Framework-first multi-agent research (not a trading bot)</div>
-    <div class="warn">⚠️ 仅供研究学习，不构成投资建议 · Research only — not investment advice</div>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">CP</div>
+      <div>
+        <h1 data-i18n="appTitle">Chokepoint Research Workstation</h1>
+        <div class="sub" data-i18n="appSub">Professional research ops · Coverage · Thesis · Evidence · Gates</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="lang-toggle" title="Language">
+        <button type="button" id="lang-zh" class="active">中文</button>
+        <button type="button" id="lang-en">EN</button>
+      </div>
+      <span class="pill" id="health-pill">…</span>
+      <div class="key-box">
+        <input id="key" type="password" data-i18n-placeholder="apiKeyPh" placeholder="X-API-Key (optional)" autocomplete="off" />
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="nav-section" data-i18n="navCore">Core</div>
+      <button class="nav-btn active" data-tab="desk"><span class="ico">◈</span><span data-i18n="tabDesk">Desk</span></button>
+      <button class="nav-btn" data-tab="research"><span class="ico">✦</span><span data-i18n="tabResearch">Research</span></button>
+      <button class="nav-btn" data-tab="watch"><span class="ico">◎</span><span data-i18n="tabWatch">Coverage</span></button>
+      <button class="nav-btn" data-tab="thesis"><span class="ico">※</span><span data-i18n="tabThesis">Theses</span></button>
+      <button class="nav-btn" data-tab="reports"><span class="ico">☰</span><span data-i18n="tabReports">Reports</span></button>
+
+      <div class="nav-section" data-i18n="navLibrary">Library</div>
+      <button class="nav-btn" data-tab="templates"><span class="ico">▤</span><span data-i18n="tabTemplates">Templates</span></button>
+      <button class="nav-btn" data-tab="search"><span class="ico">⌕</span><span data-i18n="tabSearch">Search</span></button>
+      <button class="nav-btn" data-tab="knowledge"><span class="ico">📚</span><span data-i18n="tabKnowledge">Knowledge</span></button>
+
+      <div class="nav-section" data-i18n="navOps">Ops</div>
+      <button class="nav-btn" data-tab="analytics"><span class="ico">◫</span><span data-i18n="tabAnalytics">Analytics</span></button>
+      <button class="nav-btn" data-tab="ops"><span class="ico">⚙</span><span data-i18n="tabOps">Tools</span></button>
+      <button class="nav-btn" data-tab="jobs"><span class="ico">⟳</span><span data-i18n="tabJobs">Jobs</span></button>
+      <button class="nav-btn" data-tab="doctor"><span class="ico">✓</span><span data-i18n="tabDoctor">Doctor</span></button>
+
+      <div class="sidebar-foot" data-i18n="disclaimerShort">
+        Research only — not investment advice.<br/>仅供研究学习，不构成投资建议。
+      </div>
+    </aside>
+
+    <main class="content">
+      <!-- DESK -->
+      <section id="tab-desk">
+        <div class="page-head">
+          <h2 data-i18n="deskTitle">Research Desk</h2>
+          <p data-i18n="deskSub">Process hygiene snapshot · next actions · not P&amp;L</p>
+        </div>
+        <div class="warn-banner" data-i18n="disclaimerBanner">⚠️ Research / education only — not investment advice. 仅供研究学习，不构成投资建议。</div>
+        <div class="kpi-grid" id="desk-kpis" style="margin-top:14px"></div>
+        <div class="card">
+          <div class="card-title">
+            <h3 data-i18n="nextActions">Next actions</h3>
+            <div class="actions" style="margin:0">
+              <button class="btn sm" id="desk-refresh" data-i18n="refresh">Refresh</button>
+              <button class="btn sm sec" id="desk-weekly" data-i18n="weeklyOps">Weekly ops</button>
+              <button class="btn sm ghost" id="desk-about" data-i18n="about">About</button>
+            </div>
+          </div>
+          <ul class="action-list" id="desk-actions"></ul>
+        </div>
+        <div class="card">
+          <div class="card-title"><h3 data-i18n="deskRaw">Desk payload</h3></div>
+          <div class="panel-out tall" id="desk-out"></div>
+        </div>
+      </section>
+
+      <!-- RESEARCH -->
+      <section id="tab-research" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="researchTitle">Run research</h2>
+          <p data-i18n="researchSub">Multi-agent memo · modes · skills · quality gate</p>
+        </div>
+        <div class="card">
+          <label data-i18n="question">Question</label>
+          <textarea id="q" data-i18n-placeholder="qPh" placeholder="e.g. Map CPO chokepoints for AI GPU racks…"></textarea>
+          <div class="row-3">
+            <div>
+              <label data-i18n="mode">Mode</label>
+              <select id="mode">
+                <option value="full">full</option>
+                <option value="chokepoint_fast">chokepoint_fast</option>
+                <option value="risk_only">risk_only</option>
+                <option value="compare">compare</option>
+              </select>
+            </div>
+            <div>
+              <label data-i18n="skill">Skill pack</label>
+              <input id="skill" placeholder="semiconductor / ai_infra / …" />
+            </div>
+            <div>
+              <label data-i18n="session">Session id</label>
+              <input id="session" placeholder="optional" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="checkline"><input type="checkbox" id="stream" checked /><span data-i18n="sse">SSE stream</span></div>
+            <div class="checkline"><input type="checkbox" id="bilingual" /><span data-i18n="bilingual">Bilingual memo</span></div>
+          </div>
+          <div class="row">
+            <div class="checkline"><input type="checkbox" id="pro-suite" /><span data-i18n="proSuite">Run pro-suite after save</span></div>
+            <div>
+              <label data-i18n="minQuality">Min quality</label>
+              <input id="min-quality" type="number" min="0" max="100" value="0" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="run" data-i18n="run">Run research</button>
+            <button class="btn sec" id="newSession" data-i18n="newSession">New session</button>
+          </div>
+          <div id="status" class="tiny" style="margin-top:8px"></div>
+          <div id="meta" class="meta"></div>
+          <label data-i18n="live">Live stream</label>
+          <div class="panel-out" id="live"></div>
+          <label data-i18n="report">Report</label>
+          <div class="panel-out tall" id="out"></div>
+        </div>
+      </section>
+
+      <!-- WATCH -->
+      <section id="tab-watch" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="watchTitle">Coverage book</h2>
+          <p data-i18n="watchSub">Watchlist symbols · priority · thesis notes</p>
+        </div>
+        <div class="card">
+          <div class="row">
+            <div><label data-i18n="symbol">Symbol</label><input id="w-sym" placeholder="NVDA / 600519" /></div>
+            <div><label data-i18n="name">Name</label><input id="w-name" /></div>
+          </div>
+          <label data-i18n="thesisNote">Thesis note</label><input id="w-thesis" />
+          <div class="row">
+            <div>
+              <label data-i18n="priority">Priority</label>
+              <select id="w-pri"><option>medium</option><option>high</option><option>low</option></select>
+            </div>
+            <div><label data-i18n="tags">Tags</label><input id="w-tags" placeholder="cpo, optics" /></div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="w-add" data-i18n="add">Add</button>
+            <button class="btn sec" id="w-refresh" data-i18n="refresh">Refresh</button>
+            <button class="btn ghost" id="w-bulk" data-i18n="bulkAdd">Bulk add…</button>
+          </div>
+          <table style="margin-top:14px"><thead><tr>
+            <th>ID</th><th data-i18n="symbol">Symbol</th><th data-i18n="name">Name</th>
+            <th data-i18n="priority">Pri</th><th data-i18n="thesisNote">Thesis</th>
+          </tr></thead><tbody id="w-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- THESIS -->
+      <section id="tab-thesis" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="thesisTitle">Thesis registry</h2>
+          <p data-i18n="thesisSub">Statements · kill criteria · status history</p>
+        </div>
+        <div class="card">
+          <label data-i18n="title">Title</label><input id="t-title" />
+          <label data-i18n="statement">Statement</label><textarea id="t-statement"></textarea>
+          <label data-i18n="system">System boundary</label><input id="t-system" />
+          <label data-i18n="kills">Kill criteria (; separated)</label><input id="t-kills" />
+          <div class="actions">
+            <button class="btn" id="t-add" data-i18n="addThesis">Add thesis</button>
+            <button class="btn sec" id="t-refresh" data-i18n="refresh">Refresh</button>
+            <button class="btn ghost" id="t-health" data-i18n="thesisHealth">Thesis health</button>
+          </div>
+          <div id="t-list" style="margin-top:14px"></div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="tab-reports" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="reportsTitle">Report catalog</h2>
+          <p data-i18n="reportsSub">Browse · checklist · grade · export pack</p>
+        </div>
+        <div class="card">
+          <div class="row">
+            <input id="r-q" data-i18n-placeholder="searchPh" placeholder="Search reports…" />
+            <button class="btn sec" id="r-refresh" data-i18n="searchRefresh">Search / Refresh</button>
+          </div>
+          <table style="margin-top:12px"><thead><tr>
+            <th data-i18n="name">Name</th><th data-i18n="mode">Mode</th><th>Q</th>
+            <th data-i18n="modified">Modified</th><th data-i18n="actions">Actions</th>
+          </tr></thead><tbody id="r-body"></tbody></table>
+          <label data-i18n="preview">Preview / result</label>
+          <div class="panel-out tall" id="r-out"></div>
+        </div>
+      </section>
+
+      <!-- TEMPLATES -->
+      <section id="tab-templates" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="templatesTitle">Research templates</h2>
+          <p data-i18n="templatesSub">YAML templates → fill Research tab</p>
+        </div>
+        <div class="card">
+          <div id="tpl-list" class="tiny"></div>
+          <label data-i18n="templateId">Template id</label>
+          <input id="tpl-id" placeholder="chokepoint_map" />
+          <label data-i18n="varsJson">Vars JSON</label>
+          <textarea id="tpl-vars" placeholder='{"system":"AI optical interconnect","context":""}'></textarea>
+          <div class="actions">
+            <button class="btn" id="tpl-run" data-i18n="renderFill">Render & fill Research</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEARCH -->
+      <section id="tab-search" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="searchTitle">Memo search</h2>
+          <p data-i18n="searchSub">Local TF-IDF / FTS over past memos</p>
+        </div>
+        <div class="card">
+          <div class="row">
+            <input id="s-q" data-i18n-placeholder="searchMemoPh" placeholder="CPO / kill criteria / 卡脖子…" />
+            <button class="btn sec" id="s-run" data-i18n="search">Search</button>
+          </div>
+          <div class="panel-out tall" id="s-out" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- KNOWLEDGE -->
+      <section id="tab-knowledge" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="knowledgeTitle">Knowledge</h2>
+          <p data-i18n="knowledgeSub">Maps · glossary · marketplace · pro verticals</p>
+        </div>
+        <div class="card">
+          <div class="actions" style="margin-top:0">
+            <button class="btn sec" id="k-maps" data-i18n="maps">Maps</button>
+            <button class="btn sec" id="k-mkt" data-i18n="marketplace">Marketplace</button>
+            <button class="btn sec" id="k-vert" data-i18n="verticals">Pro verticals</button>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <input id="k-gloss" data-i18n-placeholder="glossPh" placeholder="Glossary: CPO / HBM / kill…" />
+            <button class="btn" id="k-gloss-go" data-i18n="glossary">Search glossary</button>
+          </div>
+          <div class="panel-out tall" id="k-out" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section id="tab-analytics" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="analyticsTitle">Analytics & quality</h2>
+          <p data-i18n="analyticsSub">Workspace health · quality board · batch review</p>
+        </div>
+        <div class="card">
+          <div class="actions" style="margin-top:0">
+            <button class="btn sec" id="a-run" data-i18n="analytics">Analytics</button>
+            <button class="btn sec" id="a-health" data-i18n="wsHealth">Workspace health</button>
+            <button class="btn sec" id="a-qboard" data-i18n="qBoard">Quality board</button>
+            <button class="btn sec" id="a-brev" data-i18n="batchReview">Batch review</button>
+            <button class="btn" id="a-weekly" data-i18n="weeklyOps">Weekly ops</button>
+          </div>
+          <div class="panel-out tall" id="a-out" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- OPS -->
+      <section id="tab-ops" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="opsTitle">Ops toolkit</h2>
+          <p data-i18n="opsSub">Graph · coverage · queue · evidence · pro</p>
+        </div>
+        <div class="card">
+          <div class="actions" style="margin-top:0">
+            <button class="btn sm sec" id="o-graph" data-i18n="graph">Thesis graph</button>
+            <button class="btn sm sec" id="o-cov" data-i18n="coverage">Coverage</button>
+            <button class="btn sm sec" id="o-kill" data-i18n="killMon">Kill monitor</button>
+            <button class="btn sm sec" id="o-ev" data-i18n="evidence">Evidence</button>
+            <button class="btn sm sec" id="o-queue" data-i18n="queue">Queue</button>
+            <button class="btn sm" id="o-qrun" data-i18n="queueRun">Queue mock×1</button>
+            <button class="btn sm sec" id="o-pdash" data-i18n="proDash">Pro dashboard</button>
+            <button class="btn sm sec" id="o-runbook" data-i18n="runbook">Runbook</button>
+            <button class="btn sm ghost" id="o-snap" data-i18n="snapshot">Snapshot</button>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <input id="o-topic" data-i18n-placeholder="planPh" placeholder="Offline plan topic…" />
+            <button class="btn sec" id="o-plan" data-i18n="plan">Plan</button>
+          </div>
+          <div style="margin-top:10px"><img id="o-covimg" alt="" style="max-width:100%;border-radius:8px;display:none;border:1px solid var(--border)"/></div>
+          <div class="panel-out tall" id="o-out" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- JOBS -->
+      <section id="tab-jobs" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="jobsTitle">Async jobs</h2>
+          <p data-i18n="jobsSub">Background research queue</p>
+        </div>
+        <div class="card">
+          <label data-i18n="question">Question</label>
+          <textarea id="j-q" data-i18n-placeholder="jobPh" placeholder="Background research question…"></textarea>
+          <div class="row">
+            <div>
+              <label data-i18n="mode">Mode</label>
+              <select id="j-mode">
+                <option value="chokepoint_fast">chokepoint_fast</option>
+                <option value="full">full</option>
+                <option value="risk_only">risk_only</option>
+                <option value="compare">compare</option>
+              </select>
+            </div>
+            <div class="actions" style="align-self:end">
+              <button class="btn" id="j-submit" data-i18n="submitJob">Submit job</button>
+              <button class="btn sec" id="j-refresh" data-i18n="refresh">Refresh</button>
+            </div>
+          </div>
+          <div class="panel-out tall" id="j-out" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- DOCTOR -->
+      <section id="tab-doctor" class="hidden">
+        <div class="page-head">
+          <h2 data-i18n="doctorTitle">Doctor</h2>
+          <p data-i18n="doctorSub">Environment · dependencies · ops surface</p>
+        </div>
+        <div class="card">
+          <div class="actions" style="margin-top:0">
+            <button class="btn" id="d-run" data-i18n="runDoctor">Run doctor</button>
+            <button class="btn sec" id="d-about" data-i18n="about">About</button>
+          </div>
+          <div class="panel-out tall" id="d-out" style="margin-top:12px"></div>
+        </div>
+      </section>
+    </main>
   </div>
-  <div class="tiny" style="min-width:180px">
-    <label>X-API-Key</label>
-    <input id="key" type="password" placeholder="optional" />
-    <div id="health" class="tiny" style="margin-top:8px"></div>
-  </div>
-</header>
-<div class="layout">
-  <nav>
-    <button class="active" data-tab="desk">Desk 工作台</button>
-    <button data-tab="research">Research 研究</button>
-    <button data-tab="watch">Watchlist 覆盖</button>
-    <button data-tab="thesis">Theses 论点</button>
-    <button data-tab="reports">Reports 研报</button>
-    <button data-tab="templates">Templates 模板</button>
-    <button data-tab="analytics">Analytics 统计</button>
-    <button data-tab="ops">Ops 图谱/证据</button>
-    <button data-tab="search">Search 检索</button>
-    <button data-tab="jobs">Jobs 异步</button>
-    <button data-tab="doctor">Doctor 体检</button>
-  </nav>
-  <main>
-    <!-- DESK -->
-    <section id="tab-desk" class="card">
-      <h3 style="margin-top:0">Research Desk · 工作台总览</h3>
-      <p class="tiny">Process hygiene for Chokepoint research — not P&amp;L. 仅供研究学习，不构成投资建议。</p>
-      <div class="row">
-        <button class="btn" id="desk-refresh">Refresh desk</button>
-        <button class="btn sec" id="desk-weekly">Run weekly-ops</button>
-      </div>
-      <pre id="desk-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto"></pre>
-    </section>
 
-    <!-- RESEARCH -->
-    <section id="tab-research" class="card hidden">
-      <h3 style="margin-top:0">Run research</h3>
-      <label>Question / 问题</label>
-      <textarea id="q" placeholder="例：以 B200 集群拆解 CPO 卡点…"></textarea>
-      <div class="row">
-        <div>
-          <label>Mode</label>
-          <select id="mode">
-            <option value="full">full</option>
-            <option value="chokepoint_fast">chokepoint_fast</option>
-            <option value="risk_only">risk_only</option>
-            <option value="compare">compare</option>
-          </select>
-        </div>
-        <div>
-          <label>Session id</label>
-          <input id="session" placeholder="optional" />
-        </div>
-      </div>
-      <div class="row">
-        <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="stream" checked /> SSE stream</label>
-        <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="bilingual" /> Bilingual</label>
-      </div>
-      <button class="btn" id="run">Run / 开始</button>
-      <button class="btn sec" id="newSession">New session</button>
-      <div id="status" class="tiny"></div>
-      <div id="meta" class="meta"></div>
-      <label>Live</label><div id="live"></div>
-      <label>Report</label><div id="out"></div>
-    </section>
-
-    <!-- WATCH -->
-    <section id="tab-watch" class="card hidden">
-      <h3 style="margin-top:0">Watchlist / Coverage book</h3>
-      <div class="row">
-        <div><label>Symbol</label><input id="w-sym" placeholder="NVDA / 600519" /></div>
-        <div><label>Name</label><input id="w-name" /></div>
-      </div>
-      <label>Thesis note</label><input id="w-thesis" />
-      <div class="row">
-        <div><label>Priority</label>
-          <select id="w-pri"><option>medium</option><option>high</option><option>low</option></select>
-        </div>
-        <div><label>Tags (comma)</label><input id="w-tags" /></div>
-      </div>
-      <button class="btn" id="w-add">Add</button>
-      <button class="btn sec" id="w-refresh">Refresh</button>
-      <table><thead><tr><th>ID</th><th>Symbol</th><th>Name</th><th>Pri</th><th>Thesis</th></tr></thead><tbody id="w-body"></tbody></table>
-    </section>
-
-    <!-- THESIS -->
-    <section id="tab-thesis" class="card hidden">
-      <h3 style="margin-top:0">Thesis registry</h3>
-      <label>Title</label><input id="t-title" />
-      <label>Statement</label><textarea id="t-statement"></textarea>
-      <label>System boundary</label><input id="t-system" />
-      <label>Kill criteria (; separated)</label><input id="t-kills" />
-      <button class="btn" id="t-add">Add thesis</button>
-      <button class="btn sec" id="t-refresh">Refresh</button>
-      <div id="t-list" class="tiny" style="margin-top:12px"></div>
-    </section>
-
-    <!-- REPORTS -->
-    <section id="tab-reports" class="card hidden">
-      <h3 style="margin-top:0">Report catalog</h3>
-      <div class="row">
-        <input id="r-q" placeholder="search…" />
-        <button class="btn sec" id="r-refresh">Search / Refresh</button>
-      </div>
-      <table><thead><tr><th>Name</th><th>Mode</th><th>Q</th><th>Modified</th><th>Actions</th></tr></thead><tbody id="r-body"></tbody></table>
-      <label>Preview / checklist / grade</label><div id="r-out" style="white-space:pre-wrap;max-height:40vh;overflow:auto" class="mono"></div>
-    </section>
-
-    <!-- TEMPLATES -->
-    <section id="tab-templates" class="card hidden">
-      <h3 style="margin-top:0">Research templates</h3>
-      <div id="tpl-list" class="tiny"></div>
-      <label>Template id</label><input id="tpl-id" placeholder="chokepoint_map" />
-      <label>Vars JSON</label><textarea id="tpl-vars" placeholder='{"system":"AI GPU optical interconnect","context":""}'></textarea>
-      <button class="btn" id="tpl-run">Render & fill Research tab</button>
-    </section>
-
-    <!-- ANALYTICS -->
-    <section id="tab-analytics" class="card hidden">
-      <h3 style="margin-top:0">Workspace analytics · Health · Quality</h3>
-      <div class="row">
-        <button class="btn sec" id="a-run">Analytics</button>
-        <button class="btn sec" id="a-health">Workspace health</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="a-qboard">Quality board</button>
-        <button class="btn sec" id="a-brev">Batch review</button>
-      </div>
-      <button class="btn" id="a-weekly">Weekly ops pack</button>
-      <pre id="a-out" class="mono" style="white-space:pre-wrap"></pre>
-    </section>
-
-    <!-- OPS -->
-    <section id="tab-ops" class="card hidden">
-      <h3 style="margin-top:0">Ops — Graph · Coverage · Kill · Evidence · Audit</h3>
-      <div class="row">
-        <button class="btn sec" id="o-graph">Thesis graph</button>
-        <button class="btn sec" id="o-mermaid">Mermaid</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-cov">Coverage heat</button>
-        <button class="btn sec" id="o-kill">Kill monitor</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-ev">Evidence summary</button>
-        <button class="btn sec" id="o-audit">Audit trail</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-cite">Citation network</button>
-        <button class="btn sec" id="o-prov">Provider health</button>
-      </div>
-      <div class="row">
-        <input id="o-topic" placeholder="plan topic e.g. CPO for B200 racks" />
-        <button class="btn sec" id="o-plan">Offline plan</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-queue">Queue summary</button>
-        <button class="btn" id="o-qrun">Run queue (mock×1)</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-qest">Live cost estimate</button>
-        <button class="btn sec" id="o-qmap">Enqueue map:cpo</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-thealth">Thesis health</button>
-        <button class="btn sec" id="o-pcat">Plugin catalog</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-mkt">Marketplace</button>
-        <button class="btn sec" id="o-qcap">Quotes caps</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-health">Workspace health</button>
-        <button class="btn sec" id="o-runbook">Runbook</button>
-      </div>
-      <div class="row">
-        <button class="btn sec" id="o-desk">Research desk</button>
-        <button class="btn sec" id="o-pdash">Pro dashboard</button>
-      </div>
-      <div class="row">
-        <input id="o-gloss" placeholder="glossary search e.g. CPO / HBM" />
-        <button class="btn sec" id="o-gloss-go">Glossary</button>
-      </div>
-      <div class="row">
-        <input id="o-check-name" placeholder="report name for checklist…" />
-        <button class="btn sec" id="o-check">Checklist</button>
-      </div>
-      <button class="btn sec" id="o-digest">Workspace digest</button>
-      <button class="btn" id="o-snap">Workspace snapshot (zip)</button>
-      <div style="margin-top:10px"><img id="o-covimg" alt="coverage" style="max-width:100%;background:#0a0e17;border-radius:8px;display:none"/></div>
-      <pre id="o-out" class="mono" style="white-space:pre-wrap;max-height:55vh;overflow:auto;margin-top:12px"></pre>
-    </section>
-
-    <!-- SEARCH -->
-    <section id="tab-search" class="card hidden">
-      <h3 style="margin-top:0">Search past memos (local TF-IDF)</h3>
-      <div class="row">
-        <input id="s-q" placeholder="CPO / 卡脖子 / kill criteria…" />
-        <button class="btn sec" id="s-run">Search</button>
-      </div>
-      <pre id="s-out" class="mono" style="white-space:pre-wrap;max-height:50vh;overflow:auto"></pre>
-    </section>
-
-    <!-- JOBS -->
-    <section id="tab-jobs" class="card hidden">
-      <h3 style="margin-top:0">Async research jobs</h3>
-      <label>Question</label>
-      <textarea id="j-q" placeholder="Submit background research…"></textarea>
-      <div class="row">
-        <div>
-          <label>Mode</label>
-          <select id="j-mode">
-            <option value="chokepoint_fast">chokepoint_fast</option>
-            <option value="full">full</option>
-            <option value="risk_only">risk_only</option>
-            <option value="compare">compare</option>
-          </select>
-        </div>
-        <div style="align-self:end">
-          <button class="btn" id="j-submit">Submit job</button>
-        </div>
-      </div>
-      <button class="btn sec" id="j-refresh">Refresh jobs</button>
-      <pre id="j-out" class="mono" style="white-space:pre-wrap;max-height:50vh;overflow:auto"></pre>
-    </section>
-
-    <!-- DOCTOR -->
-    <section id="tab-doctor" class="card hidden">
-      <h3 style="margin-top:0">Doctor</h3>
-      <button class="btn sec" id="d-run">Run doctor</button>
-      <pre id="d-out" class="mono" style="white-space:pre-wrap"></pre>
-    </section>
-  </main>
-</div>
-<script>
-const $ = id => document.getElementById(id);
-const headers = () => {
-  const h = {"Content-Type":"application/json"};
-  const k = $("key").value.trim(); if(k) h["X-API-Key"]=k; return h;
-};
-async function jget(url){ const r=await fetch(url,{headers:headers()}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
-async function jpost(url,body){ const r=await fetch(url,{method:"POST",headers:headers(),body:JSON.stringify(body||{})}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
-async function jdel(url){ const r=await fetch(url,{method:"DELETE",headers:headers()}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
-
-// tabs
-document.querySelectorAll("nav button").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    document.querySelectorAll("main > section").forEach(s=>s.classList.add("hidden"));
-    $("tab-"+btn.dataset.tab).classList.remove("hidden");
-    if(btn.dataset.tab==="desk") loadDesk();
-  };
-});
-
-// health
-(async()=>{ try{ const h=await jget("/health"); $("health").textContent=`v${h.version} · ${h.status}`; }catch(e){ $("health").textContent="API offline"; }})();
-
-async function loadDesk(){
-  try{ $("desk-out").textContent=JSON.stringify(await jget("/desk"),null,2); }
-  catch(e){ $("desk-out").textContent=String(e); }
-}
-$("desk-refresh").onclick=()=>loadDesk();
-$("desk-weekly").onclick=async()=>{
-  try{ $("desk-out").textContent=JSON.stringify(await jpost("/weekly-ops",{save:true,enqueue:0}),null,2); }
-  catch(e){ $("desk-out").textContent=String(e); }
-};
-loadDesk().catch(()=>{});
-
-// research
-$("newSession").onclick=async()=>{ const j=await jpost("/sessions",{}); $("session").value=j.session_id||""; };
-$("run").onclick=async()=>{
-  const question=$("q").value.trim(); if(!question) return;
-  $("run").disabled=true; $("status").textContent="Running…"; $("live").textContent=""; $("out").textContent="";
-  const body={question, mode:$("mode").value, save_report:true, export:true, bilingual:$("bilingual").checked, session_id:$("session").value.trim()||null};
-  try{
-    if($("stream").checked){
-      const res=await fetch("/research/stream",{method:"POST",headers:headers(),body:JSON.stringify(body)});
-      if(!res.ok) throw new Error(await res.text());
-      const reader=res.body.getReader(); const dec=new TextDecoder(); let buf="";
-      while(true){
-        const {value,done}=await reader.read(); if(done) break;
-        buf+=dec.decode(value,{stream:true});
-        const parts=buf.split("\n\n"); buf=parts.pop();
-        for(const chunk of parts){
-          let ev="message", data="";
-          for(const line of chunk.split("\n")){
-            if(line.startsWith("event:")) ev=line.slice(6).trim();
-            if(line.startsWith("data:")) data+=line.slice(5).trim();
-          }
-          if(ev==="update"){ try{ const j=JSON.parse(data); $("live").textContent+=`[${j.node}] ${(j.preview||"").slice(0,180)}\n\n`; }catch{} }
-          if(ev==="final"){ const j=JSON.parse(data); $("out").textContent=j.report||""; $("meta").textContent=`quality=${j.quality?.score} tokens≈${j.cost?.total_tokens_est}`; }
-          if(ev==="error") throw new Error(data);
-        }
-      }
-    }else{
-      const j=await jpost("/research", body);
-      $("out").textContent=j.report||""; $("meta").textContent=`quality=${j.quality?.score} tokens≈${j.cost?.total_tokens_est}`;
-    }
-    $("status").textContent="Done"; loadReports();
-  }catch(e){ $("status").textContent="Failed: "+e; }
-  finally{ $("run").disabled=false; }
-};
-
-// watch
-async function loadWatch(){
-  const j=await jget("/watchlist"); const tb=$("w-body"); tb.innerHTML="";
-  (j.items||[]).forEach(it=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="mono">${it.id}</td><td>${it.symbol}</td><td>${it.name||""}</td><td>${it.priority}</td><td>${(it.thesis||"").slice(0,48)}</td>`;
-    tb.appendChild(tr);
-  });
-}
-$("w-refresh").onclick=()=>loadWatch().catch(e=>alert(e));
-$("w-add").onclick=async()=>{
-  await jpost("/watchlist",{symbol:$("w-sym").value,name:$("w-name").value,thesis:$("w-thesis").value,priority:$("w-pri").value,tags:($("w-tags").value||"").split(",").map(s=>s.trim()).filter(Boolean)});
-  loadWatch();
-};
-
-// thesis
-async function loadTheses(){
-  const j=await jget("/theses"); $("t-list").innerHTML=(j.items||[]).map(t=>`<div style="margin:8px 0;padding:8px;border:1px solid var(--border);border-radius:8px"><b class="mono">${t.id}</b> [${t.status}] ${t.title}<div class="tiny">${t.statement}</div></div>`).join("")||"empty";
-}
-$("t-refresh").onclick=()=>loadTheses().catch(e=>alert(e));
-$("t-add").onclick=async()=>{
-  await jpost("/theses",{title:$("t-title").value,statement:$("t-statement").value,system:$("t-system").value,kill_criteria:($("t-kills").value||"").split(";").map(s=>s.trim()).filter(Boolean)});
-  loadTheses();
-};
-
-// reports
-async function loadReports(){
-  const q=$("r-q")?$("r-q").value:"";
-  const j=await jget("/reports?limit=40&q="+encodeURIComponent(q||""));
-  const tb=$("r-body"); if(!tb) return; tb.innerHTML="";
-  (j.items||[]).forEach(it=>{
-    const tr=document.createElement("tr");
-    const name=it.name;
-    tr.innerHTML=`<td class="mono">${name}</td><td>${it.mode||"-"}</td><td>${it.quality_score||"-"}</td><td>${it.modified||""}</td>
-      <td>
-        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="view">view</button>
-        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="check">check</button>
-        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="grade">grade</button>
-        <button class="btn sec" style="margin:0;padding:4px 8px;font-size:.75rem" data-act="pack">pack</button>
-      </td>`;
-    tr.querySelectorAll("button").forEach(b=>{
-      b.onclick=async(ev)=>{
-        ev.stopPropagation();
-        const act=b.dataset.act;
-        try{
-          if(act==="view"){ const d=await jget("/reports/"+encodeURIComponent(name)); $("r-out").textContent=d.content||""; }
-          if(act==="check"){ $("r-out").textContent=JSON.stringify(await jget("/checklist/"+encodeURIComponent(name)),null,2); }
-          if(act==="grade"){ $("r-out").textContent=JSON.stringify(await jget("/grade/"+encodeURIComponent(name)),null,2); }
-          if(act==="pack"){ $("r-out").textContent=JSON.stringify(await jpost("/export-pack",{report:name}),null,2); }
-        }catch(e){ $("r-out").textContent=String(e); }
-      };
-    });
-    tb.appendChild(tr);
-  });
-}
-$("r-refresh").onclick=()=>loadReports().catch(e=>alert(e));
-
-// templates
-async function loadTpl(){
-  const j=await jget("/templates");
-  $("tpl-list").innerHTML=(j.items||[]).map(t=>`<div><b class="mono">${t.id}</b> — ${t.name} <span class="tiny">mode=${t.mode}</span><div class="tiny">${t.description}</div></div>`).join("");
-}
-$("tpl-run").onclick=async()=>{
-  let vars={}; try{ vars=JSON.parse($("tpl-vars").value||"{}"); }catch(e){ alert("Invalid JSON vars"); return; }
-  const j=await jpost("/templates/"+$("tpl-id").value.trim()+"/render", vars);
-  $("q").value=j.question||""; $("mode").value=j.mode||"full";
-  document.querySelector('nav button[data-tab="research"]').click();
-};
-
-// analytics / jobs / doctor
-$("a-run").onclick=async()=>{ const j=await jget("/analytics"); $("a-out").textContent=JSON.stringify(j,null,2); };
-$("a-health").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jget("/workspace-health"),null,2); };
-$("a-qboard").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jget("/quality-board"),null,2); };
-$("a-brev").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jget("/batch-review?limit=20"),null,2); };
-$("a-weekly").onclick=async()=>{ $("a-out").textContent=JSON.stringify(await jpost("/weekly-ops",{save:true,enqueue:0}),null,2); };
-$("s-run").onclick=async()=>{
-  const q=$("s-q").value.trim(); if(!q) return;
-  const j=await jget("/search/memos?q="+encodeURIComponent(q)+"&limit=15");
-  $("s-out").textContent=JSON.stringify(j,null,2);
-};
-$("j-submit").onclick=async()=>{
-  const q=$("j-q").value.trim(); if(!q) return;
-  const j=await jpost("/jobs",{question:q,mode:$("j-mode").value});
-  $("j-out").textContent=JSON.stringify(j,null,2);
-  setTimeout(()=>$("j-refresh").click(), 2000);
-};
-$("j-refresh").onclick=async()=>{
-  const j=await jget("/jobs?limit=20");
-  $("j-out").textContent=JSON.stringify(j,null,2);
-};
-$("d-run").onclick=async()=>{ const j=await jget("/doctor"); $("d-out").textContent=JSON.stringify(j,null,2); };
-
-// ops
-const showOps = j => { $("o-out").textContent = typeof j === "string" ? j : JSON.stringify(j,null,2); };
-$("o-graph").onclick=async()=>{ showOps(await jget("/graph")); };
-$("o-mermaid").onclick=async()=>{ const j=await jget("/graph?mermaid=true"); showOps(j.mermaid||j); };
-$("o-cov").onclick=async()=>{
-  showOps(await jget("/coverage"));
-  const img=$("o-covimg"); img.style.display="block";
-  img.src="/charts/coverage?"+Date.now();
-};
-$("o-kill").onclick=async()=>{ showOps(await jget("/kill-monitor")); };
-$("o-ev").onclick=async()=>{ showOps(await jget("/evidence?summary=true")); };
-$("o-audit").onclick=async()=>{ showOps(await jget("/audit?summary=true")); };
-$("o-cite").onclick=async()=>{ showOps(await jget("/citations")); };
-$("o-prov").onclick=async()=>{ showOps(await jget("/providers/health")); };
-$("o-plan").onclick=async()=>{
-  const topic=$("o-topic").value.trim(); if(!topic) return;
-  showOps(await jpost("/plan",{topic, skill:"ai_infra"}));
-};
-$("o-queue").onclick=async()=>{ showOps(await jget("/queue?summary=true")); };
-$("o-qrun").onclick=async()=>{ showOps(await jpost("/queue/run",{n:1, live:false})); };
-$("o-qest").onclick=async()=>{ showOps(await jget("/queue/estimate-live?n=3")); };
-$("o-qmap").onclick=async()=>{ showOps(await jpost("/queue",{from_map:"cpo_ai_interconnect"})); };
-$("o-thealth").onclick=async()=>{ showOps(await jget("/thesis-health")); };
-$("o-pcat").onclick=async()=>{ showOps(await jget("/plugin-catalog")); };
-$("o-mkt").onclick=async()=>{ showOps(await jget("/marketplace")); };
-$("o-qcap").onclick=async()=>{ showOps(await jget("/quotes/capabilities")); };
-$("o-health").onclick=async()=>{ showOps(await jget("/workspace-health")); };
-$("o-runbook").onclick=async()=>{ showOps(await jget("/runbook?system=AI+CPO")); };
-$("o-desk").onclick=async()=>{ showOps(await jget("/desk")); };
-$("o-pdash").onclick=async()=>{ showOps(await jget("/pro/dashboard")); };
-$("o-gloss-go").onclick=async()=>{
-  const q=$("o-gloss").value.trim();
-  showOps(await jget("/glossary"+(q?"?q="+encodeURIComponent(q):"")));
-};
-$("o-check").onclick=async()=>{
-  const name=$("o-check-name").value.trim(); if(!name){ alert("report name required"); return; }
-  showOps(await jget("/checklist/"+encodeURIComponent(name)));
-};
-$("o-snap").onclick=async()=>{ showOps(await jpost("/snapshot",{})); };
-if($("o-digest")) $("o-digest").onclick=async()=>{ showOps(await jget("/digest")); };
-
-// initial loads
-loadWatch().catch(()=>{}); loadTheses().catch(()=>{}); loadReports().catch(()=>{}); loadTpl().catch(()=>{});
-</script>
+  <div class="toast" id="toast"></div>
+  <script src="/static/js/i18n.js"></script>
+  <script src="/static/js/app.js"></script>
 </body>
 </html>

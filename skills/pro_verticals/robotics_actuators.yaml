@@ -1,14 +1,72 @@
 id: robotics_actuators
-title: Humanoid actuators / motion
+title: Robotics actuators & motion
+version: "8.0"
+summary: >
+  Research pack for precision actuators, reducers, encoders, servo drives,
+  and force/torque sensing that gate humanoid and industrial robot scale-up.
+  Process hygiene only — not investment advice.
 modules:
-- supplier_map
-- capacity_tracker
-- moat_score
-- tech_roadmap
+  - tech_roadmap
+  - capacity_tracker
+  - supplier_map
+  - risk_matrix
+  - unit_econ
+  - switching_cost
 keywords:
-- harmonic
-- RV
-- actuator
-- reducer
-- torque
+  - actuator
+  - harmonic drive
+  - RV reducer
+  - planetary
+  - servo
+  - encoder
+  - torque sensor
+  - frameless motor
+  - cycloidal
+  - humanoid
+  - cobot
+system_boundary: >
+  From motor + reducer + encoder + drive electronics to joint module —
+  exclude full autonomy stack and pure perception ML.
+physical_nodes:
+  - id: reducer
+    label: Precision reducer (harmonic / RV / cycloidal)
+    questions:
+      - Backlash, lifetime, and torque density vs cost?
+      - Capacity of precision gear grinding / flexspline supply?
+  - id: motor
+    label: Frameless / servo motor
+    questions:
+      - Magnet supply and copper winding capacity?
+      - Custom vs catalog motor strategy?
+  - id: encoder_sense
+    label: Encoder / force-torque sensing
+    questions:
+      - Absolute encoder multi-source?
+      - Integrated joint torque sensing maturity?
+  - id: drive
+    label: Servo drive / joint electronics
+    questions:
+      - Power stage and control ASIC concentration?
+  - id: joint_module
+    label: Integrated actuator module assembly
+    questions:
+      - Vertical integration by robot OEM vs merchant modules?
+kill_criteria:
+  - "Merchant actuator cost collapses and differentiation moves entirely to software"
+  - "Critical reducer capacity cannot scale and OEMs redesign around inferior substitutes permanently"
+  - "Regulatory / safety certification blocks target form factors"
+evidence_checklist:
+  - label: Reducer units capacity and lead time
+  - label: BOM cost share of actuators per robot
+  - label: Dual-source status for harmonic-class gears
+focus_questions:
+  - Is the chokepoint reducers, magnets, encoders, or assembly yield?
+  - Humanoid volume sensitivity to actuator cost?
+  - Who captures module vs component margin?
+peer_set_hints:
+  - harmonic / RV specialists
+  - servo motor vendors
+  - encoder houses
+  - robot OEMs
+  - magnet / rare-earth supply chain
 disclaimer: research_only_not_investment_advice

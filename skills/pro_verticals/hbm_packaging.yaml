@@ -1,15 +1,78 @@
 id: hbm_packaging
 title: HBM / Advanced packaging
+version: "8.0"
+summary: >
+  Research pack for high-bandwidth memory stacks, base die, TSV, microbump,
+  and 2.5D/3D packaging capacity that gates AI accelerator attach rates.
+  Process hygiene only — not investment advice.
 modules:
-- capacity_tracker
-- supplier_map
-- tech_roadmap
-- customer_map
-- moat_score
+  - tech_roadmap
+  - capacity_tracker
+  - supplier_map
+  - risk_matrix
+  - unit_econ
+  - switching_cost
 keywords:
-- HBM
-- CoWoS
-- OSAT
-- substrate
-- TSV
+  - HBM
+  - HBM3
+  - HBM3E
+  - HBM4
+  - TSV
+  - microbump
+  - CoWoS
+  - RDL
+  - base die
+  - stack height
+  - TC bonder
+  - hybrid bond
+system_boundary: >
+  From DRAM wafer through stack assembly, base logic die, interposer/RDL,
+  and attach to XPU package — exclude pure DDR commodity channels.
+physical_nodes:
+  - id: dram_wafer
+    label: HBM DRAM wafers / stack layers
+    questions:
+      - Bit density and layer count roadmap vs competitors?
+      - Probe yield and known-good-die economics?
+  - id: tsv_bumps
+    label: TSV / microbump / hybrid bond
+    questions:
+      - Bond pitch roadmap and void rate?
+      - Tool set single-sourced?
+  - id: base_die
+    label: Base logic die / PHY
+    questions:
+      - Who designs base die (memory vendor vs foundry partner)?
+      - Interface standard vs custom PHY risk?
+  - id: advanced_pkg
+    label: 2.5D / CoWoS-class packaging capacity
+    questions:
+      - Interposer or RDL capacity bottleneck?
+      - Alternate packaging paths (InFO, EMIB-class, fan-out)?
+  - id: test_burnin
+    label: Stack test / burn-in / system attach yield
+    questions:
+      - Where is scrap most expensive (pre- or post-attach)?
+kill_criteria:
+  - "Sustained HBM bit oversupply with no bandwidth/power advantage path"
+  - "Packaging capacity expands faster than demand and pricing power collapses without new node"
+  - "Customer roadmap shifts to alternative memory (custom HBM-lite, CXL pooled) at scale"
+  - "Critical bonder/TSV tool embargo with no dual-source capacity"
+evidence_checklist:
+  - label: Bits / stacks shipped vs attached XPUs
+    hint: Cross-check memory vendors and OSAT/foundry packaging
+  - label: Tool lead times
+    hint: TC bonder, hybrid bond, litho for RDL
+  - label: Customer multi-source policy
+    hint: Dual-vendor HBM qualification status
+focus_questions:
+  - Is the chokepoint DRAM stack, base die, or CoWoS-class capacity?
+  - What is the attach-rate limiting step for next GPU/ASIC generation?
+  - How fast can a second packaging path qualify?
+peer_set_hints:
+  - HBM DRAM vendors
+  - foundry advanced packaging
+  - OSAT 2.5D
+  - bonder / metrology tools
+  - XPU designers (demand signal)
 disclaimer: research_only_not_investment_advice

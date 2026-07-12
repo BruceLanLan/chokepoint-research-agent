@@ -1,14 +1,70 @@
 id: specialty_materials
-title: Specialty materials / chemicals
+title: Specialty materials & process chemicals
+version: "8.0"
+summary: >
+  Research pack for ultra-pure chemicals, specialty gases, photoresists,
+  CMP slurries, precursors, and substrates that gate advanced node and
+  packaging yields. Process hygiene only — not investment advice.
 modules:
-- supplier_map
-- policy_watch
-- capacity_tracker
-- risk_matrix
+  - tech_roadmap
+  - capacity_tracker
+  - supplier_map
+  - risk_matrix
+  - policy_watch
+  - switching_cost
 keywords:
-- purity
-- photoresist
-- ABF
-- rare earth
-- chemical
+  - photoresist
+  - EUV
+  - precursor
+  - CMP slurry
+  - high-purity
+  - specialty gas
+  - wet chemical
+  - substrate
+  - ABF
+  - glass core
+  - fluorochemical
+system_boundary: >
+  Materials and consumables from precursor/chemical plant to fab point-of-use —
+  exclude finished logic/memory devices except as demand signal.
+physical_nodes:
+  - id: resist
+    label: Photoresist / underlayer / ancillaries
+    questions:
+      - EUV vs DUV mix and qualification cycles?
+      - Sole-source polymer or PAG risk?
+  - id: precursors
+    label: ALD/CVD precursors
+    questions:
+      - Molecule IP and purification capacity?
+  - id: cmp_wet
+    label: CMP slurry / pads / wet chemicals
+    questions:
+      - Particle and metal impurity control?
+  - id: gases
+    label: Specialty gases
+    questions:
+      - Cylinder vs bulk; regional fill plants?
+  - id: substrates
+    label: Advanced substrates (ABF, glass, ceramic)
+    questions:
+      - ABF vs glass-core transition timing?
+kill_criteria:
+  - "Customer qualifies drop-in multi-source with no performance delta"
+  - "Environmental / PFAS-class regulation removes product without reformulation path"
+  - "Fab capex freeze cuts consumable pull-through for multi-year horizon"
+evidence_checklist:
+  - label: Qualification status at top fabs
+  - label: Plant capacity and purity grade
+  - label: Regulatory exposure (export, environmental)
+focus_questions:
+  - Which material is single-source at the target node?
+  - Reformulation lead time if banned chemistry?
+  - Substrate transition (organic → glass) winners/losers?
+peer_set_hints:
+  - resist majors
+  - gas majors
+  - slurry/pad vendors
+  - substrate suppliers
+  - fab materials engineering teams
 disclaimer: research_only_not_investment_advice

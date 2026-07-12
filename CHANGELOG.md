@@ -1,5 +1,23 @@
 # Changelog
 
+## 8.0.0 — 2026-07-12
+
+Hardening + professional workstation UI (plan Phase 4).
+
+### Added
+- **Professional UI/UX**: multi-tab shell (Desk / Research / Coverage / Theses / Reports / Templates / Search / Knowledge / Analytics / Ops / Jobs / Doctor), design system CSS, bilingual **EN/ZH** toggle (`src/static/js/i18n.js` + `app.js`)
+- API package split: `src/api/` (`factory`, `deps`, `routes/{core,research,coverage,reports,pro,knowledge,ops}`)
+- CLI package split: `src/cli/` (`common`, `research`, `watch`, `thesis`, `ops`, `pro`, `export`, `core`); thin `main.py`
+- Domain-deep **vertical packs** (CPO, HBM, power/cooling, robotics actuators, specialty materials) with physical nodes, kill criteria, evidence checklists
+
+### Changed
+- `GET /pro/verticals` resolves packs from repo `skills/pro_verticals/` after package move
+- Version surface **8.0.0**
+
+### Tests
+- 121 offline tests green
+
+
 ## 7.0.0 — 2026-07-12
 
 Consolidation sprint executing `docs/REVIEW_AND_PLAN_6.3.md` Phases 0–3.

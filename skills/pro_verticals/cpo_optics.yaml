@@ -1,16 +1,86 @@
 id: cpo_optics
 title: CPO / Optical interconnect
+version: "8.0"
+summary: >
+  Research pack for co-packaged optics (CPO), external laser source (ELS),
+  silicon photonics PICs, DSP, fiber attach, and rack-scale optical I/O.
+  Process hygiene only — not investment advice.
 modules:
-- tech_roadmap
-- capacity_tracker
-- supplier_map
-- risk_matrix
-- policy_watch
+  - tech_roadmap
+  - capacity_tracker
+  - supplier_map
+  - risk_matrix
+  - policy_watch
+  - switching_cost
+  - unit_econ
 keywords:
-- CPO
-- ELS
-- PIC
-- DSP
-- laser
-- silicon photonics
+  - CPO
+  - ELS
+  - PIC
+  - EIC
+  - DSP
+  - silicon photonics
+  - fiber attach
+  - pluggable
+  - linear drive
+  - NPO
+  - optical engine
+  - FAU
+  - laser array
+system_boundary: >
+  From switch/GPU package edge through optical engine, laser source,
+  fiber plant to TOR / spine — exclude pure software SDN control plane.
+physical_nodes:
+  - id: els_laser
+    label: External laser source / laser array
+    questions:
+      - Who ships qualified multi-λ ELS for the target power budget?
+      - What is the redundancy model (N+1 lasers, failover time)?
+      - Thermal derating and wavelength lock method?
+  - id: pic
+    label: Photonic IC (modulators, mux/demux, Ge PD)
+    questions:
+      - Foundry process node and PDK maturity?
+      - Insertion loss and yield distribution by lane?
+      - Co-design interface to EIC / SerDes?
+  - id: eic_dsp
+    label: Electrical IC / DSP / retimer
+    questions:
+      - DSP power per 100G/200G lane vs linear-drive alternative?
+      - Reticle, packaging (2.5D) and HBM adjacency constraints?
+  - id: fiber_attach
+    label: Fiber attach / FAU / connectorization
+    questions:
+      - Passive align yield and rework cost?
+      - Connector ecosystem (MPO, expanded beam) lock-in?
+  - id: thermal_mech
+    label: Thermal / mechanical co-package
+    questions:
+      - Package TDP headroom when optics sit next to XPU?
+      - Serviceability: field-replaceable optics or board-level only?
+kill_criteria:
+  - "Target rack opts for pluggable/LPO path with clear TCO win over CPO for 24+ months"
+  - "Critical ELS or PIC supplier single-source with no second source qualification path"
+  - "Power/thermal envelope on package makes co-packaged optics unshippable at scale"
+  - "Standards / MSA stall leaves multi-vendor interoperability broken"
+evidence_checklist:
+  - label: Roadmap milestone with date-stamped source
+    hint: Vendor deck, earnings call, or standards draft
+  - label: Capacity / wafer / module units
+    hint: Name the bottleneck tool or line
+  - label: Peer / substitute map
+    hint: Pluggable, LPO, NPO, copper short-reach
+  - label: Policy / export control
+    hint: Laser, PIC equipment, entity lists if applicable
+focus_questions:
+  - When does CPO become cheaper TCO than pluggable at target radix?
+  - Which node is the true chokepoint — laser, PIC yield, FAU, or thermal?
+  - What kill signal flips the thesis back to pluggable?
+  - Who controls the reference design and multi-source agreement?
+peer_set_hints:
+  - optical engine specialists
+  - merchant DSP / SerDes
+  - laser / InP suppliers
+  - advanced packaging OSATs
+  - hyperscaler custom silicon optics teams
 disclaimer: research_only_not_investment_advice

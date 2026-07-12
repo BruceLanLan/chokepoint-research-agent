@@ -1,14 +1,75 @@
 id: power_cooling
-title: Power & cooling for AI racks
+title: Power delivery & cooling
+version: "8.0"
+summary: >
+  Research pack for rack/facility power delivery, VRMs, busbars, liquid cooling,
+  CDUs, and facility thermal loops that gate AI cluster density.
+  Process hygiene only — not investment advice.
 modules:
-- capacity_tracker
-- supplier_map
-- risk_matrix
-- tech_roadmap
+  - tech_roadmap
+  - capacity_tracker
+  - supplier_map
+  - risk_matrix
+  - unit_econ
+  - policy_watch
 keywords:
-- PDU
-- UPS
-- liquid cooling
-- SiC
-- transformer
+  - VRM
+  - busbar
+  - PSU
+  - PDU
+  - CDU
+  - liquid cooling
+  - cold plate
+  - immersion
+  - facility water
+  - UPS
+  - transformer
+  - rack density
+system_boundary: >
+  From utility/MV step-down through rack power shelf, board VRM, cold plate/CDU
+  to facility heat rejection — exclude pure silicon process nodes.
+physical_nodes:
+  - id: facility_power
+    label: Substation / transformer / UPS path
+    questions:
+      - Lead time for transformers and switchgear?
+      - Redundancy topology (N+1, 2N) and land constraints?
+  - id: rack_power
+    label: Rack PSU / busbar / power shelf
+    questions:
+      - 48V vs 12V architecture migration?
+      - Connector and busbar multi-source?
+  - id: board_vrm
+    label: Board-level VRM / vertical power
+    questions:
+      - Current density and transient response for XPU rails?
+      - Inductor / stage supplier concentration?
+  - id: cold_plate_cdu
+    label: Cold plate / manifold / CDU
+    questions:
+      - Coolant chemistry and leak risk model?
+      - CDU capacity vs rack TDP roadmap?
+  - id: heat_reject
+    label: Dry cooler / chiller / heat reuse
+    questions:
+      - Climate and water constraints by region?
+kill_criteria:
+  - "Air-cooled path remains cheaper TCO at target rack kW for planning horizon"
+  - "Critical CDU/cold-plate supplier cannot scale and no second source qualifies"
+  - "Facility power interconnect delays dominate — silicon not the bottleneck"
+  - "Coolant regulation or insurance blocks liquid at target sites"
+evidence_checklist:
+  - label: Rack kW roadmap with customer reference
+  - label: CDU / cold plate capacity and lead times
+  - label: Facility interconnect queue (utility)
+focus_questions:
+  - Is the chokepoint chips, racks, CDUs, or utility interconnect?
+  - When does liquid become mandatory vs optional?
+  - Regional differences (water, climate, power markets)?
+peer_set_hints:
+  - power semiconductor / VRM
+  - rack OEM / ODM
+  - CDU / cold plate specialists
+  - data center operators
+  - electrical contractors / switchgear
 disclaimer: research_only_not_investment_advice

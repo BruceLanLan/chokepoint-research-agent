@@ -74,7 +74,8 @@
 | **v6.2.0** | Multi-quotes batch + remote plugin design doc | **Shipped** |
 | **v6.3.0** | Professional README + about snapshot | **Shipped** |
 | **v7.0.0** | Consolidation sprint | **Shipped** |
-| v8.0 | Optional remote plugin install (hash-pinned) | Future |
+| **v8.0.0** | Professional UI + CLI/API package split + deep verticals | **Shipped** |
+| v8.x | Further pro YAML depth; live-gated integration suite | Future |
 
 ---
 
