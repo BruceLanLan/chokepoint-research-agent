@@ -30,6 +30,7 @@ def save_report_file(
     mode: str = "full",
     quality: dict[str, Any] | None = None,
     skill: str | None = None,
+    vertical: str | None = None,
     thesis_id: str | None = None,
     watch_ids: list[str] | None = None,
     extra_meta: dict[str, Any] | None = None,
@@ -49,6 +50,8 @@ def save_report_file(
     }
     if skill:
         meta["skill"] = skill
+    if vertical:
+        meta["vertical_id"] = vertical
     if thesis_id:
         meta["thesis_id"] = thesis_id
     if watch_ids:

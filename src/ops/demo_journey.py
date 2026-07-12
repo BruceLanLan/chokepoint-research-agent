@@ -45,6 +45,7 @@ def run_demo_journey(*, vertical: str = "cpo_optics", save: bool = True) -> dict
             report,
             mode="chokepoint_fast",
             skill=sc.get("suggested_skill"),
+            vertical=vertical,
             skip_postprocess=False,
             min_quality=0,
             auto_tag=True,

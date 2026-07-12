@@ -15,10 +15,17 @@
 
 ## Next up (edit as you go)
 
-- [ ] Optional: frontmatter `vertical_id` on mock/live save
-- [ ] Optional: Playwright smoke for static UI
+- [ ] Optional: Playwright browser smoke (optional dep)
 - [ ] Live-gated integration tests behind explicit env
-- [ ] Keep offline tests green; weekly ritual desk + demo-journey
+- [ ] Keep offline tests green; weekly ritual desk + demo-journey + doctor scores
+
+---
+
+## 2026-07-12 — v8.3.0 frontmatter + doctor scores
+
+- **Shipped:** vertical_id on save/export; catalog fields; doctor config/ops scores; Tavily warn; UI vertical tags
+- **Tests:** 147 passed
+- **Blocked:** none
 
 ---
 

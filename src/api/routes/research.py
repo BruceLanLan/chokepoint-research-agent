@@ -123,11 +123,25 @@ def register(app: FastAPI) -> None:
                 title = (req.question or q or "mock")[:40]
                 if req.save_report:
                     saved = save_report_file(
-                        title=title, markdown_body=report, mode=mode, quality=quality
+                        title=title,
+                        markdown_body=report,
+                        mode=mode,
+                        quality=quality,
+                        skill=req.skill,
+                        vertical=req.vertical,
+                        extra_meta={"mock": True},
                     )
                 if req.export:
                     exports = export_report_bundle(
-                        title=title, markdown_body=report, mode=mode, extra={"cost": cost}
+                        title=title,
+                        markdown_body=report,
+                        mode=mode,
+                        extra={
+                            "cost": cost,
+                            "skill": req.skill,
+                            "vertical": req.vertical,
+                            "mock": True,
+                        },
                     )
                 mock_meta = run_mock_pipeline()
                 return ResearchResponse(
@@ -152,11 +166,19 @@ def register(app: FastAPI) -> None:
             title = (req.question or q or "research")[:40]
             if req.save_report:
                 saved = save_report_file(
-                    title=title, markdown_body=report, mode=mode, quality=quality
+                    title=title,
+                    markdown_body=report,
+                    mode=mode,
+                    quality=quality,
+                    skill=req.skill,
+                    vertical=req.vertical,
                 )
             if req.export:
                 exports = export_report_bundle(
-                    title=title, markdown_body=report, mode=mode, extra={"cost": cost}
+                    title=title,
+                    markdown_body=report,
+                    mode=mode,
+                    extra={"cost": cost, "skill": req.skill, "vertical": req.vertical},
                 )
             if req.session_id:
                 append_turn(
@@ -238,7 +260,13 @@ def register(app: FastAPI) -> None:
                     title = (req.question or q or "mock")[:40]
                     if req.save_report:
                         path = save_report_file(
-                            title=title, markdown_body=report, mode=mode, quality=quality
+                            title=title,
+                            markdown_body=report,
+                            mode=mode,
+                            quality=quality,
+                            skill=req.skill,
+                            vertical=req.vertical,
+                            extra_meta={"mock": True},
                         )
                     if req.export:
                         exports = export_report_bundle(
@@ -254,6 +282,7 @@ def register(app: FastAPI) -> None:
                                 "quality": quality,
                                 "cost": cost,
                                 "mock": True,
+                                "vertical": req.vertical,
                             },
                             ensure_ascii=False,
                         ),
@@ -285,13 +314,19 @@ def register(app: FastAPI) -> None:
                 cost = get_cost_tracker().summary()
                 path = None
                 exports = None
+                title = (req.question or q or "research")[:40]
                 if req.save_report and final_text:
                     path = save_report_file(
-                        title=req.question[:40], markdown_body=final_text, mode=mode, quality=quality
+                        title=title,
+                        markdown_body=final_text,
+                        mode=mode,
+                        quality=quality,
+                        skill=req.skill,
+                        vertical=req.vertical,
                     )
                 if req.export and final_text:
                     exports = export_report_bundle(
-                        title=req.question[:40], markdown_body=final_text, mode=mode, extra={"cost": cost}
+                        title=title, markdown_body=final_text, mode=mode, extra={"cost": cost}
                     )
                 yield {
                     "event": "final",

@@ -15,6 +15,7 @@ def save_research_memo(
     *,
     mode: str = "full",
     skill: str | None = None,
+    vertical: str | None = None,
     thesis_id: str | None = None,
     watch_ids: list[str] | None = None,
     min_quality: int = 0,
@@ -45,12 +46,15 @@ def save_research_memo(
     meta = dict(extra_meta or {})
     if pp.get("evidence"):
         meta["evidence_urls"] = (pp.get("evidence") or {}).get("url_count")
+    if vertical:
+        meta.setdefault("vertical_id", vertical)
     path = save_report_file(
         title=title,
         markdown_body=body,
         mode=mode,
         quality=quality,
         skill=skill,
+        vertical=vertical,
         thesis_id=thesis_id,
         watch_ids=watch_ids,
         extra_meta=meta,
@@ -60,6 +64,8 @@ def save_research_memo(
         "path": path,
         "name": name,
         "quality": quality,
+        "vertical_id": vertical,
+        "skill": skill,
         "postprocess": {
             "gate_ok": pp.get("gate_ok"),
             "charts": pp.get("charts"),
@@ -79,6 +85,7 @@ def save_research_memo(
                 "mode": mode,
                 "quality": quality.get("score"),
                 "skill": skill,
+                "vertical_id": vertical,
                 "thesis_id": thesis_id,
             },
         )

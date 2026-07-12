@@ -50,6 +50,9 @@ def build_catalog(limit: int = 100) -> list[dict[str, Any]]:
                 "path": str(p.resolve()),
                 "title": meta.get("title") or p.stem,
                 "mode": meta.get("mode") or "",
+                "skill": meta.get("skill") or "",
+                "vertical_id": meta.get("vertical_id") or "",
+                "thesis_id": meta.get("thesis_id") or "",
                 "quality_score": meta.get("quality_score") or "",
                 "generated_at": meta.get("generated_at") or "",
                 "size_kb": round(st.st_size / 1024, 1),
@@ -67,7 +70,10 @@ def search_catalog(query: str, limit: int = 50) -> list[dict[str, Any]]:
         return items[:limit]
     hit = []
     for it in items:
-        blob = f"{it.get('title')} {it.get('name')} {it.get('preview')} {it.get('mode')}".lower()
+        blob = (
+            f"{it.get('title')} {it.get('name')} {it.get('preview')} {it.get('mode')} "
+            f"{it.get('skill')} {it.get('vertical_id')} {it.get('thesis_id')}"
+        ).lower()
         if q in blob:
             hit.append(it)
     return hit[:limit]

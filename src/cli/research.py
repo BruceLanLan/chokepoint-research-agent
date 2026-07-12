@@ -179,21 +179,27 @@ def run_research(
         from src.pipeline.save_pipeline import save_research_memo
 
         saved = save_research_memo(
-            question[:40],
+            (question or "research")[:40],
             final_text,
             mode=mode,
             skill=skill,
+            vertical=vertical,
             thesis_id=thesis_id,
             min_quality=min_quality,
             auto_tag=auto_tag,
             pro_suite=pro_suite,
             pro_persist=pro_persist,
-            extra_meta={"cost_tokens_est": cost.get("total_tokens_est")},
+            extra_meta={
+                "cost_tokens_est": cost.get("total_tokens_est"),
+                "mock": mock or None,
+            },
             quality=quality,
             skip_postprocess=True,
         )
         path = saved["path"]
         console.print(f"[green]Saved: {path}[/green]")
+        if vertical:
+            console.print(f"[dim]vertical_id={vertical}[/dim]")
         if saved.get("tags"):
             console.print(f"[dim]tags={saved.get('tags')}[/dim]")
         if thesis_id:
@@ -202,10 +208,15 @@ def run_research(
             from src.tools.export import export_report_bundle
 
             paths = export_report_bundle(
-                title=question[:40],
+                title=(question or "research")[:40],
                 markdown_body=final_text,
                 mode=mode,
-                extra={"cost": cost, "postprocess": {"charts": pp.get("charts")}},
+                extra={
+                    "cost": cost,
+                    "postprocess": {"charts": pp.get("charts")},
+                    "skill": skill,
+                    "vertical": vertical,
+                },
             )
             console.print(f"[green]Export: {paths}[/green]")
 

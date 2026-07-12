@@ -77,7 +77,8 @@
 | **v8.0.0** | Professional UI + CLI/API package split + deep verticals | **Shipped** |
 | **v8.1.0** | Vertical packs wired into research/desk/suite/UI (use deep, not broad) | **Shipped** |
 | **v8.2.0** | 20-round review: mock research, demo-journey, template/UI fixes | **Shipped** |
-| v8.x | Live-gated integration suite; Playwright; pro YAML only on demand | Future |
+| **v8.3.0** | vertical_id frontmatter; doctor config/ops scores; catalog depth | **Shipped** |
+| v8.x | Live-gated integration suite; optional Playwright | Future |
 
 ---
 

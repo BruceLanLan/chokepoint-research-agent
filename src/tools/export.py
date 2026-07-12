@@ -30,6 +30,9 @@ def export_report_bundle(
 
     quality = validate_report_structure(markdown_body)
     card = extract_scorecard_table(markdown_body)
+    extra = extra or {}
+    skill = extra.get("skill")
+    vertical = extra.get("vertical") or extra.get("vertical_id")
     payload = {
         "title": title,
         "mode": mode,
@@ -37,14 +40,31 @@ def export_report_bundle(
         "quality": quality,
         "scorecard": card.model_dump(),
         "markdown": markdown_body,
-        "extra": extra or {},
+        "extra": extra,
+        "skill": skill,
+        "vertical_id": vertical,
         "disclaimer": "research_only_not_investment_advice",
     }
     json_path = base.with_suffix(".json")
     html_path = base.with_suffix(".html")
     md_path = base.with_suffix(".md")
 
-    md_path.write_text(markdown_body.strip() + "\n", encoding="utf-8")
+    # Prefer canonical frontmatter so catalog can index skill / vertical_id
+    from src.tools.reports import save_report_file
+
+    md_canonical = save_report_file(
+        title,
+        markdown_body,
+        mode=mode,
+        quality=quality,
+        skill=skill if isinstance(skill, str) else None,
+        vertical=vertical if isinstance(vertical, str) else None,
+        extra_meta={k: v for k, v in extra.items() if k not in {"skill", "vertical", "vertical_id"}},
+    )
+    md_path = Path(md_canonical)
+    json_path = md_path.with_suffix(".json")
+    html_path = md_path.with_suffix(".html")
+    base = md_path.with_suffix("")
     json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     chart_svg = ""
     try:

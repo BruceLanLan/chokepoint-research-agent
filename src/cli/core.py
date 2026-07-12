@@ -38,19 +38,32 @@ def register(app: typer.Typer) -> None:
         mig = migrate_data_stores()
         result = run_doctor()
         table = Table(title="Doctor")
+        table.add_column("Bucket")
         table.add_column("Check")
         table.add_column("OK")
         table.add_column("Detail")
         key_checks = {"model_api_key", "tavily_api_key", "model_provider"}
         for c in result["checks"]:
-            mark = "[green]yes[/green]" if c["ok"] else f"[red]{c['level']}[/red]"
-            if ops_only and c["name"] in key_checks and not c["ok"]:
+            if ops_only and c.get("bucket") == "config" and c["name"] in key_checks:
                 mark = "[yellow]skip[/yellow]"
-            table.add_row(c["name"], mark, str(c["detail"])[:80])
+            elif c["ok"]:
+                mark = "[green]yes[/green]"
+            else:
+                mark = f"[red]{c['level']}[/red]"
+            table.add_row(c.get("bucket") or "-", c["name"], mark, str(c["detail"])[:72])
         console.print(table)
+        cfg = result.get("config") or {}
+        ops = result.get("ops") or {}
         console.print(
-            f"ok={result['ok']} errors={result['errors']} warnings={result['warnings']}"
+            f"ok={result['ok']} live_ready={result.get('live_ready')} "
+            f"ops_ok={result.get('ops_ok')} errors={result['errors']} warnings={result['warnings']}"
         )
+        console.print(
+            f"[cyan]config[/cyan] {cfg.get('grade')}({cfg.get('score')})  "
+            f"[cyan]ops[/cyan] {ops.get('grade')}({ops.get('score')})"
+        )
+        if result.get("hint"):
+            console.print(f"[dim]{result['hint']}[/dim]")
         if mig.get("actions"):
             console.print(f"[dim]migrate: {mig['actions']}[/dim]")
         console.print(
@@ -58,8 +71,11 @@ def register(app: typer.Typer) -> None:
             "checklist → weekly-ops · demo-journey[/dim]"
         )
         if ops_only:
-            console.print("[dim]--ops-only: missing API keys do not fail the command[/dim]")
+            console.print("[dim]--ops-only: config key failures do not exit non-zero[/dim]")
+            if not result.get("ops_ok", True):
+                raise typer.Exit(1)
             return
+        # Fail only on hard config errors (model key / packages), not missing Tavily warn
         if not result["ok"]:
             raise typer.Exit(1)
 

@@ -618,9 +618,10 @@
           const mode = r.mode || "";
           const qscore = r.quality_score != null ? r.quality_score : r.quality?.score ?? "—";
           const mod = r.modified || r.mtime || r.updated_at || "";
+          const vert = r.vertical_id || "";
           return `<tr>
             <td class="mono">${escapeHtml(shortPath(name))}</td>
-            <td>${escapeHtml(mode)}</td>
+            <td>${escapeHtml(mode)}${vert ? ` <span class="tag">${escapeHtml(vert)}</span>` : ""}</td>
             <td>${escapeHtml(String(qscore))}</td>
             <td class="tiny">${escapeHtml(String(mod).slice(0, 19))}</td>
             <td class="row-actions">

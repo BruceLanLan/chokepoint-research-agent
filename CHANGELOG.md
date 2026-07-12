@@ -1,5 +1,22 @@
 # Changelog
 
+## 8.3.0 — 2026-07-12
+
+### Added
+- Report frontmatter **`vertical_id`** (+ skill) on save pipeline, mock research, export bundle
+- Catalog exposes `skill` / `vertical_id` / `thesis_id` for search & UI tags
+- Doctor **config** vs **ops** scores (`config.grade`, `ops.grade`, `live_ready`, `ops_ok`)
+- Verticals + pro_specs checks in ops bucket; Tavily missing is **warn** (soft-fail search)
+
+### Changed
+- Export MD uses canonical `save_report_file` frontmatter (no bare body-only MD)
+- CLI doctor table shows bucket column + dual scores
+- UI reports show vertical tag when present
+
+### Tests
+- 147 offline tests (`test_v83_frontmatter_doctor.py`)
+
+
 ## 8.2.0 — 2026-07-12
 
 20-round review / user-sim / fix / iterate hardening.
