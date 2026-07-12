@@ -1517,6 +1517,17 @@ def quote_chart_cmd(
     console.print(f"[green]{path}[/green]")
 
 
+@app.command("multi-quotes")
+def multi_quotes_cmd(
+    symbols: str = typer.Argument(..., help="Comma-separated symbols"),
+):
+    """Batch refresh + table of quote snapshots (research utility)."""
+    _boot_env()
+    from src.ops.multi_quotes import multi_quote_snapshot
+
+    console.print(multi_quote_snapshot(symbols))
+
+
 @app.command("playbook")
 def playbook_cmd(
     name: Optional[str] = typer.Argument(None, help="Playbook id; omit to list"),

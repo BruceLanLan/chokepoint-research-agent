@@ -1370,6 +1370,17 @@ def api_quote_history_chart(
     return Response(content=quote_history_svg(symbol), media_type="image/svg+xml")
 
 
+@app.post("/quotes/multi")
+def api_multi_quotes(
+    body: dict,
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+):
+    _check_access(x_api_key)
+    from src.ops.multi_quotes import multi_quote_snapshot
+
+    return multi_quote_snapshot(body.get("symbols") or [])
+
+
 @app.get("/questionnaires")
 def api_questionnaires(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
     _check_access(x_api_key)

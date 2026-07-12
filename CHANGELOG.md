@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.2.0 — 2026-07-12
+
+### Added
+- Multi-symbol quote batch (`multi-quotes`, `/quotes/multi`)
+- Remote plugin install **design doc** (`docs/REMOTE_PLUGIN_DESIGN.md`) — not implemented
+
+
 ## 6.1.0 — 2026-07-12
 
 ### Added

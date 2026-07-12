@@ -21,6 +21,14 @@
 
 ---
 
+## 2026-07-12 — v6.2.0
+
+- **Shipped:** multi-quotes batch; REMOTE_PLUGIN_DESIGN.md
+- **Tests:** 112+ passed
+- **Blocked:** none
+
+---
+
 ## 2026-07-12 — v6.1.0
 
 - **Shipped:** desk, pro-dashboard, memo-pro, pro-export, glossary, quote-history SVG, questionnaires/rubrics API, UI

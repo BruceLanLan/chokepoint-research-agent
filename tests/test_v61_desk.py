@@ -86,3 +86,13 @@ def test_quote_history_svg(ws):
     svg = quote_history_svg("ZZZ")
     assert svg.startswith("<svg")
     assert "polyline" in svg or "Need" in svg
+
+
+def test_multi_quotes(ws):
+    from src.ops.multi_quotes import multi_quote_snapshot
+    from src.ops.quote_cache import refresh_symbols
+
+    # prime with stub fetch via multi path using real refresh (may stub)
+    out = multi_quote_snapshot(["AAA", "BBB"])
+    assert out["count"] == 2
+    assert len(out["table"]) == 2
