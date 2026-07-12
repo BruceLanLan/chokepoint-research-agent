@@ -237,7 +237,9 @@ cp .env.example .env
 ```bash
 python main.py doctor
 python main.py about                 # version + capability snapshot
+python main.py golden-path -V cpo_optics   # v10 offline ritual
 python main.py desk --md             # research desk status
+python main.py vertical-coverage
 python main.py maps                  # knowledge maps
 python main.py pro                   # list 50 pro modules
 python main.py mock-eval
