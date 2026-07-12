@@ -96,3 +96,11 @@ def test_multi_quotes(ws):
     out = multi_quote_snapshot(["AAA", "BBB"])
     assert out["count"] == 2
     assert len(out["table"]) == 2
+
+
+def test_about_snapshot():
+    from src import __version__
+    from src.ops.pro import PRO_MODULE_IDS
+
+    assert __version__
+    assert len(PRO_MODULE_IDS) == 50

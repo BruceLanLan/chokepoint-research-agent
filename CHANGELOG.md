@@ -1,5 +1,15 @@
 # Changelog
 
+## 6.3.0 — 2026-07-12
+
+### Added
+- Professional **README** rewrite (EN + ZH): positioning, capability map, workflow, CLI/API index
+- `about` CLI + `GET /about` capability snapshot
+
+### Changed
+- README no longer stuck on stale v0.x feature lists; documents v6 workstation surface
+
+
 ## 6.2.0 — 2026-07-12
 
 ### Added

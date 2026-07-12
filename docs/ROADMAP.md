@@ -72,7 +72,8 @@
 | **v6.0.0** | Train cut + playbooks + metrics battery | **Shipped** |
 | **v6.1.0** | Research desk, pro dashboard, memo-pro, glossary | **Shipped** |
 | **v6.2.0** | Multi-quotes batch + remote plugin design doc | **Shipped** |
-| v6.3 | Optional remote plugin install (hash-pinned) | Future |
+| **v6.3.0** | Professional README + about snapshot | **Shipped** |
+| v6.4 | Optional remote plugin install (hash-pinned) | Future |
 
 ---
 

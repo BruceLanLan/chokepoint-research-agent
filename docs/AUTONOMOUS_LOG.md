@@ -21,6 +21,14 @@
 
 ---
 
+## 2026-07-12 — v6.3.0
+
+- **Shipped:** professional EN/ZH README rewrite; `about` CLI + `/about`
+- **Tests:** 112+ passed
+- **Blocked:** none
+
+---
+
 ## 2026-07-12 — v6.2.0
 
 - **Shipped:** multi-quotes batch; REMOTE_PLUGIN_DESIGN.md

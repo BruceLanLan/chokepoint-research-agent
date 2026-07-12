@@ -1709,6 +1709,51 @@ def show_version():
     console.print(f"chokepoint-research-agent {__version__} (prompts {PROMPT_PACK_VERSION})")
 
 
+@app.command("about")
+def about_cmd():
+    """Professional capability snapshot (offline)."""
+    from src import __version__
+    from src.ops.pro import PRO_MODULE_IDS
+    from src.playbooks.registry import list_playbooks
+    from src.questionnaires.registry import list_questionnaires
+    from src.rubrics.registry import list_rubrics
+    from src.ops.glossary_search import list_glossary_terms
+    from src.ops.knowledge_maps import list_maps
+    from src.skills.loader import list_skill_packs
+    from src.ops.marketplace import marketplace_index
+
+    mkt = marketplace_index()
+    console.print(
+        {
+            "name": "Chokepoint Research Agent",
+            "version": __version__,
+            "positioning": "Professional research workstation — not a trading bot",
+            "disclaimer": "research_only_not_investment_advice",
+            "counts": {
+                "pro_modules": len(PRO_MODULE_IDS),
+                "playbooks": len(list_playbooks()),
+                "questionnaires": len(list_questionnaires()),
+                "rubrics": len(list_rubrics()),
+                "glossary_terms": len(list_glossary_terms()),
+                "knowledge_maps": len(list_maps()),
+                "skill_packs": len(list_skill_packs()),
+                "marketplace_listings": (mkt.get("counts") or {}).get("listings"),
+            },
+            "docs": {
+                "readme": "README.md / README.zh-CN.md",
+                "workstation": "docs/PROFESSIONAL_WORKSTATION.md",
+                "pro_train": "docs/VERSIONS_5.2_to_5.51.md",
+            },
+            "entrypoints": [
+                "python main.py doctor",
+                "python main.py desk --md",
+                "python main.py research \"…\" --mode chokepoint_fast",
+                "python main.py --server",
+            ],
+        }
+    )
+
+
 @app.callback(invoke_without_command=True)
 def default(
     ctx: typer.Context,
