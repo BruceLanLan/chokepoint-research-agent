@@ -16,7 +16,15 @@
 ## Next up (edit as you go)
 
 - [ ] Optional: full live research memo pytest behind RUN_LIVE + cost accept + keys
-- [ ] Keep offline tests green; weekly ritual desk + demo-journey + doctor scores
+- [ ] Keep offline tests green; weekly ritual desk + demo-journey + compare-vertical
+
+---
+
+## 2026-07-12 — v8.6.0 vertical memo compare
+
+- **Shipped:** vertical_compare service; /reports/compare; CLI compare-vertical; UI A/B + latest pair
+- **Tests:** 162 passed / 2 skipped
+- **Blocked:** none
 
 ---
 

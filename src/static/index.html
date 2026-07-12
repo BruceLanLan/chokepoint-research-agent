@@ -231,6 +231,23 @@
             <th data-i18n="name">Name</th><th data-i18n="mode">Mode</th><th>Q</th>
             <th data-i18n="modified">Modified</th><th data-i18n="actions">Actions</th>
           </tr></thead><tbody id="r-body"></tbody></table>
+          <div class="card" style="margin-top:14px;box-shadow:none;border:1px solid var(--border)">
+            <div class="card-title"><h3 data-i18n="compareTitle">Compare memos</h3></div>
+            <div class="row-3">
+              <div>
+                <label data-i18n="compareA">Report A</label>
+                <select id="r-cmp-a"><option value="">—</option></select>
+              </div>
+              <div>
+                <label data-i18n="compareB">Report B</label>
+                <select id="r-cmp-b"><option value="">—</option></select>
+              </div>
+              <div class="actions" style="align-self:end">
+                <button class="btn sec" id="r-cmp-run" data-i18n="compareRun">Compare pair</button>
+                <button class="btn" id="r-cmp-latest" data-i18n="compareLatest">Latest in vertical</button>
+              </div>
+            </div>
+          </div>
           <label data-i18n="preview">Preview / result</label>
           <div class="panel-out tall" id="r-out"></div>
         </div>

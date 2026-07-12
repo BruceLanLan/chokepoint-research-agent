@@ -462,6 +462,61 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(2)
         console.print(compare_memos(names))
 
+    @app.command("compare-vertical")
+    def compare_vertical_cmd(
+        vertical_id: Optional[str] = typer.Argument(
+            None, help="Deep vertical id (cpo_optics, …); omit if passing --a/--b"
+        ),
+        a: Optional[str] = typer.Option(None, "--a", help="Report filename A (older)"),
+        b: Optional[str] = typer.Option(None, "--b", help="Report filename B (newer)"),
+        no_udiff: bool = typer.Option(False, "--no-udiff", help="Skip unified diff lines"),
+        list_only: bool = typer.Option(
+            False, "--list", help="Only list memos for vertical_id"
+        ),
+    ):
+        """Compare two memos in a vertical pack (or latest two)."""
+        _boot_env()
+        from src.ops.vertical_compare import compare_vertical, list_vertical_reports
+
+        if list_only:
+            if not vertical_id:
+                console.print("[red]vertical_id required with --list[/red]")
+                raise typer.Exit(2)
+            rows = list_vertical_reports(vertical_id)
+            for r in rows:
+                console.print(
+                    f"[cyan]{r.get('name')}[/cyan]  q={r.get('quality_score')}  "
+                    f"{r.get('modified')}"
+                )
+            console.print(f"[dim]{len(rows)} reports · vertical={vertical_id}[/dim]")
+            return
+        out = compare_vertical(
+            vertical_id,
+            name_a=a,
+            name_b=b,
+            include_udiff=not no_udiff,
+        )
+        if out.get("error"):
+            console.print(f"[red]{out['error']}[/red]")
+            if out.get("hint"):
+                console.print(f"[dim]{out['hint']}[/dim]")
+            raise typer.Exit(1)
+        console.print(
+            f"[bold]similarity[/bold]={out.get('similarity_ratio')}  "
+            f"same_vertical={out.get('same_vertical')}  "
+            f"Δquality(B−A)={out.get('quality_delta_b_minus_a')}"
+        )
+        sc = out.get("scorecard") or {}
+        console.print(f"shared nodes: {sc.get('shared_nodes')}")
+        console.print(f"only A: {sc.get('only_in_a')}")
+        console.print(f"only B: {sc.get('only_in_b')}")
+        for act in out.get("next_actions") or []:
+            console.print(f"[yellow]→[/yellow] {act}")
+        if not no_udiff:
+            for line in (out.get("udiff") or [])[:80]:
+                console.print(line)
+        console.print(f"[dim]{out.get('a', {}).get('name')}  vs  {out.get('b', {}).get('name')}[/dim]")
+
 
 
     @app.command("tag")

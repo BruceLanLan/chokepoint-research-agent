@@ -1,5 +1,17 @@
 # Changelog
 
+## 8.6.0 — 2026-07-12
+
+### Added
+- **Vertical memo compare** (`src/ops/vertical_compare.py`): structured + text ratio + scorecard node deltas
+- API: `GET/POST /reports/compare`, `GET /reports/by-vertical/{id}`
+- CLI: `compare-vertical [id] [--a --b | latest] [--list]`
+- UI Reports: pick A/B, compare pair, or latest pair in filtered vertical
+
+### Tests
+- 162 passed (`test_v86_vertical_compare.py`)
+
+
 ## 8.5.0 — 2026-07-12
 
 ### Added

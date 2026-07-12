@@ -80,6 +80,7 @@
 | **v8.3.0** | vertical_id frontmatter; doctor config/ops scores; catalog depth | **Shipped** |
 | **v8.4.0** | Live env gates + UI smoke (TestClient / optional Playwright) | **Shipped** |
 | **v8.5.0** | Catalog vertical/skill filters + live research cost gate | **Shipped** |
+| **v8.6.0** | Same-vertical memo compare (API/CLI/UI) | **Shipped** |
 | v8.x | Optional full live memo pytest; coverage-driven verticals only | Future |
 
 ---

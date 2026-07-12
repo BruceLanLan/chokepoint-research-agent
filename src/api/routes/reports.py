@@ -91,7 +91,71 @@ def register(app: FastAPI) -> None:
 
         return catalog_facets()
 
+    @app.get("/reports/compare")
+    def reports_compare_get(
+        vertical_id: str = "",
+        a: str = "",
+        b: str = "",
+        udiff: bool = True,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        """Compare two memos or the latest pair for a vertical."""
+        _check_access(x_api_key)
+        from src.ops.vertical_compare import compare_vertical
 
+        out = compare_vertical(
+            vertical_id or None,
+            name_a=a or None,
+            name_b=b or None,
+            include_udiff=udiff,
+        )
+        if out.get("error") and "need at least 2" in str(out.get("error")):
+            raise HTTPException(404, out)
+        if out.get("error") and "not found" in str(out.get("error")):
+            raise HTTPException(404, out)
+        if out.get("error") and "provide vertical" in str(out.get("error")):
+            raise HTTPException(400, out)
+        return out
+
+    @app.post("/reports/compare")
+    def reports_compare_post(
+        body: dict | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.vertical_compare import compare_vertical
+
+        body = body or {}
+        out = compare_vertical(
+            body.get("vertical_id"),
+            name_a=body.get("a") or body.get("name_a"),
+            name_b=body.get("b") or body.get("name_b"),
+            include_udiff=bool(body.get("udiff", True)),
+        )
+        if out.get("error"):
+            code = 400
+            err = str(out.get("error"))
+            if "not found" in err or "need at least 2" in err:
+                code = 404
+            raise HTTPException(code, out)
+        return out
+
+    @app.get("/reports/by-vertical/{vertical_id}")
+    def reports_by_vertical(
+        vertical_id: str,
+        limit: int = 20,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.vertical_compare import list_vertical_reports
+
+        items = list_vertical_reports(vertical_id, limit=limit)
+        return {
+            "vertical_id": vertical_id,
+            "count": len(items),
+            "items": items,
+            "disclaimer": "research_only_not_investment_advice",
+        }
 
     @app.get("/reports/{name}")
     def report_detail(name: str, x_api_key: str | None = Header(default=None, alias="X-API-Key")):

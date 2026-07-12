@@ -643,6 +643,24 @@
     fill("#r-mode", facets.modes);
   }
 
+  function fillCompareSelects(items) {
+    const names = (Array.isArray(items) ? items : [])
+      .map((r) => r.name || r.filename || "")
+      .filter(Boolean);
+    ["#r-cmp-a", "#r-cmp-b"].forEach((sel, idx) => {
+      const el = $(sel);
+      if (!el) return;
+      const cur = el.value;
+      el.innerHTML =
+        '<option value="">—</option>' +
+        names
+          .map((n) => `<option value="${escapeAttr(n)}">${escapeHtml(shortPath(n))}</option>`)
+          .join("");
+      if (cur && names.includes(cur)) el.value = cur;
+      else if (names.length >= 2) el.value = names[Math.min(idx, names.length - 1)];
+    });
+  }
+
   async function loadReports() {
     try {
       const q = ($("#r-q")?.value || "").trim();
@@ -658,6 +676,7 @@
       const data = await api("/reports?" + params.toString());
       fillReportFacets(data.facets);
       const items = data.reports || data.items || data || [];
+      fillCompareSelects(items);
       const body = $("#r-body");
       const countEl = $("#r-count");
       if (countEl) {
@@ -687,6 +706,8 @@
               <button class="btn sm ghost" data-act="check" data-name="${escapeAttr(name)}">Check</button>
               <button class="btn sm ghost" data-act="grade" data-name="${escapeAttr(name)}">Grade</button>
               <button class="btn sm sec" data-act="pack" data-name="${escapeAttr(name)}">Pack</button>
+              <button class="btn sm ghost" data-act="cmp-a" data-name="${escapeAttr(name)}">A</button>
+              <button class="btn sm ghost" data-act="cmp-b" data-name="${escapeAttr(name)}">B</button>
             </td>
           </tr>`;
         })
@@ -719,7 +740,52 @@
           })
         );
         toast("Export pack ready");
+      } else if (act === "cmp-a") {
+        if ($("#r-cmp-a")) $("#r-cmp-a").value = base;
+        toast("Compare A = " + shortPath(base));
+      } else if (act === "cmp-b") {
+        if ($("#r-cmp-b")) $("#r-cmp-b").value = base;
+        toast("Compare B = " + shortPath(base));
       }
+    } catch (e) {
+      setOut($("#r-out"), { error: e.message });
+      toast(e.message);
+    }
+  }
+
+  async function runReportCompare(mode) {
+    try {
+      let path;
+      if (mode === "latest") {
+        const vid = ($("#r-vertical")?.value || "").trim();
+        if (!vid) return toast("Select a vertical filter first");
+        path = "/reports/compare?vertical_id=" + encodeURIComponent(vid);
+      } else {
+        const a = ($("#r-cmp-a")?.value || "").trim();
+        const b = ($("#r-cmp-b")?.value || "").trim();
+        if (!a || !b) return toast("Pick report A and B");
+        path =
+          "/reports/compare?a=" +
+          encodeURIComponent(a) +
+          "&b=" +
+          encodeURIComponent(b);
+      }
+      const data = await api(path);
+      // Compact view for analysts
+      const summary = {
+        similarity_ratio: data.similarity_ratio,
+        same_vertical: data.same_vertical,
+        vertical_id: data.vertical_id,
+        quality_delta_b_minus_a: data.quality_delta_b_minus_a,
+        a: data.a,
+        b: data.b,
+        scorecard: data.scorecard,
+        next_actions: data.next_actions,
+        warnings: data.warnings,
+        udiff_preview: (data.udiff || []).slice(0, 40),
+      };
+      setOut($("#r-out"), summary);
+      toast("Compare done · ratio=" + (data.similarity_ratio ?? "—"));
     } catch (e) {
       setOut($("#r-out"), { error: e.message });
       toast(e.message);
@@ -734,6 +800,8 @@
     ["#r-vertical", "#r-skill", "#r-mode"].forEach((sel) => {
       $(sel)?.addEventListener("change", loadReports);
     });
+    $("#r-cmp-run")?.addEventListener("click", () => runReportCompare("pair"));
+    $("#r-cmp-latest")?.addEventListener("click", () => runReportCompare("latest"));
   }
 
   /* ── Templates ────────────────────────────────────────────── */
