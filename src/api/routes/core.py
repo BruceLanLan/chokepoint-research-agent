@@ -72,13 +72,16 @@ def register(app: FastAPI) -> None:
         from src.rubrics.registry import list_rubrics
         from src.ops.glossary_search import list_glossary_terms
         from src.ops.knowledge_maps import list_maps
+        from src.ops.pro.verticals import list_verticals
         from src.skills.loader import list_skill_packs
 
         return {
             "name": "Chokepoint Research Agent",
             "version": __version__,
             "disclaimer": "research_only_not_investment_advice",
+            "verticals": [v["id"] for v in list_verticals()],
             "counts": {
+                "verticals": len(list_verticals()),
                 "pro_modules": len(PRO_MODULE_IDS),
                 "playbooks": len(list_playbooks()),
                 "questionnaires": len(list_questionnaires()),

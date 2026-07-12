@@ -47,18 +47,46 @@ def register(app: typer.Typer, pro_app: typer.Typer) -> None:
 
 
     @pro_app.command("verticals")
-    def progrp_verticals():
-        """List deep vertical packs under skills/pro_verticals/."""
-        from pathlib import Path
-        import yaml
+    def progrp_verticals(
+        show: Optional[str] = typer.Option(None, "--show", help="Print one pack in detail"),
+        scaffold: Optional[str] = typer.Option(
+            None, "--scaffold", help="Print research question scaffold for pack id"
+        ),
+        suggest: Optional[str] = typer.Option(
+            None, "--suggest", help="Suggest vertical from free text"
+        ),
+    ):
+        """List / show / scaffold deep vertical packs (skills/pro_verticals/)."""
+        from src.ops.pro.verticals import (
+            list_verticals,
+            load_vertical,
+            scaffold_research_question,
+            suggest_vertical,
+        )
 
-        d = ROOT / "skills" / "pro_verticals"
-        if not d.is_dir():
-            console.print("[]")
+        if suggest:
+            console.print(suggest_vertical(suggest))
             return
-        for p in sorted(d.glob("*.yaml")):
-            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-            console.print(f"[cyan]{p.stem}[/cyan]  {data.get('title')}  modules={data.get('modules')}")
+        if scaffold:
+            console.print(scaffold_research_question(scaffold))
+            return
+        if show:
+            data = load_vertical(show)
+            if not data:
+                console.print(f"[red]unknown vertical: {show}[/red]")
+                raise typer.Exit(1)
+            console.print(data)
+            return
+        for v in list_verticals():
+            console.print(
+                f"[cyan]{v['id']}[/cyan]  {v.get('title')}  "
+                f"nodes={v.get('node_count')} kills={v.get('kill_count')}  "
+                f"modules={v.get('modules')}"
+            )
+        console.print(
+            "[dim]research --vertical cpo_optics · pro-suite --vertical cpo_optics · "
+            "progrp verticals --show cpo_optics[/dim]"
+        )
 
 
 
@@ -120,12 +148,15 @@ def register(app: typer.Typer, pro_app: typer.Typer) -> None:
             "--text",
         ),
         symbol: str = typer.Option("", "--symbol"),
+        vertical: Optional[str] = typer.Option(
+            None, "--vertical", "-V", help="Scope suite to vertical pack modules only"
+        ),
     ):
-        """Run analyze across all 50 pro modules (offline suite)."""
+        """Run analyze across all 50 pro modules (or --vertical scoped subset)."""
         _boot_env()
-        from src.ops.pro.suite import run_full_suite
+        from src.ops.pro.suite import run_suite
 
-        console.print(run_full_suite(text=text, symbol=symbol))
+        console.print(run_suite(text=text, symbol=symbol, vertical=vertical))
 
 
 

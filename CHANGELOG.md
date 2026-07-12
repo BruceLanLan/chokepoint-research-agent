@@ -1,5 +1,22 @@
 # Changelog
 
+## 8.1.0 — 2026-07-12
+
+**Use deep verticals, don't broaden industry catalog.**
+
+### Added
+- `src/ops/pro/verticals.py` — load / list / suggest / scaffold / vertical-scoped suite
+- CLI: `research --vertical`, `pro-suite --vertical`, `progrp verticals --show|--scaffold|--suggest`
+- API: `GET /pro/verticals/{id}`, `POST .../scaffold`, suite accepts `vertical`
+- Research agent injects vertical process constraints (nodes, kills, evidence)
+- Desk surfaces vertical catalog + next-action hints
+- Template `vertical_coverage`; UI vertical select + “Fill from vertical”
+- Tests: `tests/test_v81_verticals.py`
+
+### Fixed
+- `POST /pro/suite` no longer captured by `/pro/{module_id}`
+
+
 ## 8.0.0 — 2026-07-12
 
 Hardening + professional workstation UI (plan Phase 4).

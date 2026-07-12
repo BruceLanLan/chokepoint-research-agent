@@ -54,21 +54,59 @@ from src.api.deps import (
 def register(app: FastAPI) -> None:
     """Register pro routes."""
     @app.get("/pro/verticals")
-    def api_pro_verticals(x_api_key: str | None = Header(default=None, alias="X-API-Key")):
+    def api_pro_verticals(
+        full: bool = True,
+        q: str | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
         _check_access(x_api_key)
-        from pathlib import Path
+        from src.ops.pro.verticals import list_verticals, suggest_vertical
 
-        import yaml
+        items = list_verticals(full=full)
+        if q:
+            return {
+                "query": q,
+                "suggestions": suggest_vertical(q),
+                "items": items,
+                "count": len(items),
+            }
+        return {"items": items, "count": len(items)}
 
-        # src/api/routes/pro.py → repo root is parents[3]
-        d = Path(__file__).resolve().parents[3] / "skills" / "pro_verticals"
-        items = []
-        if d.is_dir():
-            for p in sorted(d.glob("*.yaml")):
-                data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-                data["id"] = p.stem
-                items.append(data)
-        return {"items": items}
+    @app.get("/pro/verticals/{vertical_id}")
+    def api_pro_vertical_one(
+        vertical_id: str,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.pro.verticals import load_vertical, scaffold_research_question
+
+        data = load_vertical(vertical_id)
+        if not data:
+            raise HTTPException(404, f"unknown vertical: {vertical_id}")
+        return {
+            "vertical": data,
+            "scaffold": scaffold_research_question(vertical_id),
+            "disclaimer": data.get("disclaimer"),
+        }
+
+    @app.post("/pro/verticals/{vertical_id}/scaffold")
+    def api_pro_vertical_scaffold(
+        vertical_id: str,
+        body: dict | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.pro.verticals import scaffold_research_question
+
+        body = body or {}
+        out = scaffold_research_question(
+            vertical_id,
+            system=str(body.get("system") or ""),
+            context=str(body.get("context") or ""),
+        )
+        if out.get("error"):
+            raise HTTPException(404, out["error"])
+        return out
 
 
 
@@ -106,7 +144,22 @@ def register(app: FastAPI) -> None:
 
         return {"count": len(list_modules()), "items": list_modules()}
 
+    # Register static /pro/suite BEFORE /pro/{module_id} so "suite" is not captured.
+    @app.post("/pro/suite")
+    def api_pro_suite(
+        body: dict | None = None,
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ):
+        _check_access(x_api_key)
+        from src.ops.pro.suite import run_suite
 
+        body = body or {}
+        return run_suite(
+            text=body.get("text") or "",
+            symbol=body.get("symbol") or "",
+            title=body.get("title") or "suite",
+            vertical=body.get("vertical"),
+        )
 
     @app.post("/pro/{module_id}")
     def api_pro_invoke(
@@ -122,23 +175,6 @@ def register(app: FastAPI) -> None:
         if out.get("error") and out.get("known"):
             raise HTTPException(404, out["error"])
         return out
-
-
-
-    @app.post("/pro/suite")
-    def api_pro_suite(
-        body: dict | None = None,
-        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
-    ):
-        _check_access(x_api_key)
-        from src.ops.pro.suite import run_full_suite
-
-        body = body or {}
-        return run_full_suite(
-            text=body.get("text") or "",
-            symbol=body.get("symbol") or "",
-            title=body.get("title") or "suite",
-        )
 
 
 

@@ -70,6 +70,18 @@ def register(app: FastAPI) -> None:
             rendered = render_template(req.template_id, req.template_vars or {})
             question = rendered["question"]
             mode = rendered.get("mode") or mode  # type: ignore[assignment]
+        # Vertical-only scaffold when client sends a short placeholder
+        if req.vertical and (
+            not question
+            or question.strip() in {".", "-", "vertical", req.vertical}
+            or question.strip().startswith("@vertical")
+        ):
+            from src.ops.pro.verticals import scaffold_research_question
+
+            sc = scaffold_research_question(req.vertical)
+            if not sc.get("error"):
+                question = sc["question"]
+                mode = sc.get("mode") or mode  # type: ignore[assignment]
         if req.session_id:
             ctx = session_context_block(req.session_id)
             if ctx:
@@ -87,7 +99,7 @@ def register(app: FastAPI) -> None:
             if req.bilingual:
                 object.__setattr__(settings, "bilingual_memo", True)
             q, mode = _resolve_question(req)
-            agent = get_agent(mode)
+            agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
             result = agent.invoke({"messages": [{"role": "user", "content": q}]})
             report = extract_final_text(result)
             quality = validate_report_structure(report)
@@ -140,10 +152,18 @@ def register(app: FastAPI) -> None:
             try:
                 reset_cost_tracker()
                 q, mode = _resolve_question(req)
-                agent = get_agent(mode)
+                agent = get_agent(mode, skill=req.skill, vertical=req.vertical)
                 yield {
                     "event": "start",
-                    "data": json.dumps({"question": req.question, "mode": mode}, ensure_ascii=False),
+                    "data": json.dumps(
+                        {
+                            "question": req.question,
+                            "mode": mode,
+                            "skill": req.skill,
+                            "vertical": req.vertical,
+                        },
+                        ensure_ascii=False,
+                    ),
                 }
                 final_text = ""
                 for event in agent.stream(

@@ -15,9 +15,18 @@
 
 ## Next up (edit as you go)
 
-- [ ] Optional: further domain depth on remaining 45 pro YAML specs (beyond verticals)
+- [ ] Optional: further domain depth on remaining 45 pro YAML specs (only when coverage demands)
 - [ ] Live-gated integration tests behind explicit env (keep default offline)
-- [ ] Keep offline tests green; weekly ritual desk + weekly-ops
+- [ ] Keep offline tests green; weekly ritual desk + weekly-ops + vertical suite
+
+---
+
+## 2026-07-12 — v8.1.0 vertical workflow integration
+
+- **Shipped:** vertical loader; research/pro-suite/API/UI/desk wiring; scaffold; scoped suite; route fix for /pro/suite
+- **Strategy:** deepen usage of 5 packs, not add industries
+- **Tests:** 133 passed
+- **Blocked:** none
 
 ---
 

@@ -59,11 +59,22 @@ def research_desk_status() -> dict[str, Any]:
             "questionnaires": len(list_questionnaires()),
             "rubrics": len(list_rubrics()),
             "pro_yaml_specs": True,
+            "verticals": _verticals_catalog(),
         },
+        "verticals": _verticals_catalog(),
         "next_actions": _next_actions(health, pro, kills, queue),
         "disclaimer": "research_only_not_investment_advice",
         "note": "Research desk status — process hygiene, not P&L or advice.",
     }
+
+
+def _verticals_catalog() -> dict[str, Any]:
+    try:
+        from src.ops.pro.verticals import desk_vertical_block
+
+        return desk_vertical_block()
+    except Exception:  # noqa: BLE001
+        return {"count": 0, "ids": []}
 
 
 def _next_actions(health, pro, kills, queue) -> list[str]:
@@ -75,8 +86,16 @@ def _next_actions(health, pro, kills, queue) -> list[str]:
     queued = int((queue.get("by_status") or {}).get("queued") or 0)
     if queued:
         acts.append(f"Drain queue with mock: queue --run {min(queued, 3)}")
+    verts = _verticals_catalog()
+    if int(verts.get("count") or 0) > 0 and int(pro.get("active_modules") or 0) < 3:
+        sample = (verts.get("ids") or ["cpo_optics"])[0]
+        acts.append(
+            f"Deep vertical: research --vertical {sample}  or  pro-suite --vertical {sample}"
+        )
     if not acts:
         acts.append("Run weekly-ops + pro-suite on latest memo")
+        if verts.get("ids"):
+            acts.append(f"Or vertical suite: pro-suite --vertical {verts['ids'][0]}")
     return acts[:8]
 
 
@@ -92,7 +111,8 @@ def research_desk_markdown() -> str:
         f"**Queue:** {s['queue']}\n\n",
         f"**Catalog:** playbooks={s['catalog']['playbooks']} "
         f"questionnaires={s['catalog']['questionnaires']} "
-        f"rubrics={s['catalog']['rubrics']}\n\n",
+        f"rubrics={s['catalog']['rubrics']} "
+        f"verticals={s.get('verticals', {}).get('count', 0)}\n\n",
         "## Next actions\n",
     ]
     for a in s["next_actions"]:

@@ -102,8 +102,24 @@
               <input id="skill" placeholder="semiconductor / ai_infra / …" />
             </div>
             <div>
+              <label data-i18n="vertical">Vertical pack</label>
+              <select id="vertical">
+                <option value="">—</option>
+                <option value="cpo_optics">cpo_optics</option>
+                <option value="hbm_packaging">hbm_packaging</option>
+                <option value="power_cooling">power_cooling</option>
+                <option value="robotics_actuators">robotics_actuators</option>
+                <option value="specialty_materials">specialty_materials</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div>
               <label data-i18n="session">Session id</label>
               <input id="session" placeholder="optional" />
+            </div>
+            <div class="actions" style="align-self:end">
+              <button type="button" class="btn sm sec" id="vert-scaffold" data-i18n="vertScaffold">Fill from vertical</button>
             </div>
           </div>
           <div class="row">

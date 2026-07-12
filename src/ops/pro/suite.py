@@ -61,3 +61,18 @@ def suite_markdown(text: str = "", symbol: str = "") -> str:
             f"checklist={r.get('checklist_passed')} dens={r.get('density')}\n"
         )
     return "".join(lines)
+
+
+def run_suite(
+    *,
+    text: str = "",
+    symbol: str = "",
+    title: str = "suite",
+    vertical: str | None = None,
+) -> dict[str, Any]:
+    """Full 50-module suite, or vertical-scoped modules when ``vertical`` is set."""
+    if vertical:
+        from src.ops.pro.verticals import run_vertical_suite
+
+        return run_vertical_suite(vertical, text=text, symbol=symbol, title=title)
+    return run_full_suite(text=text, symbol=symbol, title=title)

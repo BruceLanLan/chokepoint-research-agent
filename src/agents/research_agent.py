@@ -56,17 +56,21 @@ def build_investment_agent(
     settings: Settings | None = None,
     mode: Mode | None = None,
     skill: str | None = None,
+    vertical: str | None = None,
 ):
     """Create the lead investment agent with specialist sub-agents.
 
     Prefers `deepagents.create_deep_agent` when installed.
     Falls back to the built-in parallel orchestrator otherwise.
+
+    ``skill`` — light domain skill pack (skills/packs).
+    ``vertical`` — deep vertical process pack (skills/pro_verticals).
     """
     settings = settings or get_settings()
     mode = mode or settings.research_mode
 
     try:
-        return _build_deep_agent(settings, mode=mode, skill=skill)
+        return _build_deep_agent(settings, mode=mode, skill=skill, vertical=vertical)
     except Exception as exc:  # noqa: BLE001
         print(f"[chokepoint-agent] deepagents unavailable ({exc}); using fallback orchestrator")
         from src.agents.fallback_orchestrator import build_fallback_agent
@@ -123,10 +127,16 @@ def _subagent_specs(max_s: int, mode: Mode) -> list[dict[str, Any]]:
     return [chokepoint, fundamental, news, macro, risk]
 
 
-def _build_deep_agent(settings: Settings, mode: Mode = "full", skill: str | None = None):
+def _build_deep_agent(
+    settings: Settings,
+    mode: Mode = "full",
+    skill: str | None = None,
+    vertical: str | None = None,
+):
     from deepagents import create_deep_agent
 
     from src.agents.model import build_model
+    from src.ops.pro.verticals import vertical_prompt_suffix
     from src.skills.loader import skill_prompt_suffix
 
     model = build_model(settings)
@@ -139,6 +149,10 @@ def _build_deep_agent(settings: Settings, mode: Mode = "full", skill: str | None
     if settings.report_language == "en":
         lead_prompt += "\n# Language\nWrite the final memo primarily in English.\n"
     lead_prompt += skill_prompt_suffix(skill)
+    lead_prompt += vertical_prompt_suffix(vertical)
+    # If user only passed a vertical id as skill, still load deep pack
+    if not vertical and skill:
+        lead_prompt += vertical_prompt_suffix(skill)
     subagents = _subagent_specs(max_s, mode)
 
     return create_deep_agent(

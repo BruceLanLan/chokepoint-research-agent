@@ -207,6 +207,25 @@
       }
     });
 
+    $("#vert-scaffold")?.addEventListener("click", async () => {
+      const vid = ($("#vertical")?.value || "").trim();
+      if (!vid) return toast("Select a vertical pack");
+      try {
+        const r = await api("/pro/verticals/" + encodeURIComponent(vid) + "/scaffold", {
+          method: "POST",
+          body: JSON.stringify({}),
+        });
+        if (r.question && $("#q")) $("#q").value = r.question;
+        if (r.mode && $("#mode")) $("#mode").value = r.mode;
+        if (r.suggested_skill && $("#skill") && !$("#skill").value) {
+          $("#skill").value = r.suggested_skill;
+        }
+        toast("Scaffolded from " + vid);
+      } catch (e) {
+        toast(e.message);
+      }
+    });
+
     $("#run")?.addEventListener("click", runResearch);
   }
 
@@ -218,6 +237,7 @@
     }
     const mode = $("#mode")?.value || "full";
     const skill = ($("#skill")?.value || "").trim();
+    const vertical = ($("#vertical")?.value || "").trim();
     const session_id = ($("#session")?.value || "").trim() || null;
     const bilingual = !!$("#bilingual")?.checked;
     const useStream = !!$("#stream")?.checked;
@@ -239,6 +259,7 @@
       session_id,
     };
     if (skill) body.skill = skill;
+    if (vertical) body.vertical = vertical;
 
     try {
       if (useStream) {

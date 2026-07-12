@@ -34,6 +34,7 @@ def run_research(
     template: Optional[str] = None,
     var: Optional[list[str]] = None,
     skill: Optional[str] = None,
+    vertical: Optional[str] = None,
     min_quality: int = 0,
     thesis_id: Optional[str] = None,
     pro_suite: bool = False,
@@ -50,6 +51,24 @@ def run_research(
         object.__setattr__(settings, "bilingual_memo", True)
     setup_logging(settings.log_level)
     reset_cost_tracker()
+
+    if vertical:
+        from src.ops.pro.verticals import load_vertical, scaffold_research_question
+
+        if not load_vertical(vertical):
+            console.print(f"[red]Unknown vertical: {vertical}[/red]")
+            console.print("[dim]List: python main.py progrp verticals[/dim]")
+            raise typer.Exit(2)
+        if not question and not template:
+            sc = scaffold_research_question(vertical)
+            question = sc.get("question")
+            mode = sc.get("mode") or mode
+            if not skill and sc.get("suggested_skill"):
+                skill = sc["suggested_skill"]
+            console.print(f"[cyan]vertical={vertical} mode={mode} skill={skill or '-'}[/cyan]")
+        elif question:
+            # Agent system prompt gets vertical via build_investment_agent(vertical=…)
+            console.print(f"[cyan]vertical={vertical}[/cyan]")
 
     if template:
         from src.ops.templates import render_template
@@ -101,7 +120,9 @@ def run_research(
     from src.schemas.scorecard import extract_scorecard_table, validate_report_structure
 
     settings.reports_dir.mkdir(parents=True, exist_ok=True)
-    agent = build_investment_agent(settings, mode=mode, skill=skill)  # type: ignore[arg-type]
+    agent = build_investment_agent(
+        settings, mode=mode, skill=skill, vertical=vertical
+    )  # type: ignore[arg-type]
     payload = {"messages": [{"role": "user", "content": question_for_agent}]}
 
     if stream:
@@ -220,13 +241,19 @@ def register(app: typer.Typer) -> None:
             None, "--var", help="template var key=value (repeatable)"
         ),
         skill: Optional[str] = typer.Option(None, "--skill", help="domain skill pack id"),
+        vertical: Optional[str] = typer.Option(
+            None, "--vertical", "-V", help="deep vertical pack (cpo_optics, hbm_packaging, …)"
+        ),
         min_quality: int = typer.Option(0, "--min-quality", help="postprocess quality gate"),
         thesis_id: Optional[str] = typer.Option(None, "--thesis-id", help="link saved memo to thesis"),
         pro_suite: bool = typer.Option(False, "--pro-suite", help="run pro suite on saved memo"),
         pro_persist: bool = typer.Option(False, "--pro-persist", help="persist pro notes when suite passes"),
         no_auto_tag: bool = typer.Option(False, "--no-auto-tag"),
     ):
-        """Run multi-agent research (or render --template first)."""
+        """Run multi-agent research (or render --template first).
+
+        Deep vertical example: research --vertical cpo_optics
+        """
         vars_list = list(var) if var else []
         _run_research(
             question=question,
@@ -239,6 +266,7 @@ def register(app: typer.Typer) -> None:
             template=template,
             var=vars_list,
             skill=skill,
+            vertical=vertical,
             min_quality=min_quality,
             thesis_id=thesis_id,
             pro_suite=pro_suite,

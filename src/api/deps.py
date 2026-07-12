@@ -51,7 +51,13 @@ def check_access(
 _check_access = check_access
 
 
-def get_agent(mode: str = "full"):
+def get_agent(mode: str = "full", skill: str | None = None, vertical: str | None = None):
+    """Return a (possibly cached) agent. Skill/vertical bypass mode-only cache."""
+    if skill or vertical:
+        setup_logging(get_settings().log_level)
+        return build_investment_agent(
+            get_settings(), mode=mode, skill=skill, vertical=vertical  # type: ignore[arg-type]
+        )
     if mode not in _agents:
         setup_logging(get_settings().log_level)
         _agents[mode] = build_investment_agent(get_settings(), mode=mode)  # type: ignore[arg-type]
@@ -68,6 +74,7 @@ class ResearchRequest(BaseModel):
     template_id: Optional[str] = None
     template_vars: Optional[dict[str, str]] = None
     skill: Optional[str] = None
+    vertical: Optional[str] = None
     min_quality: int = 0
     pro_suite: bool = False
 
